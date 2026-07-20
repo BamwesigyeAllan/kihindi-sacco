@@ -1,0 +1,61 @@
+{
+    "configurations": [ 
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Node App",
+            "program": "${workspaceFolder}/app.js",
+            "env": {
+                "PORT": "3000",
+                "NODE_ENV": "development",
+                "DATABASE_URL": "postgres://user:pass@localhost:5432/kihindi"
+            }
+        },
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch Firefox",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}/public",
+            "reAttach": true
+        }
+        {
+            "type": "pwa-msedge",
+            "name": "Launch Microsoft Edge in headless mode",
+            "request": "launch",
+            "runtimeArgs": [
+                "--headless",
+                "--remote-debugging-port=9222"
+            ],
+            "url": "c:\\Users\\Allan Weiyz\\.vscode\\extensions\\ms-edgedevtools.vscode-edge-devtools-2.1.10\\out\\startpage\\index.html", // Provide your project's url to finish configuring
+            "presentation": {
+                "hidden": true
+            }
+        },
+        {
+            "type": "vscode-edge-devtools.debug",
+            "name": "Open Edge DevTools",
+            "request": "attach",
+            "url": "http://localhost:3000",
+            "presentation": {
+                "hidden": true
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Edge Headless and attach DevTools",
+            "configurations": [
+                "Launch Microsoft Edge in headless mode",
+                "Open Edge DevTools"
+            ]
+        },
+        {
+            "name": "Launch Edge and attach DevTools",
+            "configurations": [
+                "Launch Microsoft Edge",
+                "Open Edge DevTools"
+            ]
+        }
+    ]
+}
