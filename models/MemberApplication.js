@@ -25,8 +25,11 @@ const MemberApplication = sequelize.define('MemberApplication', {
         type: DataTypes.ENUM('pending', 'approved', 'rejected'),
         defaultValue: 'pending'
     },
-    reviewed_by: { type: DataTypes.INTEGER, references: { model: 'users', key: 'id' } },
+    reviewed_by: { type: DataTypes.INTEGER },
     reviewed_at: DataTypes.DATE
-}, { timestamps: true, tableName: 'member_applications' });
+}, {
+    timestamps: true,
+    tableName: 'member_applications'
+});
 
 module.exports = MemberApplication;
