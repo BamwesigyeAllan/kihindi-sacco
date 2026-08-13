@@ -15,9 +15,6 @@ const LoanApplication = sequelize.define('LoanApplication', {
     reviewed_by: { type: DataTypes.INTEGER },
     reviewed_at: DataTypes.DATE,
     notes: DataTypes.TEXT
-}, {
-    timestamps: true,
-    tableName: 'loan_applications'
-});
+}, { timestamps: true, tableName: 'loan_applications' });
 
 module.exports = LoanApplication;
