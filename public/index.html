@@ -68,7 +68,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ============================================================
-           DASHBOARD HEADER (Render-style)
+           DASHBOARD HEADER
            ============================================================ */
         .dash-header {
             display: flex;
@@ -117,7 +117,6 @@
             color: white;
             border-color: var(--primary);
         }
-        .dash-header-actions .btn-outline i { font-size: 0.9rem; }
         .dash-header-actions .btn-primary-outline {
             background: var(--primary);
             border: none;
@@ -135,7 +134,7 @@
         .dash-header-actions .btn-primary-outline:hover { background: var(--primary-light); }
 
         /* ============================================================
-           STATS GRID (Render-style Cards)
+           STATS GRID
            ============================================================ */
         .stats-grid {
             display: grid;
@@ -542,7 +541,7 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h1>KIHINDI SACCO</h1>
-            <div class="motto">Faith in God leads success</div>
+            <div class="motto">Faith in God Leads to Success</div>
             <input type="text" id="loginUser" placeholder="Username" value="admin" />
             <input type="password" id="loginPass" placeholder="Password" value="password" />
             <button onclick="login()">Login</button>
@@ -835,8 +834,8 @@
                 </div>
                 <div class="table-responsive">
                     <table id="loanTable">
-                        <thead><tr><th>Loan ID</th><th>Member</th><th>Product</th><th>Amount</th><th>Balance</th><th>Status</th></tr></thead>
-                        <tbody><tr><td colspan="6" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
+                        <thead><tr><th>Loan ID</th><th>Member</th><th>Product</th><th>Amount</th><th>Balance</th><th>Insurance Fee</th><th>Status</th></tr></thead>
+                        <tbody><tr><td colspan="7" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -848,6 +847,12 @@
                         <div class="form-group"><label>Loan Product</label><select id="loanProduct" required onchange="updateLoanRates()"></select></div>
                         <div class="form-group"><label>Amount (UGX)</label><input type="number" id="loanAmount" required></div>
                         <div class="form-group"><label>Repayment Period (Months)</label><input type="number" id="loanTenor" required></div>
+                        <!-- INSURANCE FEE – Visible only to privileged roles -->
+                        <div class="form-group full-width" id="insuranceFeeGroup" style="display:none;">
+                            <label>Insurance Fee (UGX)</label>
+                            <input type="number" id="loanInsuranceFee" step="100" value="5000" />
+                            <small style="color:#888;">This fee covers loan insurance.</small>
+                        </div>
                         <div class="form-group"><label>Interest Rate (%)</label><input type="number" step="0.1" id="loanRate" readonly></div>
                         <div class="form-group"><label>Product Description</label><input type="text" id="loanProductDesc" readonly></div>
                         <div class="form-actions">
@@ -918,7 +923,7 @@
     <footer>
         <i class="fas fa-hand-holding-heart"></i>
         MBARARA CITY KIHINDI BODA BODA RIDERS' SACCO –
-        <span style="color:var(--gold);">Faith in God leads success</span>
+        <span style="color:var(--gold);">Faith in God Leads to Success</span>
         <br><small>&copy; 2026 All rights reserved</small>
     </footer>
 
@@ -1011,6 +1016,16 @@
         function openModal(id) { document.getElementById(id).classList.add('show'); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
         function printReceipt() { window.print(); }
+
+        // ===================== GET USER ROLE FROM TOKEN =====================
+        function getUserRole() {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.role;
+            } catch (e) {
+                return null;
+            }
+        }
 
         // ===================== LIVE DATE/TIME =====================
         function updateDateTime() {
@@ -1354,11 +1369,12 @@
                             <td>${l.LoanProduct?.product_name || 'N/A'}</td>
                             <td>UGX ${Number(l.amount).toLocaleString()}</td>
                             <td>UGX ${Number(l.balance).toLocaleString()}</td>
+                            <td>${l.insurance_fee ? 'UGX ' + Number(l.insurance_fee).toLocaleString() : 'N/A'}</td>
                             <td><span class="badge badge-${l.status}">${l.status}</span></td>
                         </tr>
                     `).join('');
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No loans</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">No loans</td></tr>';
                 }
             } catch (e) { console.error('Loans error:', e); }
         }
@@ -1389,7 +1405,8 @@
                 member_id: document.getElementById('loanMember').value,
                 product_id: document.getElementById('loanProduct').value,
                 amount: document.getElementById('loanAmount').value,
-                repayment_period_months: document.getElementById('loanTenor').value
+                repayment_period_months: document.getElementById('loanTenor').value,
+                insurance_fee: document.getElementById('loanInsuranceFee').value || 0
             };
             try {
                 const res = await apiFetch('/loans', {
@@ -1410,6 +1427,16 @@
             if (form.style.display === 'block') {
                 loadMemberSelects();
                 loadLoanProducts();
+
+                // Show/hide insurance fee based on role
+                const role = getUserRole();
+                const allowedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
+                const insuranceGroup = document.getElementById('insuranceFeeGroup');
+                if (role && allowedRoles.includes(role)) {
+                    insuranceGroup.style.display = 'block';
+                } else {
+                    insuranceGroup.style.display = 'none';
+                }
             }
         }
 

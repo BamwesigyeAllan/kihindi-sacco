@@ -1,30 +1,34 @@
 const express = require('express');
-const { body, param } = require('express-validator');
 const { Loan, Member, LoanProduct, LoanRepayment, Transaction } = require('../models');
 const { authenticate, authorize } = require('../middleware/auth');
-const { validate } = require('../middleware/validate');
 const router = express.Router();
 
+// GET all loans (with insurance_fee hidden from non-privileged roles)
 router.get('/', authenticate, async (req, res) => {
     try {
-        const { member_id } = req.query;
-        const where = {};
-        if (member_id) where.member_id = member_id;
-
         const loans = await Loan.findAll({
-            where,
             include: [
                 { model: Member, attributes: ['id', 'full_name', 'phone'] },
                 { model: LoanProduct, attributes: ['id', 'product_name', 'interest_rate'] }
             ],
             order: [['createdAt', 'DESC']]
         });
+        
+        // If user is not privileged, remove insurance_fee from response
+        const privilegedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
+        if (!privilegedRoles.includes(req.user.role)) {
+            loans.forEach(loan => {
+                delete loan.dataValues.insurance_fee;
+            });
+        }
+        
         res.json(loans);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
+// GET loan products
 router.get('/products', authenticate, async (req, res) => {
     try {
         const products = await LoanProduct.findAll({ where: { status: 'active' } });
@@ -34,90 +38,10 @@ router.get('/products', authenticate, async (req, res) => {
     }
 });
 
-router.get('/products/:id', authenticate, validate([
-    param('id').isInt().withMessage('Product ID must be an integer')
-]), async (req, res) => {
+// POST apply for loan (with insurance_fee)
+router.post('/', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer', 'treasurer', 'officer'), async (req, res) => {
     try {
-        const product = await LoanProduct.findByPk(req.params.id);
-        if (!product) return res.status(404).json({ error: 'Loan product not found' });
-        res.json(product);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-router.delete('/products/:id', authenticate, authorize('admin', 'manager'), validate([
-    param('id').isInt().withMessage('Product ID must be an integer')
-]), async (req, res) => {
-    try {
-        const product = await LoanProduct.findByPk(req.params.id);
-        if (!product) return res.status(404).json({ error: 'Loan product not found' });
-        await product.destroy();
-        res.json({ success: true, message: 'Loan product deleted' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-router.post('/products', authenticate, authorize('admin', 'manager'), validate([
-    body('product_name').trim().notEmpty().withMessage('Product name is required'),
-    body('interest_rate').isFloat({ gt: 0 }).withMessage('Interest rate must be a positive number'),
-    body('rate_type').isIn(['per_annum', 'per_month']).withMessage('Rate type must be per_annum or per_month'),
-    body('min_amount').isFloat({ gt: 0 }).withMessage('Minimum amount must be a positive number'),
-    body('max_amount').isFloat({ gt: 0 }).withMessage('Maximum amount must be a positive number'),
-    body('max_tenor_months').isInt({ gt: 0 }).withMessage('Maximum tenor must be a positive integer')
-]), async (req, res) => {
-    try {
-        const { product_name, description, interest_rate, rate_type, min_amount, max_amount, max_tenor_months } = req.body;
-        const existing = await LoanProduct.findOne({ where: { product_name } });
-        if (existing) return res.status(409).json({ error: 'Loan product already exists' });
-
-        const product = await LoanProduct.create({
-            product_name,
-            description,
-            interest_rate,
-            rate_type,
-            min_amount,
-            max_amount,
-            max_tenor_months,
-            status: 'active'
-        });
-
-        res.status(201).json({ success: true, product });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-router.put('/products/:id', authenticate, authorize('admin', 'manager'), validate([
-    param('id').isInt().withMessage('Product ID must be an integer'),
-    body('product_name').optional().trim().notEmpty().withMessage('Product name cannot be empty'),
-    body('interest_rate').optional().isFloat({ gt: 0 }).withMessage('Interest rate must be a positive number'),
-    body('rate_type').optional().isIn(['per_annum', 'per_month']).withMessage('Rate type must be per_annum or per_month'),
-    body('min_amount').optional().isFloat({ gt: 0 }).withMessage('Minimum amount must be a positive number'),
-    body('max_amount').optional().isFloat({ gt: 0 }).withMessage('Maximum amount must be a positive number'),
-    body('max_tenor_months').optional().isInt({ gt: 0 }).withMessage('Maximum tenor must be a positive integer'),
-    body('status').optional().isIn(['active', 'inactive']).withMessage('Status must be active or inactive')
-]), async (req, res) => {
-    try {
-        const product = await LoanProduct.findByPk(req.params.id);
-        if (!product) return res.status(404).json({ error: 'Loan product not found' });
-
-        await product.update(req.body);
-        res.json({ success: true, product });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-router.post('/', authenticate, authorize('admin', 'manager'), validate([
-    body('member_id').isInt().withMessage('Member ID is required'),
-    body('product_id').isInt().withMessage('Loan product ID is required'),
-    body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
-    body('repayment_period_months').isInt({ gt: 0 }).withMessage('Repayment period must be a positive integer')
-]), async (req, res) => {
-    try {
-        const { member_id, product_id, amount, repayment_period_months } = req.body;
+        const { member_id, product_id, amount, repayment_period_months, insurance_fee } = req.body;
 
         const product = await LoanProduct.findByPk(product_id);
         if (!product) return res.status(400).json({ error: 'Invalid loan product' });
@@ -143,6 +67,7 @@ router.post('/', authenticate, authorize('admin', 'manager'), validate([
             interest_rate: product.interest_rate,
             repayment_period_months,
             balance: amount,
+            insurance_fee: insurance_fee || 0,
             status: 'pending',
             created_by: req.user.id
         });
@@ -153,11 +78,8 @@ router.post('/', authenticate, authorize('admin', 'manager'), validate([
     }
 });
 
-router.put('/:id', authenticate, authorize('admin', 'manager'), validate([
-    param('id').isInt().withMessage('Loan ID must be an integer'),
-    body('status').optional().isIn(['pending', 'active', 'completed', 'defaulted']).withMessage('Invalid loan status'),
-    body('disbursement_date').optional().isISO8601().withMessage('Disbursement date must be a valid date')
-]), async (req, res) => {
+// PUT approve/disburse loan
+router.put('/:id', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer'), async (req, res) => {
     try {
         const loan = await Loan.findByPk(req.params.id, {
             include: [{ model: Member }]
@@ -188,12 +110,8 @@ router.put('/:id', authenticate, authorize('admin', 'manager'), validate([
     }
 });
 
-router.post('/:id/repay', authenticate, authorize('admin', 'manager', 'officer'), validate([
-    param('id').isInt().withMessage('Loan ID must be an integer'),
-    body('amount_paid').isFloat({ gt: 0 }).withMessage('Amount paid must be greater than 0'),
-    body('payment_date').optional().isISO8601().withMessage('Payment date must be a valid date'),
-    body('payment_mode').optional().isIn(['cash', 'bank', 'mmo']).withMessage('Payment mode must be cash, bank, or mmo')
-]), async (req, res) => {
+// POST repay loan
+router.post('/:id/repay', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer', 'treasurer', 'officer'), async (req, res) => {
     try {
         const { amount_paid, payment_date, payment_mode, reference_no } = req.body;
         const loan = await Loan.findByPk(req.params.id, {

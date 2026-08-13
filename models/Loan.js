@@ -12,6 +12,7 @@ const Loan = sequelize.define('Loan', {
     disbursement_date: DataTypes.DATEONLY,
     due_date: DataTypes.DATEONLY,
     balance: { type: DataTypes.DECIMAL(12, 2), allowNull: false },
+    insurance_fee: { type: DataTypes.DECIMAL(12, 2), allowNull: false, defaultValue: 0 }, // NEW
     status: { type: DataTypes.ENUM('pending', 'active', 'completed', 'defaulted'), defaultValue: 'pending' },
     created_by: { type: DataTypes.INTEGER }
 }, { timestamps: true, tableName: 'loans' });
