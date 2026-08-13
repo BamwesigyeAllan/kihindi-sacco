@@ -14,13 +14,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
+// --------------------- Routes ---------------------
 const authRoutes = require('./routes/auth');
 const memberRoutes = require('./routes/members');
 const savingsRoutes = require('./routes/savings');
 const depositRoutes = require('./routes/deposits');
 const loanRoutes = require('./routes/loans');
 const reportRoutes = require('./routes/reports');
+
+// NEW ROUTES
+const memberApplicationRoutes = require('./routes/memberApplications');
+const loanApplicationRoutes = require('./routes/loanApplications');
+const userRoutes = require('./routes/users');
 
 app.use('/auth', authRoutes);
 app.use('/members', authenticate, memberRoutes);
@@ -29,21 +34,25 @@ app.use('/deposits', authenticate, depositRoutes);
 app.use('/loans', authenticate, loanRoutes);
 app.use('/reports', authenticate, reportRoutes);
 
+// Register new routes
+app.use('/member-applications', authenticate, memberApplicationRoutes);
+app.use('/loan-applications', authenticate, loanApplicationRoutes);
+app.use('/users', authenticate, userRoutes);
+
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
 const PORT = process.env.PORT || 5000;
 
-// ============================================================
-// SYNC DATABASE & CREATE DEFAULT USERS
-// ============================================================
+// Sync database and create default users
 sequelize.sync().then(async () => {
     console.log('✅ Database synced');
 
     const defaultUsers = [
         { username: 'admin', password: 'admin123', role: 'admin' },
-        { username: 'chairperson', password: 'chairperson123', role: 'chairperson' },
-        { username: 'treasurer', password: 'treasurer123', role: 'treasurer' },
-        { username: 'loans_officer', password: 'loans123', role: 'loans_officer' }
+        { username: 'chairman', password: 'chairman123', role: 'chairman' },
+        { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
+        { username: 'cashier', password: 'cashier123', role: 'cashier' },
+        { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
     ];
 
     for (const userData of defaultUsers) {

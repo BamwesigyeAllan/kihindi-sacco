@@ -10,6 +10,8 @@ const LoanProduct = require('./LoanProduct');
 const Loan = require('./Loan');
 const LoanRepayment = require('./LoanRepayment');
 const Transaction = require('./Transaction');
+const MemberApplication = require('./MemberApplication');
+const LoanApplication = require('./LoanApplication');
 
 // User ↔ Member
 User.hasMany(Member, { foreignKey: 'registered_by' });
@@ -71,6 +73,14 @@ Transaction.belongsTo(Member, { foreignKey: 'member_id' });
 User.hasMany(Transaction, { foreignKey: 'created_by' });
 Transaction.belongsTo(User, { foreignKey: 'created_by' });
 
+// MemberApplication ↔ User (reviewer)
+MemberApplication.belongsTo(User, { foreignKey: 'reviewed_by', as: 'reviewer' });
+
+// LoanApplication associations
+LoanApplication.belongsTo(Member, { foreignKey: 'member_id' });
+LoanApplication.belongsTo(LoanProduct, { foreignKey: 'product_id' });
+LoanApplication.belongsTo(User, { foreignKey: 'reviewed_by', as: 'reviewer' });
+
 module.exports = {
     sequelize,
     User,
@@ -84,4 +94,7 @@ module.exports = {
     Loan,
     LoanRepayment,
     Transaction
+    ,
+    MemberApplication,
+    LoanApplication
 };
