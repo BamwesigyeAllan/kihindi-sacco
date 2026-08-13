@@ -8,6 +8,17 @@ async function resetSeed() {
     const adminPassword = await bcrypt.hash('admin123', 10);
     await User.create({ username: 'admin', password_hash: adminPassword, role: 'admin' });
 
+    // Create a user for each role
+    const roles = ['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'];
+    const defaultPassHash = await bcrypt.hash('password123', 10);
+
+    for (const role of roles) {
+      const username = role;
+      // skip creating duplicate admin (already created above)
+      if (username === 'admin') continue;
+      await User.create({ username, password_hash: defaultPassHash, role });
+    }
+
     const loanProducts = [
       {
         product_name: 'Salary Advance',

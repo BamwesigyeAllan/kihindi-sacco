@@ -6,10 +6,22 @@ async function seed() {
     await sequelize.sync({ alter: true });
 
     const adminPassword = await bcrypt.hash('admin123', 10);
-    const [admin] = await User.findOrCreate({
+    await User.findOrCreate({
       where: { username: 'admin' },
       defaults: { username: 'admin', password_hash: adminPassword, role: 'admin' }
     });
+
+    // Ensure a user exists for each role
+    const roles = ['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'];
+    const defaultPassHash = await bcrypt.hash('password123', 10);
+
+    for (const role of roles) {
+      const username = role;
+      await User.findOrCreate({
+        where: { username },
+        defaults: { username, password_hash: defaultPassHash, role }
+      });
+    }
 
     const loanProducts = [
       {
