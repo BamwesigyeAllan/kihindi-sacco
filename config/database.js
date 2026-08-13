@@ -1,9 +1,6 @@
 ﻿const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
-
 dotenv.config();
-
-const useSsl = process.env.DB_USE_SSL === 'true';
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -15,9 +12,12 @@ const sequelize = new Sequelize(
         port: process.env.DB_PORT || 4000,
         logging: false,
         define: { timestamps: true },
-        dialectOptions: useSsl
-            ? { ssl: { require: true, rejectUnauthorized: false } }
-            : {}
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false   // Important for TiDB Cloud
+            }
+        }
     }
 );
 

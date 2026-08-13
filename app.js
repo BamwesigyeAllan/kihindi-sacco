@@ -36,9 +36,7 @@ const PORT = process.env.PORT || 5000;
 sequelize.sync({ alter: true }).then(async () => {
     console.log('✅ Database synced');
 
-    // ============================================================
-    // CREATE DEFAULT USERS (if they don't exist)
-    // ============================================================
+    // Create default users if they don't exist
     const defaultUsers = [
         { username: 'admin', password: 'admin123', role: 'admin' },
         { username: 'chairperson', password: 'chairperson123', role: 'chairperson' },
@@ -56,14 +54,9 @@ sequelize.sync({ alter: true }).then(async () => {
                 role: userData.role
             });
             console.log(`✅ Default user created: ${userData.username} (role: ${userData.role})`);
-        } else {
-            console.log(`ℹ️ User already exists: ${userData.username}`);
         }
     }
 
-    // ============================================================
-    // START THE SERVER
-    // ============================================================
     app.listen(PORT, () => {
         console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
