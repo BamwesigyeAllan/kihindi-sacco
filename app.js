@@ -34,12 +34,11 @@ app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() 
 const PORT = process.env.PORT || 5000;
 
 // ============================================================
-// SYNC DATABASE – NO ALTER (to avoid UNIQUE constraint errors)
+// SYNC DATABASE & CREATE DEFAULT USERS
 // ============================================================
 sequelize.sync().then(async () => {
     console.log('✅ Database synced');
 
-    // Create default users if they don't exist
     const defaultUsers = [
         { username: 'admin', password: 'admin123', role: 'admin' },
         { username: 'chairperson', password: 'chairperson123', role: 'chairperson' },
@@ -57,8 +56,6 @@ sequelize.sync().then(async () => {
                 role: userData.role
             });
             console.log(`✅ Default user created: ${userData.username} (role: ${userData.role})`);
-        } else {
-            console.log(`ℹ️ User already exists: ${userData.username}`);
         }
     }
 
