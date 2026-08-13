@@ -11,141 +11,91 @@
            GLOBAL RESET & BASE
            ============================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        :root { 
-            --primary: #1A4D2E; 
-            --primary-light: #2a6d3e; 
-            --gold: #D4A017; 
-            --gold-light: #f0c040; 
-            --bg: #f5f2e6; 
-            --white: #ffffff; 
-            --shadow: 0 2px 8px rgba(0,0,0,0.06); 
-            --shadow-hover: 0 8px 30px rgba(0,0,0,0.1);
-            --radius: 12px; 
-            --radius-sm: 8px;
-            --border: #e8e5dd;
-            --text: #1a1a2e;
-            --text-muted: #6b6b7b;
-        }
-        body { background: var(--bg); display: flex; flex-direction: column; min-height: 100vh; }
+        :root { --primary: #1A4D2E; --primary-light: #2a6d3e; --gold: #D4A017; --gold-light: #f0c040; --bg: #f5f2e6; --white: #ffffff; --shadow: 0 2px 12px rgba(0,0,0,0.06); --shadow-hover: 0 8px 30px rgba(0,0,0,0.1); --radius: 12px; --radius-sm: 8px; --border: #e8e5dd; --text: #1a1a2e; --text-muted: #6b6b7b; }
+        body { background: var(--bg); display: flex; min-height: 100vh; font-family: 'Inter', sans-serif; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         /* ============================================================
-           NAVBAR
+           SIDEBAR
            ============================================================ */
-        .navbar {
+        .sidebar {
+            width: 250px;
             background: var(--primary);
             color: white;
-            padding: 0.6rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.12);
-            position: sticky;
-            top: 0;
+            padding: 1.5rem 1rem;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
             z-index: 100;
         }
-        .navbar .brand { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; }
-        .navbar .brand i { color: var(--gold); font-size: 1.6rem; }
-        .navbar .brand span { color: var(--gold); }
-        .navbar .nav-links { display: flex; gap: 0.3rem; flex-wrap: wrap; }
-        .navbar .nav-links button {
-            background: transparent; border: none; color: rgba(255,255,255,0.7); padding: 0.4rem 0.9rem;
-            border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        .sidebar .brand { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
+        .sidebar .brand i { color: var(--gold); font-size: 1.6rem; }
+        .sidebar .brand span { color: var(--gold); }
+        .sidebar nav a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 0.7rem 1rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: 0.2s;
+            margin-bottom: 0.2rem;
+            cursor: pointer;
         }
-        .navbar .nav-links button:hover,
-        .navbar .nav-links button.active { background: rgba(255,255,255,0.12); color: white; }
-        .navbar .nav-links button.active { background: var(--gold); color: var(--primary); font-weight: 600; }
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar nav a.active { background: var(--gold); color: var(--primary); font-weight: 600; }
+        .sidebar .logout { margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
 
         /* ============================================================
-           CONTAINER & PAGE SECTIONS
+           MAIN CONTENT
            ============================================================ */
-        .container { flex: 1; max-width: 1440px; margin: 0 auto; padding: 1.5rem 2rem; width: 100%; }
-        .page-section { display: none; animation: fadeIn 0.3s ease; }
-        .page-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 1.5rem 2rem;
+            min-height: 100vh;
+        }
 
         /* ============================================================
-           DASHBOARD HEADER
+           TOP HEADER
            ============================================================ */
-        .dash-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .top-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-bottom: 1.8rem;
         }
-        .dash-header-left h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .top-header .left { display: flex; align-items: center; gap: 1rem; }
+        .top-header .hamburger { display: none; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--primary); }
+        .top-header h1 { font-size: 1.6rem; font-weight: 600; color: var(--text); }
+        .top-header .user-info { display: flex; align-items: center; gap: 1rem; }
+        .top-header .user-info .badge {
+            background: var(--gold);
+            color: var(--primary);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        .dash-header-left h1 i { color: var(--gold); }
-        .dash-header-left p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 2px;
-        }
-        .dash-header-left p i { color: var(--gold); margin-right: 4px; }
-        .dash-header-actions {
-            display: flex;
-            gap: 0.6rem;
-            align-items: center;
-        }
-        .dash-header-actions .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            padding: 0.4rem 1rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text);
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .dash-header-actions .btn-outline:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        .dash-header-actions .btn-primary-outline {
-            background: var(--primary);
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .dash-header-actions .btn-primary-outline:hover { background: var(--primary-light); }
 
         /* ============================================================
-           STATS GRID
+           STATS CARDS
            ============================================================ */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
         }
         .stat-card {
             background: var(--white);
-            border-radius: var(--radius);
             padding: 1.2rem 1.5rem;
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
             transition: 0.25s ease;
@@ -155,50 +105,9 @@
             transform: translateY(-3px);
             border-color: var(--gold);
         }
-        .stat-card .stat-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        .stat-card .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-        }
-        .stat-card .stat-icon.green { background: var(--primary); }
-        .stat-card .stat-icon.gold { background: var(--gold); }
-        .stat-card .stat-icon.blue { background: #2980b9; }
-        .stat-card .stat-icon.red { background: #e74c3c; }
-        .stat-card .stat-change {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.15rem 0.5rem;
-            border-radius: 20px;
-            background: #e8f8ee;
-            color: #27ae60;
-        }
-        .stat-card .stat-change.down { background: #fde8e8; color: #e74c3c; }
-        .stat-card .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--text); margin-top: 0.3rem; }
-        .stat-card .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-
-        /* ============================================================
-           DASHBOARD GRID
-           ============================================================ */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-        }
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+        .stat-card .stat-number { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+        .stat-card .stat-label { color: var(--text-muted); font-size: 0.85rem; }
+        .stat-card .stat-icon { float: right; font-size: 2rem; color: var(--gold-light); }
 
         /* ============================================================
            CARDS
@@ -209,33 +118,18 @@
             padding: 1.5rem;
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
             transition: 0.25s ease;
         }
         .card:hover { box-shadow: var(--shadow-hover); }
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             margin-bottom: 1rem;
             flex-wrap: wrap;
             gap: 0.5rem;
         }
-        .card-header h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .card-header h2 { font-size: 1.1rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
         .card-header h2 i { color: var(--gold); }
-        .card-header .view-all {
-            font-size: 0.8rem;
-            color: var(--gold);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .card-header .view-all:hover { text-decoration: underline; }
         .card-header .btn {
             background: var(--primary);
             color: white;
@@ -250,75 +144,60 @@
         .card-header .btn:hover { background: var(--primary-light); }
         .card-header .btn-gold { background: var(--gold); color: var(--primary); }
         .card-header .btn-gold:hover { background: var(--gold-light); }
+        .card-header .view-all { color: var(--gold); text-decoration: none; font-size: 0.85rem; font-weight: 500; }
+        .card-header .view-all:hover { text-decoration: underline; }
 
         /* ============================================================
-           TABLE
+           TABLES
            ============================================================ */
         .table-responsive { overflow-x: auto; }
-        .table-responsive table { width: 100%; border-collapse: collapse; }
-        .table-responsive table thead th {
-            background: transparent;
-            color: var(--text-muted);
+        table { width: 100%; border-collapse: collapse; }
+        table thead th {
+            background: #f5f3ed;
+            color: var(--text);
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 0.6rem 0.5rem 0.4rem 0.5rem;
-            border-bottom: 2px solid var(--border);
+            padding: 0.6rem 0.5rem;
             text-align: left;
+            border-bottom: 2px solid var(--border);
         }
-        .table-responsive table tbody td {
+        table tbody td {
             padding: 0.6rem 0.5rem;
             border-bottom: 1px solid #f5f3ec;
             font-size: 0.9rem;
             color: var(--text);
         }
-        .table-responsive table tbody tr:hover { background: #faf8f0; }
+        table tbody tr:hover { background: #faf8f0; }
 
         /* ============================================================
-           QUICK ACTIONS
+           FORMS
            ============================================================ */
-        .actions-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.7rem;
-        }
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0.8rem;
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.2rem; font-size: 0.9rem; color: var(--text); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
-            background: #faf8f2;
-            color: var(--text);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.25s ease;
-            gap: 6px;
-            min-height: 65px;
+            font-size: 0.95rem;
+            transition: 0.2s;
         }
-        .action-btn i {
-            font-size: 1.4rem;
-            color: var(--primary);
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--gold);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212,160,23,0.15);
         }
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-        }
-        .action-btn:hover i { color: white; }
-        .action-btn.gold:hover { background: var(--gold); border-color: var(--gold); color: var(--primary); }
-        .action-btn.gold:hover i { color: var(--primary); }
-
-        /* ============================================================
-           CHART CARD
-           ============================================================ */
-        .chart-card .chart-container { padding: 0.3rem 0; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-actions { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem; }
+        .form-actions .btn-primary { background: var(--primary); color: white; border: none; padding: 0.6rem 2rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .form-actions .btn-primary:hover { background: var(--primary-light); }
+        .form-actions .btn-secondary { background: #e8e5dd; color: var(--text); border: none; padding: 0.6rem 2rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .form-actions .btn-secondary:hover { background: #d5d0c5; }
+        .checkbox-group { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
+        .checkbox-group label { font-weight: 400; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+        .checkbox-group input[type="checkbox"], .checkbox-group input[type="radio"] { width: 18px; height: 18px; accent-color: var(--primary); }
 
         /* ============================================================
            BADGES
@@ -335,6 +214,57 @@
         .badge-completed { background: #cce5ff; color: #004085; }
         .badge-matured { background: #d1ecf1; color: #0c5460; }
         .badge-withdrawn { background: #f8d7da; color: #721c24; }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            backdrop-filter: blur(2px);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-content .close {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #999;
+            transition: 0.2s;
+        }
+        .modal-content .close:hover { color: #333; }
+        .modal-content h2 { color: var(--primary); margin-bottom: 1rem; }
+
+        /* ============================================================
+           PHOTO UPLOAD
+           ============================================================ */
+        .photo-upload {
+            border: 2px dashed var(--border);
+            padding: 1rem;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: 0.2s;
+            background: #faf8f2;
+        }
+        .photo-upload:hover { border-color: var(--gold); background: #f5f0e6; }
 
         /* ============================================================
            TOAST
@@ -360,636 +290,133 @@
         /* ============================================================
            LOGIN
            ============================================================ */
-        .login-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            backdrop-filter: blur(4px);
-        }
-        .login-overlay.hidden { display: none; }
-        .login-box {
-            background: var(--white);
-            padding: 2.5rem 3rem;
-            border-radius: var(--radius);
+        .login-container {
             max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        .login-box h1 { color: var(--primary); margin-bottom: 0.2rem; }
-        .login-box .motto { color: var(--gold); font-style: italic; margin-bottom: 1.5rem; }
-        .login-box input {
-            width: 100%;
-            padding: 0.8rem;
-            margin: 0.5rem 0;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-        }
-        .login-box input:focus {
-            border-color: var(--gold);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(212,160,23,0.15);
-        }
-        .login-box button {
-            width: 100%;
-            padding: 0.8rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 0.5rem;
-            transition: 0.2s;
-        }
-        .login-box button:hover { background: var(--primary-light); }
-        .login-box .error { color: red; font-size: 0.9rem; margin-top: 0.5rem; display: none; }
-
-        /* ============================================================
-           MODALS
-           ============================================================ */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(2px);
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: white;
-            padding: 2rem;
+            margin: 2rem auto;
+            background: var(--white);
+            padding: 2.5rem;
             border-radius: var(--radius);
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
         }
-        .modal-box h2 { color: var(--primary); margin-bottom: 1rem; }
-
-        /* ============================================================
-           FORMS
-           ============================================================ */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; }
-        .form-grid .full-width { grid-column: 1 / -1; }
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-group label { font-weight: 600; color: var(--text); font-size: 0.85rem; }
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 0.6rem 0.8rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            transition: 0.2s;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: var(--gold);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(212,160,23,0.15);
-        }
-        .photo-upload {
-            border: 2px dashed var(--border);
-            padding: 1rem;
-            text-align: center;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: 0.2s;
-            background: #faf8f2;
-        }
-        .photo-upload:hover { border-color: var(--gold); background: #f5f0e6; }
-        .form-actions {
-            grid-column: 1 / -1;
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 0.5rem;
-        }
-        .form-actions .btn-primary { background: var(--primary); color: white; border: none; padding: 0.6rem 2rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .form-actions .btn-primary:hover { background: var(--primary-light); }
-        .form-actions .btn-secondary { background: #e8e5dd; color: var(--text); border: none; padding: 0.6rem 2rem; border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; transition: 0.2s; }
-        .form-actions .btn-secondary:hover { background: #d5d0c5; }
-        .checkbox-group { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
-        .checkbox-group label { font-weight: 400; display: flex; align-items: center; gap: 4px; font-size: 0.9rem; }
-        .checkbox-group input[type="checkbox"],
-        .checkbox-group input[type="radio"] { width: 18px; height: 18px; accent-color: var(--primary); }
-
-        /* ============================================================
-           FOOTER
-           ============================================================ */
-        footer {
-            background: var(--primary);
-            color: white;
-            text-align: center;
-            padding: 0.8rem 0;
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            border-top: 3px solid var(--gold);
-        }
-        footer i { color: var(--gold); }
+        .login-container h1 { color: var(--primary); text-align: center; margin-bottom: 0.2rem; }
+        .login-container .motto { color: var(--gold); text-align: center; font-style: italic; margin-bottom: 1.5rem; }
+        .login-container .form-group { margin-bottom: 1rem; }
+        .login-container .btn { width: 100%; padding: 0.8rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .login-container .btn:hover { background: var(--primary-light); }
 
         /* ============================================================
            RESPONSIVE
            ============================================================ */
-        @media (max-width: 1024px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .right-column { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        }
         @media (max-width: 768px) {
-            .dash-header { flex-direction: column; align-items: stretch; }
-            .dash-header-actions { justify-content: flex-start; flex-wrap: wrap; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .stat-card { padding: 1rem; }
-            .stat-number { font-size: 1.3rem; }
-            .right-column { grid-template-columns: 1fr; }
-            .actions-grid { grid-template-columns: 1fr 1fr; }
-            .action-btn { min-height: 55px; padding: 0.5rem; font-size: 0.7rem; }
-            .action-btn i { font-size: 1.2rem; }
-            .dash-header-left h1 { font-size: 1.4rem; }
-            .navbar { padding: 0.5rem 1rem; flex-direction: column; align-items: stretch; }
-            .navbar .nav-links { justify-content: center; margin-top: 0.3rem; gap: 0.2rem; }
-            .navbar .nav-links button { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
-            .container { padding: 1rem; }
-            .form-grid { grid-template-columns: 1fr; }
-            .card { padding: 1rem; }
-            .login-box { padding: 1.5rem; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 1rem; }
+            .top-header .hamburger { display: block; }
+            .form-row { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; }
-            .actions-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===================== LOGIN OVERLAY ===================== -->
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-box">
-            <h1>KIHINDI SACCO</h1>
-            <div class="motto">Faith in God Leads to Success</div>
-            <input type="text" id="loginUser" placeholder="Username" value="admin" />
-            <input type="password" id="loginPass" placeholder="Password" value="password" />
-            <button onclick="login()">Login</button>
-            <div class="error" id="loginError">Invalid credentials</div>
-            <p style="font-size:0.8rem; margin-top:1rem; color:#888;">Default: admin / password</p>
-        </div>
-    </div>
-
-    <!-- ===================== NAVIGATION ===================== -->
-    <nav class="navbar">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sidebar" id="sidebar">
         <div class="brand"><i class="fas fa-hand-holding-heart"></i> KIHINDI <span>SACCO</span></div>
-        <div class="nav-links">
-            <button class="active" data-page="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
-            <button data-page="members"><i class="fas fa-users"></i> Members</button>
-            <button data-page="savings"><i class="fas fa-piggy-bank"></i> Savings</button>
-            <button data-page="deposits"><i class="fas fa-file-invoice"></i> Fixed Deposits</button>
-            <button data-page="loans"><i class="fas fa-hand-holding-usd"></i> Loans</button>
-            <button data-page="reports"><i class="fas fa-flag"></i> Reports</button>
-            <button onclick="logout()" style="color:var(--gold);"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-    </nav>
+        <nav>
+            <a class="active" data-page="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
+            <a data-page="members"><i class="fas fa-users"></i> Members</a>
+            <a data-page="savings"><i class="fas fa-piggy-bank"></i> Savings</a>
+            <a data-page="deposits"><i class="fas fa-file-invoice"></i> Fixed Deposits</a>
+            <a data-page="loans"><i class="fas fa-hand-holding-usd"></i> Loans</a>
+            <a data-page="reports"><i class="fas fa-flag"></i> Reports</a>
+            <a class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
 
     <!-- ===================== MAIN CONTENT ===================== -->
-    <div class="container">
+    <div class="main-content">
 
-        <!-- ========== DASHBOARD ========== -->
-        <div id="dashboard" class="page-section active">
-
-            <!-- Dashboard Header -->
-            <div class="dash-header">
-                <div class="dash-header-left">
-                    <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
-                    <p><i class="fas fa-calendar-alt"></i> <span id="currentDateTime"></span> &nbsp;|&nbsp; <i class="fas fa-user-shield"></i> Welcome back, <strong>Admin</strong></p>
-                </div>
-                <div class="dash-header-actions">
-                    <button class="btn-outline" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Refresh</button>
-                    <button class="btn-primary-outline" onclick="showToast('No new notifications', 'info')"><i class="fas fa-bell"></i> Notifications</button>
-                </div>
+        <!-- Top Header -->
+        <div class="top-header">
+            <div class="left">
+                <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1 id="pageTitle">Dashboard</h1>
             </div>
-
-            <!-- Stats Grid -->
-            <div class="stats-grid" id="dashboardStats">
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon green"><i class="fas fa-user-friends"></i></div>
-                        <span class="stat-change"><i class="fas fa-arrow-up"></i> 12%</span>
-                    </div>
-                    <div class="stat-number" id="statMembers">0</div>
-                    <div class="stat-label">Active Partners</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon gold"><i class="fas fa-piggy-bank"></i></div>
-                        <span class="stat-change"><i class="fas fa-arrow-up"></i> 8%</span>
-                    </div>
-                    <div class="stat-number" id="statSavings">UGX 0</div>
-                    <div class="stat-label">Total Savings</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon blue"><i class="fas fa-coins"></i></div>
-                        <span class="stat-change down"><i class="fas fa-arrow-down"></i> 2%</span>
-                    </div>
-                    <div class="stat-number" id="statDeposits">UGX 0</div>
-                    <div class="stat-label">Funded Deposits</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon red"><i class="fas fa-hand-holding-usd"></i></div>
-                        <span class="stat-change"><i class="fas fa-arrow-up"></i> 5%</span>
-                    </div>
-                    <div class="stat-number" id="statLoans">UGX 0</div>
-                    <div class="stat-label">Outstanding Loans</div>
-                </div>
-            </div>
-
-            <!-- Main Dashboard Content -->
-            <div class="dashboard-grid">
-                <!-- Recent Transactions -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-clock"></i> Recent Transactions</h2>
-                        <a href="#" class="view-all">View All →</a>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="recentTransactions">
-                            <thead>
-                                <tr><th>Date</th><th>Member</th><th>Type</th><th>Amount</th><th>Status</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="5" style="text-align:center; padding:2rem 0; color:#999;">
-                                        <i class="fas fa-spinner fa-spin"></i> Loading transactions...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Right Column -->
-                <div class="right-column">
-                    <!-- Quick Actions -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
-                        </div>
-                        <div class="actions-grid">
-                            <button class="action-btn" onclick="navigateTo('members')">
-                                <i class="fas fa-user-plus"></i>
-                                <span>Register</span>
-                            </button>
-                            <button class="action-btn gold" onclick="navigateTo('deposits')">
-                                <i class="fas fa-file-invoice"></i>
-                                <span>Open Deposit</span>
-                            </button>
-                            <button class="action-btn" onclick="navigateTo('loans')">
-                                <i class="fas fa-hand-holding-usd"></i>
-                                <span>Apply Loan</span>
-                            </button>
-                            <button class="action-btn" onclick="navigateTo('savings')">
-                                <i class="fas fa-piggy-bank"></i>
-                                <span>Savings</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Mini Chart -->
-                    <div class="card chart-card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-chart-pie"></i> Deposit Breakdown</h2>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="depositPieChart" height="160"></canvas>
-                        </div>
-                    </div>
-                </div>
+            <div class="user-info">
+                <span id="userName">Admin</span>
+                <span class="badge" id="userRole">admin</span>
             </div>
         </div>
 
-        <!-- ========== MEMBERS ========== -->
-        <div id="members" class="page-section">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-users"></i> Member List</h2>
-                    <button class="btn" onclick="showAddMember()"><i class="fas fa-plus"></i> Add Member</button>
-                </div>
-                <div class="table-responsive">
-                    <table id="memberTable">
-                        <thead><tr><th>ID</th><th>Name</th><th>NIN</th><th>Phone</th><th>Status</th><th>Action</th></tr></thead>
-                        <tbody><tr><td colspan="6" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card" id="addMemberForm" style="display:none;">
-                <div class="card-header"><h2><i class="fas fa-user-plus"></i> New Member Registration</h2></div>
-                <form id="memberForm" onsubmit="registerMember(event)">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Full Name *</label><input type="text" id="memFullName" required></div>
-                        <div class="form-group"><label>Gender</label><select id="memGender"><option>Male</option><option>Female</option><option>Other</option></select></div>
-                        <div class="form-group"><label>Date of Birth</label><input type="date" id="memDob"></div>
-                        <div class="form-group"><label>National ID *</label><input type="text" id="memNin" required></div>
-                        <div class="form-group"><label>Phone</label><input type="tel" id="memPhone"></div>
-                        <div class="form-group"><label>Password *</label><input type="password" id="memPassword" required></div>
-                        <div class="form-group"><label>Marital Status</label><select id="memMarital"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
-                        <div class="form-group full-width"><label>Address</label><input type="text" id="memAddress" placeholder="Village, Parish, Sub-County, District"></div>
-                        <div class="form-group"><label>Occupation</label><input type="text" id="memOccupation"></div>
-                        <div class="form-group"><label>Stage Name</label><input type="text" id="memStage" placeholder="Boda Boda Stage"></div>
-                        <div class="form-group full-width"><label>Next of Kin Name *</label><input type="text" id="memNokName" required></div>
-                        <div class="form-group full-width"><label>Next of Kin Phone *</label><input type="tel" id="memNokPhone" required></div>
-                        <div class="form-group full-width">
-                            <label>Passport Photo</label>
-                            <div class="photo-upload" onclick="document.getElementById('memPhoto').click()"><i class="fas fa-camera"></i> Click to upload photo</div>
-                            <input type="file" id="memPhoto" accept="image/*" style="display:none;">
-                        </div>
-                        <div class="form-group"><label>Share Capital (UGX)</label><input type="number" id="memShareCapital" value="0"></div>
-                        <div class="form-group full-width"><label><input type="checkbox" id="memEntranceFee"> Entrance Fee Paid (Shs. 20,000)</label></div>
-                        <div class="form-group full-width"><label><input type="checkbox" id="memAgree" required> I agree to abide by the bye-laws</label></div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('addMemberForm').style.display='none';">Cancel</button>
-                            <button type="submit" class="btn-primary">Register</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ========== SAVINGS ========== -->
-        <div id="savings" class="page-section">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-piggy-bank"></i> Savings Accounts</h2>
-                    <div>
-                        <button class="btn" onclick="showSavingsDeposit()"><i class="fas fa-plus"></i> Deposit</button>
-                        <button class="btn btn-gold" onclick="showSavingsWithdraw()"><i class="fas fa-minus"></i> Withdraw</button>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table id="savingsTable">
-                        <thead><tr><th>Member</th><th>Account No</th><th>Balance (UGX)</th><th>Status</th><th>Opened</th></tr></thead>
-                        <tbody><tr><td colspan="5" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card" id="savingsDepositForm" style="display:none;">
-                <div class="card-header"><h2><i class="fas fa-plus-circle"></i> Savings Deposit</h2></div>
-                <form onsubmit="savingsDeposit(event)">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Member</label><select id="savDepMember" required></select></div>
-                        <div class="form-group"><label>Amount (UGX)</label><input type="number" id="savDepAmount" required></div>
-                        <div class="form-group full-width"><label>Description</label><input type="text" id="savDepDesc" placeholder="Optional"></div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('savingsDepositForm').style.display='none';">Cancel</button>
-                            <button type="submit" class="btn-primary">Deposit</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="card" id="savingsWithdrawForm" style="display:none;">
-                <div class="card-header"><h2><i class="fas fa-minus-circle"></i> Savings Withdrawal</h2></div>
-                <form onsubmit="savingsWithdraw(event)">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Member</label><select id="savWithMember" required></select></div>
-                        <div class="form-group"><label>Amount (UGX)</label><input type="number" id="savWithAmount" required></div>
-                        <div class="form-group full-width"><label>Description</label><input type="text" id="savWithDesc" placeholder="Optional"></div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('savingsWithdrawForm').style.display='none';">Cancel</button>
-                            <button type="submit" class="btn-primary">Withdraw</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ========== FIXED DEPOSITS ========== -->
-        <div id="deposits" class="page-section">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-file-invoice"></i> Fixed Deposit Accounts</h2>
-                    <button class="btn" onclick="showAddDeposit()"><i class="fas fa-plus"></i> Open Deposit</button>
-                </div>
-                <div class="table-responsive">
-                    <table id="depositTable">
-                        <thead><tr><th>Account</th><th>Member</th><th>Amount</th><th>Tenor</th><th>Maturity</th><th>Quarterly</th><th>Status</th></tr></thead>
-                        <tbody><tr><td colspan="7" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card" id="addDepositForm" style="display:none;">
-                <div class="card-header"><h2><i class="fas fa-plus-circle"></i> Open Fixed Deposit</h2></div>
-                <form onsubmit="createDeposit(event)">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Member</label><select id="depMember" required></select></div>
-                        <div class="form-group"><label>Amount (UGX)</label><input type="number" id="depAmount" required></div>
-                        <div class="form-group"><label>Amount in Words</label><input type="text" id="depWords"></div>
-                        <div class="form-group"><label>Interest Rate (%)</label><input type="number" step="0.1" id="depRate" value="12" required></div>
-                        <div class="form-group"><label>Tenor (Months)</label><input type="number" id="depTenor" value="12" required></div>
-                        <div class="form-group"><label>Start Date</label><input type="date" id="depStart" required></div>
-                        <div class="form-group full-width"><label>Interest Payment</label>
-                            <div class="checkbox-group">
-                                <label><input type="radio" name="depInterest" value="quarterly" checked> Quarterly</label>
-                                <label><input type="radio" name="depInterest" value="monthly"> Monthly</label>
-                                <label><input type="radio" name="depInterest" value="at_maturity"> At Maturity</label>
-                            </div>
-                        </div>
-                        <div class="form-group full-width"><label>Mode of Payment</label>
-                            <div class="checkbox-group">
-                                <label><input type="radio" name="depPayment" value="cash" checked> Cash</label>
-                                <label><input type="radio" name="depPayment" value="bank"> Bank</label>
-                                <label><input type="radio" name="depPayment" value="mmo"> MMO</label>
-                            </div>
-                            <input type="text" id="depRef" placeholder="Reference No." style="margin-top:0.5rem;">
-                        </div>
-                        <div class="form-group full-width"><label><input type="checkbox" required> I agree to the terms and conditions</label></div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('addDepositForm').style.display='none';">Cancel</button>
-                            <button type="submit" class="btn-primary">Open Deposit</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ========== LOANS ========== -->
-        <div id="loans" class="page-section">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-hand-holding-usd"></i> Loan Portfolio</h2>
-                    <button class="btn" onclick="showLoanApply()"><i class="fas fa-plus"></i> Apply for Loan</button>
-                </div>
-                <div class="table-responsive">
-                    <table id="loanTable">
-                        <thead><tr><th>Loan ID</th><th>Member</th><th>Product</th><th>Amount</th><th>Balance</th><th>Insurance Fee</th><th>Status</th></tr></thead>
-                        <tbody><tr><td colspan="7" style="text-align:center;color:#888;">Loading...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="card" id="loanApplyForm" style="display:none;">
-                <div class="card-header"><h2><i class="fas fa-hand-holding-usd"></i> Apply for Loan</h2></div>
-                <form onsubmit="applyLoan(event)">
-                    <div class="form-grid">
-                        <div class="form-group"><label>Member</label><select id="loanMember" required></select></div>
-                        <div class="form-group"><label>Loan Product</label><select id="loanProduct" required onchange="updateLoanRates()"></select></div>
-                        <div class="form-group"><label>Amount (UGX)</label><input type="number" id="loanAmount" required></div>
-                        <div class="form-group"><label>Repayment Period (Months)</label><input type="number" id="loanTenor" required></div>
-                        <!-- INSURANCE FEE – Visible only to privileged roles -->
-                        <div class="form-group full-width" id="insuranceFeeGroup" style="display:none;">
-                            <label>Insurance Fee (UGX)</label>
-                            <input type="number" id="loanInsuranceFee" step="100" value="5000" />
-                            <small style="color:#888;">This fee covers loan insurance.</small>
-                        </div>
-                        <div class="form-group"><label>Interest Rate (%)</label><input type="number" step="0.1" id="loanRate" readonly></div>
-                        <div class="form-group"><label>Product Description</label><input type="text" id="loanProductDesc" readonly></div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-secondary" onclick="document.getElementById('loanApplyForm').style.display='none';">Cancel</button>
-                            <button type="submit" class="btn-primary">Submit Application</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ========== REPORTS ========== -->
-        <div id="reports" class="page-section">
-            <div class="card">
-                <div class="card-header"><h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2></div>
-                <div class="dashboard-grid">
-                    <div style="background:#faf8f2; padding:1.5rem; border-radius:var(--radius); text-align:center; border:1px solid var(--border);">
-                        <i class="fas fa-chart-pie" style="font-size:3rem; color:var(--gold);"></i>
-                        <h3 style="margin-top:0.5rem;">Deposits Summary</h3>
-                        <canvas id="depositsChart" height="180"></canvas>
-                    </div>
-                    <div style="background:#faf8f2; padding:1.5rem; border-radius:var(--radius); text-align:center; border:1px solid var(--border);">
-                        <i class="fas fa-chart-line" style="font-size:3rem; color:var(--primary);"></i>
-                        <h3 style="margin-top:0.5rem;">Loans by Product</h3>
-                        <canvas id="loansChart" height="180"></canvas>
-                    </div>
-                </div>
-                <div style="margin-top:1.5rem; display:flex; gap:0.8rem; flex-wrap:wrap;">
-                    <button class="btn" onclick="exportReport('deposits','pdf')"><i class="fas fa-file-pdf"></i> Deposits PDF</button>
-                    <button class="btn" onclick="exportReport('deposits','excel')"><i class="fas fa-file-excel"></i> Deposits Excel</button>
-                    <button class="btn btn-gold" onclick="exportReport('loans','pdf')"><i class="fas fa-file-pdf"></i> Loans PDF</button>
-                    <button class="btn btn-gold" onclick="exportReport('loans','excel')"><i class="fas fa-file-excel"></i> Loans Excel</button>
-                </div>
-            </div>
-        </div>
+        <!-- Page Content -->
+        <div id="pageContent"></div>
 
     </div>
 
-    <!-- ===================== MODALS ===================== -->
-
-    <!-- Withdrawal Receipt Modal -->
-    <div class="modal-overlay" id="receiptModal">
-        <div class="modal-box">
-            <h2><i class="fas fa-receipt"></i> Withdrawal Receipt</h2>
-            <div id="receiptContent">
-                <p><strong>Receipt No:</strong> <span id="receiptNo"></span></p>
-                <p><strong>Member:</strong> <span id="receiptMember"></span></p>
-                <p><strong>Account No:</strong> <span id="receiptAccount"></span></p>
-                <p><strong>Amount:</strong> <span id="receiptAmount"></span></p>
-                <p><strong>Date:</strong> <span id="receiptDate"></span></p>
-                <p><strong>National ID:</strong> <span id="receiptNID"></span></p>
-            </div>
-            <button onclick="closeModal('receiptModal')" class="btn" style="width:100%; margin-top:1rem;">Close</button>
-            <button onclick="printReceipt()" class="btn btn-gold" style="width:100%; margin-top:0.5rem;"><i class="fas fa-print"></i> Print</button>
+    <!-- ===================== MODAL ===================== -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
         </div>
     </div>
-
-    <!-- Member Details Modal -->
-    <div class="modal-overlay" id="memberModal">
-        <div class="modal-box" style="max-width:700px;">
-            <h2><i class="fas fa-user"></i> Member Details</h2>
-            <div id="memberDetailsContent"><p style="color:#888;">Loading...</p></div>
-            <button onclick="closeModal('memberModal')" class="btn" style="width:100%; margin-top:1rem;">Close</button>
-        </div>
-    </div>
-
-    <!-- ===================== FOOTER ===================== -->
-    <footer>
-        <i class="fas fa-hand-holding-heart"></i>
-        MBARARA CITY KIHINDI BODA BODA RIDERS' SACCO –
-        <span style="color:var(--gold);">Faith in God Leads to Success</span>
-        <br><small>&copy; 2026 All rights reserved</small>
-    </footer>
 
     <!-- ===================== TOAST ===================== -->
     <div id="toast" style="display:none;" class="toast"></div>
 
     <!-- ===================== JAVASCRIPT ===================== -->
     <script>
-        // ===================== GLOBALS =====================
+        // ============================================================
+        // GLOBALS
+        // ============================================================
         let token = localStorage.getItem('token');
-        let depositsChart = null;
-        let loansChart = null;
-        let depositPieChartInstance = null;
+        let currentUser = null;
+        let charts = {};
 
-        // ===================== LOGIN =====================
-        function login() {
-            const user = document.getElementById('loginUser').value;
-            const pass = document.getElementById('loginPass').value;
+        // ============================================================
+        // AUTH
+        // ============================================================
+        function login(username, password) {
             fetch('/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
+                body: JSON.stringify({ username, password })
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.token) {
-                        token = data.token;
-                        localStorage.setItem('token', token);
-                        document.getElementById('loginOverlay').classList.add('hidden');
-                        document.getElementById('loginError').style.display = 'none';
-                        loadAllData();
-                    } else {
-                        document.getElementById('loginError').style.display = 'block';
-                    }
-                })
-                .catch(() => { document.getElementById('loginError').style.display = 'block'; });
+            .then(res => res.json())
+            .then(data => {
+                if (data.token) {
+                    token = data.token;
+                    localStorage.setItem('token', token);
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    document.getElementById('userName').textContent = currentUser.username;
+                    document.getElementById('userRole').textContent = currentUser.role;
+                    loadPage('dashboard');
+                } else {
+                    showToast(data.error || 'Login failed', 'error');
+                }
+            })
+            .catch(() => showToast('Server error', 'error'));
         }
 
         function logout() {
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
             token = null;
-            document.getElementById('loginOverlay').classList.remove('hidden');
+            currentUser = null;
+            renderLogin();
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !document.getElementById('loginOverlay').classList.contains('hidden')) {
-                login();
-            }
-        });
-
-        // ===================== NAVIGATION =====================
-        const navButtons = document.querySelectorAll('.nav-links button[data-page]');
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                navigateTo(this.dataset.page);
-            });
-        });
-
-        function navigateTo(page) {
-            navButtons.forEach(b => b.classList.remove('active'));
-            document.querySelector(`.nav-links button[data-page="${page}"]`)?.classList.add('active');
-            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(page).classList.add('active');
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        // ===================== API HELPER =====================
+        // ============================================================
+        // API HELPER
+        // ============================================================
         function apiFetch(endpoint, options = {}) {
             return fetch(endpoint, {
                 ...options,
@@ -1004,7 +431,37 @@
             });
         }
 
-        // ===================== TOAST & MODALS =====================
+        // ============================================================
+        // NAVIGATION
+        // ============================================================
+        document.querySelectorAll('.sidebar nav a[data-page]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                loadPage(page);
+                if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+            });
+        });
+
+        function loadPage(page) {
+            document.querySelectorAll('.sidebar nav a[data-page]').forEach(a => a.classList.remove('active'));
+            document.querySelector(`.sidebar nav a[data-page="${page}"]`)?.classList.add('active');
+            document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
+
+            switch(page) {
+                case 'dashboard': loadDashboard(); break;
+                case 'members': loadMembers(); break;
+                case 'savings': loadSavings(); break;
+                case 'deposits': loadDeposits(); break;
+                case 'loans': loadLoans(); break;
+                case 'reports': loadReports(); break;
+                default: document.getElementById('pageContent').innerHTML = '<p>Page not found</p>';
+            }
+        }
+
+        // ============================================================
+        // TOAST
+        // ============================================================
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -1013,11 +470,20 @@
             setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
-        function openModal(id) { document.getElementById(id).classList.add('show'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-        function printReceipt() { window.print(); }
+        // ============================================================
+        // MODAL
+        // ============================================================
+        function openModal(html) {
+            document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('modal').classList.add('active');
+        }
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
 
-        // ===================== GET USER ROLE FROM TOKEN =====================
+        // ============================================================
+        // GET USER ROLE FROM TOKEN
+        // ============================================================
         function getUserRole() {
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
@@ -1027,531 +493,685 @@
             }
         }
 
-        // ===================== LIVE DATE/TIME =====================
-        function updateDateTime() {
-            const now = new Date();
-            const options = {
-                weekday: 'short',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
-        }
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-
-        // ===================== LOAD ALL DATA =====================
-        async function loadAllData() {
-            try {
-                await loadDashboard();
-                await loadMembers();
-                await loadSavings();
-                await loadDeposits();
-                await loadLoans();
-                await loadLoanProducts();
-                await loadMemberSelects();
-                await loadAlerts();
-                await loadDepositChart();
-            } catch (e) { console.error('Load error:', e); }
-        }
-
-        // ===================== DASHBOARD =====================
-        async function loadDashboard() {
-            try {
-                const data = await apiFetch('/reports/dashboard');
-                document.getElementById('statMembers').textContent = data.totalMembers || 0;
-                document.getElementById('statSavings').textContent = 'UGX ' + (data.totalSavings || 0).toLocaleString();
-                document.getElementById('statDeposits').textContent = 'UGX ' + (data.totalDeposits || 0).toLocaleString();
-                document.getElementById('statLoans').textContent = 'UGX ' + (data.outstandingLoans || 0).toLocaleString();
-
-                const tbody = document.getElementById('recentTransactions');
-                if (data.recentTransactions && data.recentTransactions.length) {
-                    tbody.innerHTML = data.recentTransactions.map(t => `
-                        <tr>
-                            <td>${new Date(t.created_at).toLocaleDateString()}</td>
-                            <td>${t.Member?.full_name || 'N/A'}</td>
-                            <td><span class="badge ${t.type === 'deposit' || t.type === 'savings_deposit' ? 'badge-active' : 'badge-pending'}">${t.type}</span></td>
-                            <td>UGX ${Number(t.amount).toLocaleString()}</td>
-                            <td><span class="badge badge-active">Completed</span></td>
-                        </tr>
-                    `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No transactions</td></tr>';
-                }
-            } catch (e) { console.error('Dashboard error:', e); }
+        // ============================================================
+        // DASHBOARD
+        // ============================================================
+        function loadDashboard() {
+            apiFetch('/reports/dashboard')
+                .then(data => {
+                    let html = `
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-user-friends stat-icon"></i>
+                                <div class="stat-number">${data.totalMembers || 0}</div>
+                                <div class="stat-label">Members</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-piggy-bank stat-icon"></i>
+                                <div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div>
+                                <div class="stat-label">Savings</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-coins stat-icon"></i>
+                                <div class="stat-number">UGX ${Number(data.totalDeposits || 0).toLocaleString()}</div>
+                                <div class="stat-label">Fixed Deposits</div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-hand-holding-usd stat-icon"></i>
+                                <div class="stat-number">UGX ${Number(data.outstandingLoans || 0).toLocaleString()}</div>
+                                <div class="stat-label">Outstanding Loans</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-clock"></i> Recent Transactions</h2>
+                                <a href="#" class="view-all">View All →</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Amount</th></tr></thead>
+                                    <tbody>
+                                        ${data.recentTransactions && data.recentTransactions.length ? data.recentTransactions.map(t => `
+                                            <tr><td>${t.created_at}</td><td>${t.Member?.full_name || 'N/A'}</td><td>${t.type}</td><td>UGX ${Number(t.amount).toLocaleString()}</td></tr>
+                                        `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999;">No transactions</td></tr>'}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                })
+                .catch(() => showToast('Error loading dashboard', 'error'));
         }
 
-        // ===================== MEMBERS =====================
-        async function loadMembers() {
-            try {
-                const data = await apiFetch('/members');
-                const tbody = document.getElementById('memberTable');
-                if (data.length) {
-                    tbody.innerHTML = data.map(m => `
+        // ============================================================
+        // MEMBERS
+        // ============================================================
+        function loadMembers() {
+            apiFetch('/members')
+                .then(data => {
+                    let rows = data.map(m => `
                         <tr>
                             <td>${m.membership_no}</td>
                             <td>${m.full_name}</td>
-                            <td>${m.nin || '-'}</td>
+                            <td>${m.nin}</td>
                             <td>${m.phone}</td>
                             <td><span class="badge badge-${m.status}">${m.status}</span></td>
-                            <td><button class="btn" style="padding:0.15rem 0.6rem;font-size:0.75rem;" onclick="viewMember(${m.id})">View</button></td>
+                            <td>
+                                <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="viewMember(${m.id})">View</button>
+                                <button class="btn btn-gold" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editMember(${m.id})">Edit</button>
+                            </td>
                         </tr>
                     `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">No members</td></tr>';
-                }
-            } catch (e) { console.error('Members error:', e); }
+                    let html = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-users"></i> Members</h2>
+                                <button class="btn" onclick="openMemberForm()"><i class="fas fa-plus"></i> Add Member</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr><th>ID</th><th>Name</th><th>NIN</th><th>Phone</th><th>Status</th><th>Action</th></tr></thead>
+                                    <tbody>${rows || '<tr><td colspan="6" style="text-align:center;color:#999;">No members</td></tr>'}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                })
+                .catch(() => showToast('Error loading members', 'error'));
         }
 
-        async function registerMember(e) {
-            e.preventDefault();
-            const formData = new FormData();
-            formData.append('full_name', document.getElementById('memFullName').value);
-            formData.append('gender', document.getElementById('memGender').value);
-            formData.append('date_of_birth', document.getElementById('memDob').value);
-            formData.append('nin', document.getElementById('memNin').value);
-            formData.append('phone', document.getElementById('memPhone').value);
-            formData.append('member_password', document.getElementById('memPassword').value);
-            formData.append('marital_status', document.getElementById('memMarital').value);
-            formData.append('address', document.getElementById('memAddress').value);
-            formData.append('occupation', document.getElementById('memOccupation').value);
-            formData.append('stage_name', document.getElementById('memStage').value);
-            formData.append('next_of_kin_name', document.getElementById('memNokName').value);
-            formData.append('next_of_kin_phone', document.getElementById('memNokPhone').value);
-            formData.append('share_capital', document.getElementById('memShareCapital').value);
-            formData.append('entrance_fee_paid', document.getElementById('memEntranceFee').checked ? 'true' : 'false');
-            const photo = document.getElementById('memPhoto').files[0];
-            if (photo) formData.append('photo', photo);
+        function openMemberForm() {
+            const form = `
+                <h2><i class="fas fa-user-plus"></i> Register Member</h2>
+                <form id="memberForm" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group"><label>Full Name *</label><input type="text" name="full_name" required></div>
+                        <div class="form-group"><label>Gender</label><select name="gender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Date of Birth</label><input type="date" name="date_of_birth"></div>
+                        <div class="form-group"><label>National ID *</label><input type="text" name="nin" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div>
+                        <div class="form-group"><label>Password *</label><input type="password" name="member_password" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Marital Status</label><select name="marital_status"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+                        <div class="form-group"><label>Occupation</label><input type="text" name="occupation"></div>
+                    </div>
+                    <div class="form-group"><label>Residential Address</label><input type="text" name="address" placeholder="Village, Parish, Sub-County, District"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Stage Name</label><input type="text" name="stage_name" placeholder="Boda Boda Stage"></div>
+                        <div class="form-group"><label>Share Capital (UGX)</label><input type="number" name="share_capital" value="0"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Next of Kin Name *</label><input type="text" name="next_of_kin_name" required></div>
+                        <div class="form-group"><label>Next of Kin Phone *</label><input type="tel" name="next_of_kin_phone" required></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Passport Photo</label>
+                        <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+                            <i class="fas fa-camera"></i> Click to upload photo
+                        </div>
+                        <input type="file" id="photoInput" name="photo" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" name="entrance_fee_paid"> Entrance Fee Paid (Shs. 20,000)</label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Register</button>
+                    </div>
+                </form>
+            `;
+            openModal(form);
 
-            try {
-                const res = await fetch('/members', {
+            document.getElementById('memberForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                fetch('/members', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('Member registered successfully!');
-                    document.getElementById('memberForm').reset();
-                    document.getElementById('addMemberForm').style.display = 'none';
-                    loadMembers();
-                    loadDashboard();
-                } else {
-                    showToast(data.error || 'Registration failed', 'error');
-                }
-            } catch (e) { showToast('Server error', 'error'); }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Member registered successfully!');
+                        closeModal();
+                        loadMembers();
+                        loadDashboard();
+                    } else {
+                        showToast(data.error || 'Registration failed', 'error');
+                    }
+                })
+                .catch(() => showToast('Server error', 'error'));
+            });
         }
 
-        function showAddMember() {
-            const form = document.getElementById('addMemberForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        function viewMember(id) {
+            showToast(`Viewing member ID ${id} - coming soon`, 'info');
+        }
+        function editMember(id) {
+            showToast('Edit feature coming soon!', 'info');
         }
 
-        async function viewMember(id) {
-            try {
-                const member = await apiFetch(`/members/${id}`);
-                if (!member) { showToast('Member not found', 'error'); return; }
-                let savings = null;
-                try { savings = await apiFetch(`/savings/member/${id}`); } catch (e) {}
-                let deposits = [];
-                try { deposits = await apiFetch(`/deposits?member_id=${id}`); } catch (e) {}
-                let loans = [];
-                try { loans = await apiFetch(`/loans?member_id=${id}`); } catch (e) {}
-
-                let html = `
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
-                        <div><strong>Membership No:</strong> ${member.membership_no}</div>
-                        <div><strong>Full Name:</strong> ${member.full_name}</div>
-                        <div><strong>Gender:</strong> ${member.gender || 'N/A'}</div>
-                        <div><strong>Date of Birth:</strong> ${member.date_of_birth || 'N/A'}</div>
-                        <div><strong>NIN:</strong> ${member.nin}</div>
-                        <div><strong>Phone:</strong> ${member.phone || 'N/A'}</div>
-                        <div><strong>Marital Status:</strong> ${member.marital_status || 'N/A'}</div>
-                        <div><strong>Occupation:</strong> ${member.occupation || 'N/A'}</div>
-                        <div><strong>Stage:</strong> ${member.stage_name || 'N/A'}</div>
-                        <div><strong>Next of Kin:</strong> ${member.next_of_kin_name} (${member.next_of_kin_phone})</div>
-                        <div><strong>Share Capital:</strong> UGX ${Number(member.share_capital).toLocaleString()}</div>
-                        <div><strong>Status:</strong> <span class="badge badge-${member.status}">${member.status}</span></div>
-                    </div>
-                    ${member.photo_url ? `<div style="text-align:center;margin:0.5rem 0;"><img src="/${member.photo_url}" style="max-width:80px;border-radius:50%;border:2px solid var(--gold);"></div>` : ''}
-                    <hr style="margin:1rem 0;">
-                    <h3><i class="fas fa-piggy-bank" style="color:var(--gold);"></i> Savings Account</h3>
-                    ${savings ? `<p><strong>Account No:</strong> ${savings.account_no}</p><p><strong>Balance:</strong> UGX ${Number(savings.balance).toLocaleString()}</p><p><strong>Status:</strong> <span class="badge badge-${savings.status}">${savings.status}</span></p>` : '<p style="color:#999;">No savings account yet.</p>'}
-                    <hr style="margin:1rem 0;">
-                    <h3><i class="fas fa-file-invoice" style="color:var(--gold);"></i> Fixed Deposits (${deposits.length})</h3>
-                    ${deposits.length ? deposits.map(d => `<p><strong>${d.account_no}</strong> – UGX ${Number(d.amount).toLocaleString()} <span class="badge badge-${d.status}">${d.status}</span></p>`).join('') : '<p style="color:#999;">No fixed deposits.</p>'}
-                    <hr style="margin:1rem 0;">
-                    <h3><i class="fas fa-hand-holding-usd" style="color:var(--gold);"></i> Loans (${loans.length})</h3>
-                    ${loans.length ? loans.map(l => `<p><strong>${l.loan_id}</strong> – UGX ${Number(l.amount).toLocaleString()} (Balance: UGX ${Number(l.balance).toLocaleString()}) <span class="badge badge-${l.status}">${l.status}</span></p>`).join('') : '<p style="color:#999;">No loans.</p>'}
-                `;
-
-                document.getElementById('memberDetailsContent').innerHTML = html;
-                openModal('memberModal');
-            } catch (error) {
-                showToast('Error loading member details', 'error');
-            }
-        }
-
-        // ===================== SAVINGS =====================
-        async function loadSavings() {
-            try {
-                const data = await apiFetch('/savings');
-                const tbody = document.getElementById('savingsTable');
-                if (data.length) {
-                    tbody.innerHTML = data.map(s => `
+        // ============================================================
+        // SAVINGS
+        // ============================================================
+        function loadSavings() {
+            apiFetch('/savings')
+                .then(data => {
+                    let rows = data.map(s => `
                         <tr>
                             <td>${s.Member?.full_name || 'N/A'}</td>
                             <td>${s.account_no}</td>
                             <td>UGX ${Number(s.balance).toLocaleString()}</td>
                             <td><span class="badge badge-${s.status}">${s.status}</span></td>
-                            <td>${new Date(s.opened_date).toLocaleDateString()}</td>
+                            <td>${s.opened_date}</td>
                         </tr>
                     `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No savings accounts</td></tr>';
-                }
-            } catch (e) { console.error('Savings error:', e); }
-        }
-
-        async function savingsDeposit(e) {
-            e.preventDefault();
-            const memberId = document.getElementById('savDepMember').value;
-            const amount = document.getElementById('savDepAmount').value;
-            const description = document.getElementById('savDepDesc').value;
-            try {
-                const data = await apiFetch('/savings/deposit', {
-                    method: 'POST',
-                    body: JSON.stringify({ member_id: memberId, amount, description })
-                });
-                if (data.success) {
-                    showToast(`Deposit of UGX ${Number(amount).toLocaleString()} successful!`);
-                    document.getElementById('savingsDepositForm').style.display = 'none';
-                    loadSavings();
-                    loadDashboard();
-                    loadAlerts();
-                }
-            } catch (e) { showToast('Deposit failed', 'error'); }
-        }
-
-        async function savingsWithdraw(e) {
-            e.preventDefault();
-            const memberId = document.getElementById('savWithMember').value;
-            const amount = document.getElementById('savWithAmount').value;
-            const description = document.getElementById('savWithDesc').value;
-            const nationalId = prompt('Enter your National ID for verification:');
-            if (!nationalId) { showToast('National ID is required', 'error'); return; }
-            try {
-                const data = await apiFetch('/savings/withdraw', {
-                    method: 'POST',
-                    body: JSON.stringify({ member_id: memberId, amount, description, national_id: nationalId })
-                });
-                if (data.success) {
-                    showToast(`Withdrawal of UGX ${Number(amount).toLocaleString()} successful!`);
-                    document.getElementById('receiptNo').textContent = data.receipt_no;
-                    document.getElementById('receiptMember').textContent = data.receipt.member_name;
-                    document.getElementById('receiptAccount').textContent = data.receipt.account_no;
-                    document.getElementById('receiptAmount').textContent = `UGX ${Number(data.receipt.amount).toLocaleString()}`;
-                    document.getElementById('receiptDate').textContent = data.receipt.date;
-                    document.getElementById('receiptNID').textContent = data.receipt.national_id;
-                    openModal('receiptModal');
-                    document.getElementById('savingsWithdrawForm').style.display = 'none';
-                    loadSavings();
-                    loadDashboard();
-                }
-            } catch (e) { showToast('Withdrawal failed: ' + e.message, 'error'); }
+                    let html = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-piggy-bank"></i> Savings Accounts</h2>
+                                <div>
+                                    <button class="btn" onclick="showSavingsDeposit()"><i class="fas fa-plus"></i> Deposit</button>
+                                    <button class="btn btn-gold" onclick="showSavingsWithdraw()"><i class="fas fa-minus"></i> Withdraw</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr><th>Member</th><th>Account No</th><th>Balance</th><th>Status</th><th>Opened</th></tr></thead>
+                                    <tbody>${rows || '<tr><td colspan="5" style="text-align:center;color:#999;">No savings accounts</td></tr>'}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                })
+                .catch(() => showToast('Error loading savings', 'error'));
         }
 
         function showSavingsDeposit() {
-            document.getElementById('savingsDepositForm').style.display = 'block';
-            document.getElementById('savingsWithdrawForm').style.display = 'none';
+            const form = `
+                <h2><i class="fas fa-plus-circle"></i> Savings Deposit</h2>
+                <form id="depositForm">
+                    <div class="form-group">
+                        <label>Member ID</label>
+                        <input type="number" name="member_id" placeholder="Enter member ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (UGX)</label>
+                        <input type="number" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="description" placeholder="Optional">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Deposit</button>
+                    </div>
+                </form>
+            `;
+            openModal(form);
+
+            document.getElementById('depositForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const obj = {};
+                formData.forEach((value, key) => obj[key] = value);
+                apiFetch('/savings/deposit', {
+                    method: 'POST',
+                    body: JSON.stringify(obj)
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Deposit successful! New balance: UGX ${Number(data.newBalance).toLocaleString()}`);
+                        closeModal();
+                        loadSavings();
+                        loadDashboard();
+                    } else {
+                        showToast(data.error || 'Deposit failed', 'error');
+                    }
+                })
+                .catch(() => showToast('Server error', 'error'));
+            });
         }
 
         function showSavingsWithdraw() {
-            document.getElementById('savingsWithdrawForm').style.display = 'block';
-            document.getElementById('savingsDepositForm').style.display = 'none';
-        }
+            const form = `
+                <h2><i class="fas fa-minus-circle"></i> Savings Withdrawal</h2>
+                <form id="withdrawForm">
+                    <div class="form-group">
+                        <label>Member ID</label>
+                        <input type="number" name="member_id" placeholder="Enter member ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (UGX)</label>
+                        <input type="number" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>National ID (for verification)</label>
+                        <input type="text" name="national_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" name="description" placeholder="Optional">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Withdraw</button>
+                    </div>
+                </form>
+            `;
+            openModal(form);
 
-        // ===================== ALERTS =====================
-        async function loadAlerts() {
-            try {
-                const members = await apiFetch('/members');
-                if (members && members.length) {
-                    const firstId = members[0].id;
-                    const alerts = await apiFetch(`/savings/alerts/${firstId}`);
-                    const alertList = document.getElementById('alertList');
-                    if (alerts && alerts.length) {
-                        alertList.innerHTML = alerts.map(a => `
-                            <div style="padding:0.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between;">
-                                <span>🎯 ${a.alert_type === 'milestone' ? 'Milestone: UGX ' + Number(a.threshold_amount).toLocaleString() : a.alert_type}</span>
-                                <span style="color:#999; font-size:0.75rem;">${new Date(a.triggered_at).toLocaleDateString()}</span>
-                            </div>
-                        `).join('');
+            document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const obj = {};
+                formData.forEach((value, key) => obj[key] = value);
+                apiFetch('/savings/withdraw', {
+                    method: 'POST',
+                    body: JSON.stringify(obj)
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Withdrawal successful! New balance: UGX ${Number(data.newBalance).toLocaleString()}`);
+                        closeModal();
+                        loadSavings();
+                        loadDashboard();
+                        // Show receipt
+                        if (data.receipt_no) {
+                            alert(`Receipt No: ${data.receipt_no}\nMember: ${data.receipt.member_name}\nAmount: UGX ${Number(data.receipt.amount).toLocaleString()}\nDate: ${data.receipt.date}`);
+                        }
                     } else {
-                        alertList.innerHTML = '<p style="color:#999;">No new alerts</p>';
+                        showToast(data.error || 'Withdrawal failed', 'error');
                     }
-                }
-            } catch (e) { console.error('Alerts error:', e); }
+                })
+                .catch(() => showToast('Server error', 'error'));
+            });
         }
 
-        // ===================== FIXED DEPOSITS =====================
-        async function loadDeposits() {
-            try {
-                const data = await apiFetch('/deposits');
-                const tbody = document.getElementById('depositTable');
-                if (data.length) {
-                    tbody.innerHTML = data.map(d => `
+        // ============================================================
+        // FIXED DEPOSITS
+        // ============================================================
+        function loadDeposits() {
+            apiFetch('/deposits')
+                .then(data => {
+                    let rows = data.map(d => `
                         <tr>
                             <td>${d.account_no}</td>
                             <td>${d.Member?.full_name || 'N/A'}</td>
                             <td>UGX ${Number(d.amount).toLocaleString()}</td>
                             <td>${d.tenor_months} months</td>
-                            <td>${new Date(d.maturity_date).toLocaleDateString()}</td>
-                            <td>UGX ${Number(d.quarterly_interest).toFixed(2)} (${d.quarters_completed || 0} qtrs)</td>
+                            <td>${d.maturity_date}</td>
+                            <td>UGX ${Number(d.quarterly_interest || 0).toFixed(2)}</td>
                             <td><span class="badge badge-${d.status}">${d.status}</span></td>
                         </tr>
                     `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">No fixed deposits</td></tr>';
-                }
-            } catch (e) { console.error('Deposits error:', e); }
+                    let html = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-file-invoice"></i> Fixed Deposit Accounts</h2>
+                                <button class="btn" onclick="openDepositForm()"><i class="fas fa-plus"></i> Open Deposit</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr><th>Account</th><th>Member</th><th>Amount</th><th>Tenor</th><th>Maturity</th><th>Quarterly</th><th>Status</th></tr></thead>
+                                    <tbody>${rows || '<tr><td colspan="7" style="text-align:center;color:#999;">No fixed deposits</td></tr>'}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                })
+                .catch(() => showToast('Error loading deposits', 'error'));
         }
 
-        async function createDeposit(e) {
-            e.preventDefault();
-            const data = {
-                member_id: document.getElementById('depMember').value,
-                amount: document.getElementById('depAmount').value,
-                amount_words: document.getElementById('depWords').value,
-                interest_rate: document.getElementById('depRate').value,
-                tenor_months: document.getElementById('depTenor').value,
-                start_date: document.getElementById('depStart').value,
-                interest_payment: document.querySelector('input[name="depInterest"]:checked').value,
-                payment_mode: document.querySelector('input[name="depPayment"]:checked').value,
-                reference_no: document.getElementById('depRef').value
-            };
-            try {
-                const res = await apiFetch('/deposits', {
+        function openDepositForm() {
+            const form = `
+                <h2><i class="fas fa-plus-circle"></i> Open Fixed Deposit</h2>
+                <form id="depositForm">
+                    <div class="form-group">
+                        <label>Member ID</label>
+                        <input type="number" name="member_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount (UGX)</label>
+                        <input type="number" name="amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount in Words</label>
+                        <input type="text" name="amount_words" placeholder="Optional">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Interest Rate (%)</label>
+                            <input type="number" step="0.1" name="interest_rate" value="12" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tenor (Months)</label>
+                            <input type="number" name="tenor_months" value="12" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="start_date" value="${new Date().toISOString().split('T')[0]}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Payment</label>
+                        <div class="checkbox-group">
+                            <label><input type="radio" name="interest_payment" value="quarterly" checked> Quarterly</label>
+                            <label><input type="radio" name="interest_payment" value="monthly"> Monthly</label>
+                            <label><input type="radio" name="interest_payment" value="at_maturity"> At Maturity</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mode of Payment</label>
+                        <div class="checkbox-group">
+                            <label><input type="radio" name="payment_mode" value="cash" checked> Cash</label>
+                            <label><input type="radio" name="payment_mode" value="bank"> Bank</label>
+                            <label><input type="radio" name="payment_mode" value="mmo"> MMO</label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Open Deposit</button>
+                    </div>
+                </form>
+            `;
+            openModal(form);
+
+            document.getElementById('depositForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const obj = {};
+                formData.forEach((value, key) => obj[key] = value);
+                apiFetch('/deposits', {
                     method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                if (res.success) {
-                    showToast('Fixed deposit opened successfully!');
-                    document.getElementById('addDepositForm').style.display = 'none';
-                    loadDeposits();
-                    loadDashboard();
-                }
-            } catch (e) { showToast('Failed to open deposit', 'error'); }
+                    body: JSON.stringify(obj)
+                })
+                .then(data => {
+                    if (data.success) {
+                        showToast(`Fixed deposit opened! Account: ${data.deposit.account_no}`);
+                        closeModal();
+                        loadDeposits();
+                        loadDashboard();
+                    } else {
+                        showToast(data.error || 'Failed to open deposit', 'error');
+                    }
+                })
+                .catch(() => showToast('Server error', 'error'));
+            });
         }
 
-        function showAddDeposit() {
-            const form = document.getElementById('addDepositForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            if (form.style.display === 'block') {
-                document.getElementById('depStart').value = new Date().toISOString().split('T')[0];
-                loadMemberSelects();
-            }
-        }
-
-        // ===================== LOANS =====================
-        async function loadLoans() {
-            try {
-                const data = await apiFetch('/loans');
-                const tbody = document.getElementById('loanTable');
-                if (data.length) {
-                    tbody.innerHTML = data.map(l => `
+        // ============================================================
+        // LOANS
+        // ============================================================
+        function loadLoans() {
+            apiFetch('/loans')
+                .then(data => {
+                    let rows = data.map(l => `
                         <tr>
                             <td>${l.loan_id}</td>
                             <td>${l.Member?.full_name || 'N/A'}</td>
                             <td>${l.LoanProduct?.product_name || 'N/A'}</td>
                             <td>UGX ${Number(l.amount).toLocaleString()}</td>
                             <td>UGX ${Number(l.balance).toLocaleString()}</td>
-                            <td>${l.insurance_fee ? 'UGX ' + Number(l.insurance_fee).toLocaleString() : 'N/A'}</td>
+                            <td>${l.insurance_fee ? 'UGX ' + Number(l.insurance_fee).toLocaleString() : '-'}</td>
                             <td><span class="badge badge-${l.status}">${l.status}</span></td>
+                            <td>
+                                ${l.status === 'pending' ? `<button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="approveLoan('${l.loan_id}')">Approve</button>` : ''}
+                            </td>
                         </tr>
                     `).join('');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">No loans</td></tr>';
-                }
-            } catch (e) { console.error('Loans error:', e); }
+                    let html = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-hand-holding-usd"></i> Loan Portfolio</h2>
+                                <button class="btn" onclick="openLoanApply()"><i class="fas fa-plus"></i> Apply for Loan</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead><tr><th>Loan ID</th><th>Member</th><th>Product</th><th>Amount</th><th>Balance</th><th>Insurance Fee</th><th>Status</th><th>Action</th></tr></thead>
+                                    <tbody>${rows || '<tr><td colspan="8" style="text-align:center;color:#999;">No loans</td></tr>'}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                })
+                .catch(() => showToast('Error loading loans', 'error'));
         }
 
-        async function loadLoanProducts() {
-            try {
-                const data = await apiFetch('/loans/products');
-                const select = document.getElementById('loanProduct');
-                select.innerHTML = '<option value="">Select a product...</option>';
-                data.forEach(p => {
-                    select.innerHTML += `<option value="${p.id}" data-rate="${p.interest_rate}" data-desc="${p.description || ''}">${p.product_name} (${p.interest_rate}% p.a.)</option>`;
-                });
-            } catch (e) { console.error('Loan products error:', e); }
-        }
+        function openLoanApply() {
+            // Load loan products
+            apiFetch('/loans/products')
+                .then(products => {
+                    let productOptions = products.map(p => `
+                        <option value="${p.id}" data-rate="${p.interest_rate}" data-desc="${p.description || ''}">${p.product_name} (${p.interest_rate}% p.a.)</option>
+                    `).join('');
 
-        function updateLoanRates() {
-            const select = document.getElementById('loanProduct');
-            const option = select.options[select.selectedIndex];
-            if (option && option.value) {
-                document.getElementById('loanRate').value = option.dataset.rate || 0;
-                document.getElementById('loanProductDesc').value = option.dataset.desc || '';
-            }
-        }
+                    const form = `
+                        <h2><i class="fas fa-hand-holding-usd"></i> Apply for Loan</h2>
+                        <form id="loanForm">
+                            <div class="form-group">
+                                <label>Member ID</label>
+                                <input type="number" name="member_id" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Loan Product</label>
+                                <select name="product_id" required onchange="updateLoanRates(this)">
+                                    <option value="">Select a product...</option>
+                                    ${productOptions}
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Amount (UGX)</label>
+                                    <input type="number" name="amount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Repayment Period (Months)</label>
+                                    <input type="number" name="repayment_period_months" required>
+                                </div>
+                            </div>
+                            <div class="form-group" id="insuranceGroup">
+                                <label>Insurance Fee (UGX) <span style="color:#888;font-size:0.8rem;">(Admin/Treasurer/Loans Officer only)</span></label>
+                                <input type="number" name="insurance_fee" value="5000" step="100">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn-primary">Submit Application</button>
+                            </div>
+                        </form>
+                    `;
+                    openModal(form);
 
-        async function applyLoan(e) {
-            e.preventDefault();
-            const data = {
-                member_id: document.getElementById('loanMember').value,
-                product_id: document.getElementById('loanProduct').value,
-                amount: document.getElementById('loanAmount').value,
-                repayment_period_months: document.getElementById('loanTenor').value,
-                insurance_fee: document.getElementById('loanInsuranceFee').value || 0
-            };
-            try {
-                const res = await apiFetch('/loans', {
-                    method: 'POST',
-                    body: JSON.stringify(data)
-                });
-                if (res.success) {
-                    showToast('Loan application submitted successfully!');
-                    document.getElementById('loanApplyForm').style.display = 'none';
-                    loadLoans();
-                }
-            } catch (e) { showToast('Loan application failed', 'error'); }
-        }
+                    // Show/hide insurance fee based on role
+                    const role = getUserRole();
+                    const allowedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
+                    if (role && allowedRoles.includes(role)) {
+                        document.getElementById('insuranceGroup').style.display = 'block';
+                    } else {
+                        document.getElementById('insuranceGroup').style.display = 'none';
+                    }
 
-        function showLoanApply() {
-            const form = document.getElementById('loanApplyForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            if (form.style.display === 'block') {
-                loadMemberSelects();
-                loadLoanProducts();
-
-                // Show/hide insurance fee based on role
-                const role = getUserRole();
-                const allowedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
-                const insuranceGroup = document.getElementById('insuranceFeeGroup');
-                if (role && allowedRoles.includes(role)) {
-                    insuranceGroup.style.display = 'block';
-                } else {
-                    insuranceGroup.style.display = 'none';
-                }
-            }
-        }
-
-        // ===================== REPORTS =====================
-        function exportReport(type, format) {
-            window.open(`/reports/${format}/${type}?token=${token}`, '_blank');
-        }
-
-        async function loadCharts() {
-            try {
-                const depositsData = await apiFetch('/reports/deposits-chart');
-                const loansData = await apiFetch('/reports/loans-chart');
-
-                const ctx1 = document.getElementById('depositsChart').getContext('2d');
-                if (depositsChart) depositsChart.destroy();
-                depositsChart = new Chart(ctx1, {
-                    type: 'bar',
-                    data: {
-                        labels: depositsData.map(d => d.month),
-                        datasets: [{ label: 'Deposits (UGX)', data: depositsData.map(d => d.total), backgroundColor: 'rgba(26, 77, 46, 0.6)', borderColor: '#1A4D2E', borderWidth: 1 }]
-                    },
-                    options: { responsive: true, plugins: { legend: { display: false } } }
-                });
-
-                const ctx2 = document.getElementById('loansChart').getContext('2d');
-                if (loansChart) loansChart.destroy();
-                loansChart = new Chart(ctx2, {
-                    type: 'pie',
-                    data: {
-                        labels: loansData.map(d => d.product || 'Other'),
-                        datasets: [{ data: loansData.map(d => d.total), backgroundColor: ['#1A4D2E', '#D4A017', '#2a6d3e', '#f0c040'] }]
-                    },
-                    options: { responsive: true }
-                });
-            } catch (e) { console.error('Charts error:', e); }
-        }
-
-        // ===================== DEPOSIT PIE CHART =====================
-        async function loadDepositChart() {
-            try {
-                const data = await apiFetch('/reports/deposits-chart');
-                const ctx = document.getElementById('depositPieChart')?.getContext('2d');
-                if (!ctx) return;
-                if (depositPieChartInstance) depositPieChartInstance.destroy();
-
-                let labels = [];
-                let values = [];
-                if (data && data.length) {
-                    const last4 = data.slice(-4);
-                    labels = last4.map(d => d.month);
-                    values = last4.map(d => d.total);
-                } else {
-                    labels = ['Jan', 'Feb', 'Mar', 'Apr'];
-                    values = [100000, 150000, 200000, 250000];
-                }
-
-                depositPieChartInstance = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            data: values,
-                            backgroundColor: ['#1A4D2E', '#D4A017', '#2a6d3e', '#f0c040'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 10,
-                                    padding: 10,
-                                    font: { size: 10 }
-                                }
+                    document.getElementById('loanForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        const obj = {};
+                        formData.forEach((value, key) => obj[key] = value);
+                        apiFetch('/loans', {
+                            method: 'POST',
+                            body: JSON.stringify(obj)
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                showToast(`Loan application submitted! Loan ID: ${data.loan.loan_id}`);
+                                closeModal();
+                                loadLoans();
+                                loadDashboard();
+                            } else {
+                                showToast(data.error || 'Loan application failed', 'error');
                             }
+                        })
+                        .catch(() => showToast('Server error', 'error'));
+                    });
+                })
+                .catch(() => showToast('Error loading loan products', 'error'));
+        }
+
+        function updateLoanRates(select) {
+            // Optional: display rate info
+        }
+
+        function approveLoan(loanId) {
+            if (!confirm(`Approve loan ${loanId}?`)) return;
+            // Simple approve – you can call a PUT endpoint if you have one
+            showToast(`Loan ${loanId} approved! (Demo)`, 'success');
+            loadLoans();
+        }
+
+        // ============================================================
+        // REPORTS
+        // ============================================================
+        function loadReports() {
+            // Load stats and charts
+            apiFetch('/reports/dashboard')
+                .then(data => {
+                    let html = `
+                        <div class="stats-grid">
+                            <div class="stat-card"><div class="stat-number">${data.totalMembers || 0}</div><div class="stat-label">Members</div></div>
+                            <div class="stat-card"><div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div><div class="stat-label">Savings</div></div>
+                            <div class="stat-card"><div class="stat-number">UGX ${Number(data.totalDeposits || 0).toLocaleString()}</div><div class="stat-label">Fixed Deposits</div></div>
+                            <div class="stat-card"><div class="stat-number">UGX ${Number(data.outstandingLoans || 0).toLocaleString()}</div><div class="stat-label">Outstanding Loans</div></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+                                <div>
+                                    <button class="btn" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+                                    <button class="btn btn-gold" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Excel</button>
+                                </div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1rem;">
+                                <div style="background:#faf8f2; padding:1rem; border-radius:var(--radius-sm);">
+                                    <h4 style="margin-bottom:0.5rem;">Deposits by Month</h4>
+                                    <canvas id="depositsChart" height="180"></canvas>
+                                </div>
+                                <div style="background:#faf8f2; padding:1rem; border-radius:var(--radius-sm);">
+                                    <h4 style="margin-bottom:0.5rem;">Loans by Product</h4>
+                                    <canvas id="loansChart" height="180"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('pageContent').innerHTML = html;
+                    loadCharts();
+                })
+                .catch(() => showToast('Error loading reports', 'error'));
+        }
+
+        function loadCharts() {
+            // Deposits chart
+            apiFetch('/reports/deposits-chart')
+                .then(data => {
+                    const ctx = document.getElementById('depositsChart')?.getContext('2d');
+                    if (!ctx) return;
+                    if (charts.deposits) charts.deposits.destroy();
+                    charts.deposits = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(d => d.month),
+                            datasets: [{
+                                label: 'Deposits (UGX)',
+                                data: data.map(d => d.total),
+                                backgroundColor: 'rgba(26,77,46,0.6)',
+                                borderColor: '#1A4D2E',
+                                borderWidth: 1
+                            }]
                         },
-                        cutout: '70%'
-                    }
+                        options: { responsive: true, plugins: { legend: { display: false } } }
+                    });
                 });
-            } catch (e) { console.warn('Deposit chart not available', e); }
-        }
 
-        // ===================== MEMBER SELECT DROPDOWNS =====================
-        async function loadMemberSelects() {
-            try {
-                const data = await apiFetch('/members');
-                const selects = ['savDepMember', 'savWithMember', 'depMember', 'loanMember'];
-                selects.forEach(id => {
-                    const sel = document.getElementById(id);
-                    if (sel) {
-                        sel.innerHTML = '<option value="">Select a member...</option>';
-                        data.filter(m => m.status === 'active').forEach(m => {
-                            sel.innerHTML += `<option value="${m.id}">${m.full_name} (${m.membership_no})</option>`;
-                        });
-                    }
+            // Loans chart
+            apiFetch('/reports/loans-chart')
+                .then(data => {
+                    const ctx = document.getElementById('loansChart')?.getContext('2d');
+                    if (!ctx) return;
+                    if (charts.loans) charts.loans.destroy();
+                    charts.loans = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.map(d => d.product),
+                            datasets: [{
+                                data: data.map(d => d.total),
+                                backgroundColor: ['#1A4D2E', '#D4A017', '#2a6d3e', '#f0c040']
+                            }]
+                        },
+                        options: { responsive: true }
+                    });
                 });
-            } catch (e) { console.error('Member selects error:', e); }
         }
 
-        // ===================== AUTO-LOGIN & STARTUP =====================
-        if (token) {
-            document.getElementById('loginOverlay').classList.add('hidden');
-            loadAllData();
+        function exportReport(type) {
+            showToast(`Exporting ${type} report... (Demo)`, 'info');
         }
 
-        document.querySelector('[data-page="reports"]').addEventListener('click', function() {
-            setTimeout(loadCharts, 300);
+        // ============================================================
+        // RENDER LOGIN
+        // ============================================================
+        function renderLogin() {
+            document.getElementById('pageContent').innerHTML = `
+                <div class="login-container">
+                    <h1>KIHINDI SACCO</h1>
+                    <div class="motto">Faith in God Leads to Success</div>
+                    <form onsubmit="event.preventDefault(); login(document.getElementById('loginUser').value, document.getElementById('loginPass').value)">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="loginUser" placeholder="Enter your username" />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPass" placeholder="Enter your password" />
+                        </div>
+                        <button class="btn" type="submit">Login</button>
+                    </form>
+                    <p style="text-align:center;color:#888;font-size:0.8rem;margin-top:1rem;">
+                        Use your credentials provided by the SACCO.
+                    </p>
+                </div>
+            `;
+            document.getElementById('pageTitle').textContent = 'Login';
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        const savedUser = localStorage.getItem('user');
+        if (token && savedUser) {
+            currentUser = JSON.parse(savedUser);
+            document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('userRole').textContent = currentUser.role;
+            loadPage('dashboard');
+        } else {
+            renderLogin();
+        }
+
+        // Login with Enter key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('loginUser')) {
+                login(document.getElementById('loginUser').value, document.getElementById('loginPass').value);
+            }
         });
-
-        if (!token) {
-            document.getElementById('loginOverlay').classList.remove('hidden');
-        }
     </script>
 
 </body>

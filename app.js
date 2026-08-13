@@ -1,9 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const dotenv = require('dotenv');
 const path = require('path');
-const config = require('./config');
 const { sequelize, User } = require('./models');
 const { authenticate } = require('./middleware/auth');
+
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -29,18 +31,41 @@ app.use('/reports', authenticate, reportRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() }));
 
-const PORT = parseInt(process.env.PORT, 10) || config.port;
+const PORT = process.env.PORT || 5000;
 
-sequelize.sync({ alter: process.env.NODE_ENV !== 'production' }).then(async () => {
+sequelize.sync({ alter: true }).then(async () => {
     console.log('✅ Database synced');
-    const adminExists = await User.findOne({ where: { username: 'admin' } });
-    if (!adminExists) {
-        const hashed = await User.hashPassword('password');
-        await User.create({ username: 'admin', password_hash: hashed, role: 'admin' });
-        console.log('✅ Default admin created (admin/password)');
+
+    // ============================================================
+    // CREATE DEFAULT USERS (if they don't exist)
+    // ============================================================
+    const defaultUsers = [
+        { username: 'admin', password: 'admin123', role: 'admin' },
+        { username: 'chairperson', password: 'chairperson123', role: 'chairperson' },
+        { username: 'treasurer', password: 'treasurer123', role: 'treasurer' },
+        { username: 'loans_officer', password: 'loans123', role: 'loans_officer' }
+    ];
+
+    for (const userData of defaultUsers) {
+        const existing = await User.findOne({ where: { username: userData.username } });
+        if (!existing) {
+            const hashed = await User.hashPassword(userData.password);
+            await User.create({
+                username: userData.username,
+                password_hash: hashed,
+                role: userData.role
+            });
+            console.log(`✅ Default user created: ${userData.username} (role: ${userData.role})`);
+        } else {
+            console.log(`ℹ️ User already exists: ${userData.username}`);
+        }
     }
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+
+    // ============================================================
+    // START THE SERVER
+    // ============================================================
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
 }).catch(err => {
     console.error('❌ Database connection failed:', err);
