@@ -33,7 +33,10 @@ app.get('/health', (req, res) => res.json({ status: 'OK', timestamp: new Date() 
 
 const PORT = process.env.PORT || 5000;
 
-sequelize.sync({ alter: true }).then(async () => {
+// ============================================================
+// SYNC DATABASE – NO ALTER (to avoid UNIQUE constraint errors)
+// ============================================================
+sequelize.sync().then(async () => {
     console.log('✅ Database synced');
 
     // Create default users if they don't exist
@@ -54,6 +57,8 @@ sequelize.sync({ alter: true }).then(async () => {
                 role: userData.role
             });
             console.log(`✅ Default user created: ${userData.username} (role: ${userData.role})`);
+        } else {
+            console.log(`ℹ️ User already exists: ${userData.username}`);
         }
     }
 
