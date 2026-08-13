@@ -12,12 +12,72 @@
            ============================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
         :root { --primary: #1A4D2E; --primary-light: #2a6d3e; --gold: #D4A017; --gold-light: #f0c040; --bg: #f5f2e6; --white: #ffffff; --shadow: 0 2px 12px rgba(0,0,0,0.06); --shadow-hover: 0 8px 30px rgba(0,0,0,0.1); --radius: 12px; --radius-sm: 8px; --border: #e8e5dd; --text: #1a1a2e; --text-muted: #6b6b7b; }
-        body { background: var(--bg); display: flex; min-height: 100vh; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         /* ============================================================
-           SIDEBAR
+           TOP NAVIGATION BAR
+           ============================================================ */
+        .top-nav {
+            background: var(--primary);
+            color: white;
+            padding: 0.6rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 70px;
+        }
+        .top-nav .brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .top-nav .brand i { color: var(--gold); font-size: 1.6rem; }
+        .top-nav .brand span { color: var(--gold); }
+        .top-nav .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+        .top-nav .user-info .badge {
+            background: var(--gold);
+            color: var(--primary);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .top-nav .user-info .logout-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+        .top-nav .user-info .logout-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ============================================================
+           SIDEBAR – Always visible
            ============================================================ */
         .sidebar {
             width: 250px;
@@ -25,16 +85,16 @@
             color: white;
             padding: 1.5rem 1rem;
             position: fixed;
-            top: 0; left: 0; bottom: 0;
+            top: 70px; /* height of top-nav */
+            left: 0;
+            bottom: 0;
             overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 100;
+            z-index: 99;
         }
-        .sidebar .brand { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
-        .sidebar .brand i { color: var(--gold); font-size: 1.6rem; }
-        .sidebar .brand span { color: var(--gold); }
         .sidebar nav a {
-            display: flex; align-items: center; gap: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             padding: 0.7rem 1rem;
             color: rgba(255,255,255,0.7);
             text-decoration: none;
@@ -43,44 +103,43 @@
             margin-bottom: 0.2rem;
             cursor: pointer;
         }
-        .sidebar nav a:hover, .sidebar nav a.active {
-            background: rgba(255,255,255,0.1);
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(255,255,255,0.12);
             color: white;
         }
-        .sidebar nav a.active { background: var(--gold); color: var(--primary); font-weight: 600; }
-        .sidebar .logout { margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+        .sidebar nav a.active {
+            background: var(--gold);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        /* Logout inside sidebar (optional) */
+        .sidebar nav a.logout-link {
+            margin-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1rem;
+        }
 
         /* ============================================================
            MAIN CONTENT
            ============================================================ */
         .main-content {
             margin-left: 250px;
-            flex: 1;
             padding: 1.5rem 2rem;
-            min-height: 100vh;
+            margin-top: 70px; /* top-nav height */
+            min-height: calc(100vh - 70px);
         }
 
         /* ============================================================
-           TOP HEADER
+           PAGE HEADER
            ============================================================ */
-        .top-header {
-            display: flex; justify-content: space-between; align-items: center;
+        .page-header {
             margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
-        .top-header .left { display: flex; align-items: center; gap: 1rem; }
-        .top-header .hamburger { display: none; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--primary); }
-        .top-header h1 { font-size: 1.6rem; font-weight: 600; color: var(--text); }
-        .top-header .user-info { display: flex; align-items: center; gap: 1rem; }
-        .top-header .user-info .badge {
-            background: var(--gold);
-            color: var(--primary);
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        .page-header h1 {
+            font-size: 1.6rem;
             font-weight: 600;
-            text-transform: uppercase;
+            color: var(--text);
         }
 
         /* ============================================================
@@ -288,7 +347,7 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* ============================================================
-           LOGIN
+           LOGIN (centered)
            ============================================================ */
         .login-container {
             max-width: 400px;
@@ -305,26 +364,56 @@
         .login-container .btn:hover { background: var(--primary-light); }
 
         /* ============================================================
-           RESPONSIVE
+           RESPONSIVE – sidebar stays visible, but we adapt spacing
            ============================================================ */
         @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 1rem; }
-            .top-header .hamburger { display: block; }
+            .sidebar {
+                width: 200px; /* narrower on small screens */
+            }
+            .main-content {
+                margin-left: 200px;
+                padding: 1rem;
+            }
+            .top-nav {
+                padding: 0.4rem 1rem;
+            }
+            .top-nav .brand {
+                font-size: 1.2rem;
+            }
             .form-row { grid-template-columns: 1fr; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
         }
-        @media (max-width: 480px) {
+        @media (max-width: 576px) {
+            .sidebar {
+                width: 180px;
+            }
+            .main-content {
+                margin-left: 180px;
+                padding: 0.8rem;
+            }
             .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===================== SIDEBAR ===================== -->
+    <!-- ===================== TOP NAVBAR ===================== -->
+    <nav class="top-nav">
+        <div class="brand">
+            <i class="fas fa-hand-holding-heart"></i>
+            <span>KIHINDI</span> SACCO
+        </div>
+
+        <!-- User Info & Logout -->
+        <div class="user-info" id="userInfo" style="display:none;">
+            <span id="userName">Admin</span>
+            <span class="badge" id="userRole">admin</span>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <!-- ===================== SIDEBAR (Always Visible) ===================== -->
     <aside class="sidebar" id="sidebar">
-        <div class="brand"><i class="fas fa-hand-holding-heart"></i> KIHINDI <span>SACCO</span></div>
         <nav>
             <a class="active" data-page="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a>
             <a data-page="members"><i class="fas fa-users"></i> Members</a>
@@ -332,28 +421,13 @@
             <a data-page="deposits"><i class="fas fa-file-invoice"></i> Fixed Deposits</a>
             <a data-page="loans"><i class="fas fa-hand-holding-usd"></i> Loans</a>
             <a data-page="reports"><i class="fas fa-flag"></i> Reports</a>
-            <a class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <a class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </nav>
     </aside>
 
     <!-- ===================== MAIN CONTENT ===================== -->
-    <div class="main-content">
-
-        <!-- Top Header -->
-        <div class="top-header">
-            <div class="left">
-                <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <h1 id="pageTitle">Dashboard</h1>
-            </div>
-            <div class="user-info">
-                <span id="userName">Admin</span>
-                <span class="badge" id="userRole">admin</span>
-            </div>
-        </div>
-
-        <!-- Page Content -->
-        <div id="pageContent"></div>
-
+    <div class="main-content" id="mainContent">
+        <!-- Page content will be injected here -->
     </div>
 
     <!-- ===================== MODAL ===================== -->
@@ -392,8 +466,7 @@
                     localStorage.setItem('token', token);
                     currentUser = data.user;
                     localStorage.setItem('user', JSON.stringify(currentUser));
-                    document.getElementById('userName').textContent = currentUser.username;
-                    document.getElementById('userRole').textContent = currentUser.role;
+                    showUserInfo(true);
                     loadPage('dashboard');
                 } else {
                     showToast(data.error || 'Login failed', 'error');
@@ -407,11 +480,19 @@
             localStorage.removeItem('user');
             token = null;
             currentUser = null;
+            showUserInfo(false);
             renderLogin();
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+        function showUserInfo(loggedIn) {
+            const info = document.getElementById('userInfo');
+            if (loggedIn && currentUser) {
+                info.style.display = 'flex';
+                document.getElementById('userName').textContent = currentUser.username;
+                document.getElementById('userRole').textContent = currentUser.role;
+            } else {
+                info.style.display = 'none';
+            }
         }
 
         // ============================================================
@@ -439,14 +520,12 @@
                 e.preventDefault();
                 const page = link.dataset.page;
                 loadPage(page);
-                if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
             });
         });
 
         function loadPage(page) {
             document.querySelectorAll('.sidebar nav a[data-page]').forEach(a => a.classList.remove('active'));
             document.querySelector(`.sidebar nav a[data-page="${page}"]`)?.classList.add('active');
-            document.getElementById('pageTitle').textContent = page.charAt(0).toUpperCase() + page.slice(1);
 
             switch(page) {
                 case 'dashboard': loadDashboard(); break;
@@ -455,7 +534,7 @@
                 case 'deposits': loadDeposits(); break;
                 case 'loans': loadLoans(); break;
                 case 'reports': loadReports(); break;
-                default: document.getElementById('pageContent').innerHTML = '<p>Page not found</p>';
+                default: document.getElementById('mainContent').innerHTML = '<p>Page not found</p>';
             }
         }
 
@@ -494,12 +573,40 @@
         }
 
         // ============================================================
+        // RENDER LOGIN
+        // ============================================================
+        function renderLogin() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="login-container">
+                    <h1>KIHINDI SACCO</h1>
+                    <div class="motto">Faith in God Leads to Success</div>
+                    <form onsubmit="event.preventDefault(); login(document.getElementById('loginUser').value, document.getElementById('loginPass').value)">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="loginUser" placeholder="Enter your username" />
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPass" placeholder="Enter your password" />
+                        </div>
+                        <button class="btn" type="submit">Login</button>
+                    </form>
+                    <p style="text-align:center;color:#888;font-size:0.8rem;margin-top:1rem;">
+                        Use your credentials provided by the SACCO.
+                    </p>
+                </div>
+            `;
+            showUserInfo(false);
+        }
+
+        // ============================================================
         // DASHBOARD
         // ============================================================
         function loadDashboard() {
             apiFetch('/reports/dashboard')
                 .then(data => {
                     let html = `
+                        <div class="page-header"><h1>Dashboard</h1></div>
                         <div class="stats-grid">
                             <div class="stat-card">
                                 <i class="fas fa-user-friends stat-icon"></i>
@@ -539,7 +646,7 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                 })
                 .catch(() => showToast('Error loading dashboard', 'error'));
         }
@@ -564,9 +671,10 @@
                         </tr>
                     `).join('');
                     let html = `
+                        <div class="page-header"><h1>Members</h1></div>
                         <div class="card">
                             <div class="card-header">
-                                <h2><i class="fas fa-users"></i> Members</h2>
+                                <h2><i class="fas fa-users"></i> Member List</h2>
                                 <button class="btn" onclick="openMemberForm()"><i class="fas fa-plus"></i> Add Member</button>
                             </div>
                             <div class="table-responsive">
@@ -577,7 +685,7 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                 })
                 .catch(() => showToast('Error loading members', 'error'));
         }
@@ -675,6 +783,7 @@
                         </tr>
                     `).join('');
                     let html = `
+                        <div class="page-header"><h1>Savings</h1></div>
                         <div class="card">
                             <div class="card-header">
                                 <h2><i class="fas fa-piggy-bank"></i> Savings Accounts</h2>
@@ -691,7 +800,7 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                 })
                 .catch(() => showToast('Error loading savings', 'error'));
         }
@@ -786,7 +895,6 @@
                         closeModal();
                         loadSavings();
                         loadDashboard();
-                        // Show receipt
                         if (data.receipt_no) {
                             alert(`Receipt No: ${data.receipt_no}\nMember: ${data.receipt.member_name}\nAmount: UGX ${Number(data.receipt.amount).toLocaleString()}\nDate: ${data.receipt.date}`);
                         }
@@ -816,6 +924,7 @@
                         </tr>
                     `).join('');
                     let html = `
+                        <div class="page-header"><h1>Fixed Deposits</h1></div>
                         <div class="card">
                             <div class="card-header">
                                 <h2><i class="fas fa-file-invoice"></i> Fixed Deposit Accounts</h2>
@@ -829,7 +938,7 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                 })
                 .catch(() => showToast('Error loading deposits', 'error'));
         }
@@ -932,6 +1041,7 @@
                         </tr>
                     `).join('');
                     let html = `
+                        <div class="page-header"><h1>Loans</h1></div>
                         <div class="card">
                             <div class="card-header">
                                 <h2><i class="fas fa-hand-holding-usd"></i> Loan Portfolio</h2>
@@ -945,13 +1055,12 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                 })
                 .catch(() => showToast('Error loading loans', 'error'));
         }
 
         function openLoanApply() {
-            // Load loan products
             apiFetch('/loans/products')
                 .then(products => {
                     let productOptions = products.map(p => `
@@ -994,7 +1103,6 @@
                     `;
                     openModal(form);
 
-                    // Show/hide insurance fee based on role
                     const role = getUserRole();
                     const allowedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
                     if (role && allowedRoles.includes(role)) {
@@ -1028,13 +1136,9 @@
                 .catch(() => showToast('Error loading loan products', 'error'));
         }
 
-        function updateLoanRates(select) {
-            // Optional: display rate info
-        }
-
+        function updateLoanRates(select) { /* optional */ }
         function approveLoan(loanId) {
             if (!confirm(`Approve loan ${loanId}?`)) return;
-            // Simple approve – you can call a PUT endpoint if you have one
             showToast(`Loan ${loanId} approved! (Demo)`, 'success');
             loadLoans();
         }
@@ -1043,10 +1147,10 @@
         // REPORTS
         // ============================================================
         function loadReports() {
-            // Load stats and charts
             apiFetch('/reports/dashboard')
                 .then(data => {
                     let html = `
+                        <div class="page-header"><h1>Reports</h1></div>
                         <div class="stats-grid">
                             <div class="stat-card"><div class="stat-number">${data.totalMembers || 0}</div><div class="stat-label">Members</div></div>
                             <div class="stat-card"><div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div><div class="stat-label">Savings</div></div>
@@ -1055,7 +1159,7 @@
                         </div>
                         <div class="card">
                             <div class="card-header">
-                                <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+                                <h2><i class="fas fa-chart-bar"></i> Analytics</h2>
                                 <div>
                                     <button class="btn" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
                                     <button class="btn btn-gold" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Excel</button>
@@ -1073,14 +1177,13 @@
                             </div>
                         </div>
                     `;
-                    document.getElementById('pageContent').innerHTML = html;
+                    document.getElementById('mainContent').innerHTML = html;
                     loadCharts();
                 })
                 .catch(() => showToast('Error loading reports', 'error'));
         }
 
         function loadCharts() {
-            // Deposits chart
             apiFetch('/reports/deposits-chart')
                 .then(data => {
                     const ctx = document.getElementById('depositsChart')?.getContext('2d');
@@ -1102,7 +1205,6 @@
                     });
                 });
 
-            // Loans chart
             apiFetch('/reports/loans-chart')
                 .then(data => {
                     const ctx = document.getElementById('loansChart')?.getContext('2d');
@@ -1127,40 +1229,12 @@
         }
 
         // ============================================================
-        // RENDER LOGIN
-        // ============================================================
-        function renderLogin() {
-            document.getElementById('pageContent').innerHTML = `
-                <div class="login-container">
-                    <h1>KIHINDI SACCO</h1>
-                    <div class="motto">Faith in God Leads to Success</div>
-                    <form onsubmit="event.preventDefault(); login(document.getElementById('loginUser').value, document.getElementById('loginPass').value)">
-                        <div class="form-group">
-                            <label>Username</label>
-                            <input type="text" id="loginUser" placeholder="Enter your username" />
-                        </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" id="loginPass" placeholder="Enter your password" />
-                        </div>
-                        <button class="btn" type="submit">Login</button>
-                    </form>
-                    <p style="text-align:center;color:#888;font-size:0.8rem;margin-top:1rem;">
-                        Use your credentials provided by the SACCO.
-                    </p>
-                </div>
-            `;
-            document.getElementById('pageTitle').textContent = 'Login';
-        }
-
-        // ============================================================
         // INIT
         // ============================================================
         const savedUser = localStorage.getItem('user');
         if (token && savedUser) {
             currentUser = JSON.parse(savedUser);
-            document.getElementById('userName').textContent = currentUser.username;
-            document.getElementById('userRole').textContent = currentUser.role;
+            showUserInfo(true);
             loadPage('dashboard');
         } else {
             renderLogin();
