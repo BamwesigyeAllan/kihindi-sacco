@@ -1,22 +1,20 @@
 const { sequelize, User, LoanProduct } = require('../models');
-const bcrypt = require('bcrypt');
 
 async function resetSeed() {
   try {
     await sequelize.sync({ force: true });
 
-    const adminPassword = await bcrypt.hash('admin123', 10);
-    await User.create({ username: 'admin', password_hash: adminPassword, role: 'admin' });
+    const users = [
+      { username: 'admin', password: 'admin123', role: 'admin' },
+      { username: 'chairman', password: 'chairman123', role: 'chairman' },
+      { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
+      { username: 'cashier', password: 'cashier123', role: 'cashier' },
+      { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
+    ];
 
-    // Create a user for each role
-    const roles = ['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'];
-    const defaultPassHash = await bcrypt.hash('password123', 10);
-
-    for (const role of roles) {
-      const username = role;
-      // skip creating duplicate admin (already created above)
-      if (username === 'admin') continue;
-      await User.create({ username, password_hash: defaultPassHash, role });
+    for (const userData of users) {
+      const hashed = await User.hashPassword(userData.password);
+      await User.create({ username: userData.username, password_hash: hashed, role: userData.role });
     }
 
     const loanProducts = [
@@ -39,6 +37,16 @@ async function resetSeed() {
         max_amount: 10000000,
         max_tenor_months: 24,
         status: 'active'
+      },
+      {
+        product_name: 'Emergency Loan',
+        description: 'Quick loan for urgent member needs',
+        interest_rate: 6.0,
+        rate_type: 'per_annum',
+        min_amount: 50000,
+        max_amount: 1000000,
+        max_tenor_months: 6,
+        status: 'active'
       }
     ];
 
@@ -46,10 +54,10 @@ async function resetSeed() {
       await LoanProduct.create(product);
     }
 
-    console.log('✅ Database reset and seeded successfully');
+    console.log('Database reset and seeded successfully');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Reset seed failed:', error);
+    console.error('Reset seed failed:', error);
     process.exit(1);
   }
 }

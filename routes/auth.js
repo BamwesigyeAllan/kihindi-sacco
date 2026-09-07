@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { body } = require('express-validator');
 const { User } = require('../models');
 const { validate } = require('../middleware/validate');
+const config = require('../config');
 const router = express.Router();
 
 router.post('/login', validate([
@@ -11,9 +12,6 @@ router.post('/login', validate([
 ]), async (req, res) => {
     try {
         const { username, password } = req.body;
-        if (!username || !password) {
-            return res.status(400).json({ error: 'Username and password required' });
-        }
         const user = await User.findOne({ where: { username } });
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -24,7 +22,7 @@ router.post('/login', validate([
         }
         const token = jwt.sign(
             { userId: user.id, username: user.username, role: user.role },
-            process.env.JWT_SECRET,
+            config.jwtSecret,
             { expiresIn: '7d' }
         );
         res.json({

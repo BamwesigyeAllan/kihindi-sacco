@@ -1,10 +1,10 @@
 const express = require('express');
 const { Loan, Member, LoanProduct, LoanRepayment, Transaction } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authorize } = require('../middleware/auth');
+const { INSURANCE_VIEW, LOAN_WRITE, LOAN_APPROVE } = require('../utils/roles');
 const router = express.Router();
 
-// GET all loans (with insurance_fee hidden from non-privileged roles)
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const loans = await Loan.findAll({
             include: [
@@ -13,23 +13,20 @@ router.get('/', authenticate, async (req, res) => {
             ],
             order: [['createdAt', 'DESC']]
         });
-        
-        // If user is not privileged, remove insurance_fee from response
-        const privilegedRoles = ['admin', 'chairperson', 'manager', 'loans_officer', 'treasurer'];
-        if (!privilegedRoles.includes(req.user.role)) {
-            loans.forEach(loan => {
+
+        if (!INSURANCE_VIEW.includes(req.user.role)) {
+            loans.forEach((loan) => {
                 delete loan.dataValues.insurance_fee;
             });
         }
-        
+
         res.json(loans);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// GET loan products
-router.get('/products', authenticate, async (req, res) => {
+router.get('/products', async (req, res) => {
     try {
         const products = await LoanProduct.findAll({ where: { status: 'active' } });
         res.json(products);
@@ -38,8 +35,7 @@ router.get('/products', authenticate, async (req, res) => {
     }
 });
 
-// POST apply for loan (with insurance_fee)
-router.post('/', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer', 'treasurer', 'officer'), async (req, res) => {
+router.post('/', authorize(...LOAN_WRITE), async (req, res) => {
     try {
         const { member_id, product_id, amount, repayment_period_months, insurance_fee } = req.body;
 
@@ -78,8 +74,7 @@ router.post('/', authenticate, authorize('admin', 'chairperson', 'manager', 'loa
     }
 });
 
-// PUT approve/disburse loan
-router.put('/:id', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer'), async (req, res) => {
+router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
     try {
         const loan = await Loan.findByPk(req.params.id, {
             include: [{ model: Member }]
@@ -110,8 +105,7 @@ router.put('/:id', authenticate, authorize('admin', 'chairperson', 'manager', 'l
     }
 });
 
-// POST repay loan
-router.post('/:id/repay', authenticate, authorize('admin', 'chairperson', 'manager', 'loans_officer', 'treasurer', 'officer'), async (req, res) => {
+router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
     try {
         const { amount_paid, payment_date, payment_mode, reference_no } = req.body;
         const loan = await Loan.findByPk(req.params.id, {

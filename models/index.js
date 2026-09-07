@@ -10,6 +10,8 @@ const LoanRepayment = require('./LoanRepayment');
 const Transaction = require('./Transaction');
 const MemberApplication = require('./MemberApplication');
 const LoanApplication = require('./LoanApplication');
+const SavingsAlert = require('./SavingsAlert');
+const WithdrawalReceipt = require('./WithdrawalReceipt');
 
 // ============================================================
 // ASSOCIATIONS (all with correct spelling: foreignKey)
@@ -74,6 +76,12 @@ Transaction.belongsTo(Member, { foreignKey: 'member_id' });
 User.hasMany(Transaction, { foreignKey: 'created_by' });
 Transaction.belongsTo(User, { foreignKey: 'created_by' });
 
+Member.hasMany(SavingsAlert, { foreignKey: 'member_id' });
+SavingsAlert.belongsTo(Member, { foreignKey: 'member_id' });
+
+Member.hasMany(WithdrawalReceipt, { foreignKey: 'member_id' });
+WithdrawalReceipt.belongsTo(Member, { foreignKey: 'member_id' });
+
 // ============================================================
 // EXPORT
 // ============================================================
@@ -89,5 +97,7 @@ module.exports = {
     LoanRepayment,
     Transaction,
     MemberApplication,
-    LoanApplication
+    LoanApplication,
+    SavingsAlert,
+    WithdrawalReceipt
 };

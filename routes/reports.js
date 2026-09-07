@@ -1,11 +1,10 @@
 const express = require('express');
 const { FixedDeposit, Member, Loan, LoanProduct, SavingsAccount, Transaction } = require('../models');
-const { authenticate } = require('../middleware/auth');
-const sequelize = require('../config/database');
-const { Op } = require('sequelize');
+const config = require('../config');
+const { Op, fn, col, literal } = require('sequelize');
 const router = express.Router();
 
-router.get('/dashboard', authenticate, async (req, res) => {
+router.get('/dashboard', async (req, res) => {
     try {
         const totalMembers = await Member.count({ where: { status: 'active' } });
         const totalDeposits = await FixedDeposit.sum('amount', { where: { status: 'active' } });
@@ -30,15 +29,19 @@ router.get('/dashboard', authenticate, async (req, res) => {
     }
 });
 
-router.get('/deposits-chart', authenticate, async (req, res) => {
+router.get('/deposits-chart', async (req, res) => {
     try {
+        const monthExpr = config.database.dialect === 'sqlite'
+            ? fn('strftime', '%Y-%m', col('start_date'))
+            : fn('DATE_FORMAT', col('start_date'), '%Y-%m');
+
         const results = await FixedDeposit.findAll({
             attributes: [
-                [sequelize.fn('DATE_FORMAT', sequelize.col('start_date'), '%Y-%m'), 'month'],
-                [sequelize.fn('SUM', sequelize.col('amount')), 'total']
+                [monthExpr, 'month'],
+                [fn('SUM', col('amount')), 'total']
             ],
             group: ['month'],
-            order: [[sequelize.literal('month'), 'ASC']],
+            order: [[literal('month'), 'ASC']],
             where: {
                 start_date: { [Op.gte]: new Date(new Date().getFullYear() - 1, 0, 1) }
             },
@@ -50,12 +53,12 @@ router.get('/deposits-chart', authenticate, async (req, res) => {
     }
 });
 
-router.get('/loans-chart', authenticate, async (req, res) => {
+router.get('/loans-chart', async (req, res) => {
     try {
         const results = await Loan.findAll({
             attributes: [
-                [sequelize.col('LoanProduct.product_name'), 'product'],
-                [sequelize.fn('SUM', sequelize.col('amount')), 'total']
+                [col('LoanProduct.product_name'), 'product'],
+                [fn('SUM', col('amount')), 'total']
             ],
             include: [{ model: LoanProduct, attributes: [] }],
             group: ['LoanProduct.product_name'],

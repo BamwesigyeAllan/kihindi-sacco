@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { MemberApplication, Member, User } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authorize } = require('../middleware/auth');
+const { MEMBER_WRITE } = require('../utils/roles');
+const { isTruthy } = require('../utils/helpers');
 
 // GET all applications
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const apps = await MemberApplication.findAll({
             include: [{ model: User, as: 'reviewer', attributes: ['id', 'username'] }],
@@ -17,7 +19,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // GET single application
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const app = await MemberApplication.findByPk(req.params.id, {
             include: [{ model: User, as: 'reviewer', attributes: ['id', 'username'] }]
@@ -30,9 +32,22 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // POST – submit new application
-router.post('/', authenticate, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
-        const data = req.body;
+        const data = { ...req.body };
+        if (!data.full_name || !data.nin || !data.phone || !data.member_password || !data.next_of_kin_name || !data.next_of_kin_phone) {
+            return res.status(400).json({ error: 'Required application fields are missing' });
+        }
+        if (data.address && !data.village) {
+            const parts = String(data.address).split(',').map((part) => part.trim());
+            data.village = parts[0];
+            data.parish = parts[1];
+            data.sub_county = parts[2];
+            data.district = parts[3];
+        }
+        delete data.address;
+        delete data.photo;
+        data.entrance_fee_paid = isTruthy(data.entrance_fee_paid);
         const bcrypt = require('bcrypt');
         const hashed = await bcrypt.hash(data.member_password, 10);
         data.member_password = hashed;
@@ -44,7 +59,7 @@ router.post('/', authenticate, async (req, res) => {
 });
 
 // PUT – review (approve/reject)
-router.put('/:id', authenticate, authorize('admin', 'chairman'), async (req, res) => {
+router.put('/:id', authorize(...MEMBER_WRITE), async (req, res) => {
     try {
         const { status } = req.body;
         const app = await MemberApplication.findByPk(req.params.id);
@@ -97,7 +112,7 @@ router.put('/:id', authenticate, authorize('admin', 'chairman'), async (req, res
 });
 
 // DELETE
-router.delete('/:id', authenticate, authorize('admin', 'chairman'), async (req, res) => {
+router.delete('/:id', authorize(...MEMBER_WRITE), async (req, res) => {
     try {
         const app = await MemberApplication.findByPk(req.params.id);
         if (!app) return res.status(404).json({ error: 'Application not found' });
