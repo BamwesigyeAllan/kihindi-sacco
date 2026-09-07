@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { LoanApplication, Member, LoanProduct, User, Loan } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authorize } = require('../middleware/auth');
+const { LOAN_APPROVE, MEMBER_WRITE } = require('../utils/roles');
 
 // GET all loan applications
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
 	try {
 		const apps = await LoanApplication.findAll({
 			include: [
@@ -21,7 +22,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // POST – submit new loan application
-router.post('/', authenticate, async (req, res) => {
+router.post('/', async (req, res) => {
 	try {
 		const { member_id, product_id, amount, repayment_period_months, insurance_fee } = req.body;
 		const member = await Member.findByPk(member_id);
@@ -47,7 +48,7 @@ router.post('/', authenticate, async (req, res) => {
 });
 
 // PUT – review (approve/reject)
-router.put('/:id', authenticate, authorize('admin', 'chairman', 'loan_officer'), async (req, res) => {
+router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
 	try {
 		const { status, notes } = req.body;
 		const app = await LoanApplication.findByPk(req.params.id, {
@@ -85,7 +86,7 @@ router.put('/:id', authenticate, authorize('admin', 'chairman', 'loan_officer'),
 });
 
 // DELETE
-router.delete('/:id', authenticate, authorize('admin', 'chairman'), async (req, res) => {
+router.delete('/:id', authorize(...MEMBER_WRITE), async (req, res) => {
 	try {
 		const app = await LoanApplication.findByPk(req.params.id);
 		if (!app) return res.status(404).json({ error: 'Application not found' });

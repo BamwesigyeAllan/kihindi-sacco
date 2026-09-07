@@ -1,59 +1,66 @@
-const bcrypt = require('bcrypt');
-const { sequelize, User, Member, LoanProduct } = require('../models');
+const { sequelize, User, LoanProduct } = require('../models');
+
+const defaultUsers = [
+  { username: 'admin', password: 'admin123', role: 'admin' },
+  { username: 'chairman', password: 'chairman123', role: 'chairman' },
+  { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
+  { username: 'cashier', password: 'cashier123', role: 'cashier' },
+  { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
+];
+
+const loanProducts = [
+  {
+    product_name: 'Salary Advance',
+    description: 'Short-term advance for salaried members',
+    interest_rate: 5.0,
+    rate_type: 'per_annum',
+    min_amount: 100000,
+    max_amount: 2000000,
+    max_tenor_months: 12,
+    status: 'active'
+  },
+  {
+    product_name: 'Agriculture Loan',
+    description: 'Loan for agricultural input and equipment',
+    interest_rate: 8.0,
+    rate_type: 'per_annum',
+    min_amount: 500000,
+    max_amount: 10000000,
+    max_tenor_months: 24,
+    status: 'active'
+  },
+  {
+    product_name: 'Emergency Loan',
+    description: 'Quick loan for urgent member needs',
+    interest_rate: 6.0,
+    rate_type: 'per_annum',
+    min_amount: 50000,
+    max_amount: 1000000,
+    max_tenor_months: 6,
+    status: 'active'
+  }
+];
 
 async function seed() {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
-    const adminPassword = await bcrypt.hash('admin123', 10);
-    await User.findOrCreate({
-      where: { username: 'admin' },
-      defaults: { username: 'admin', password_hash: adminPassword, role: 'admin' }
-    });
-
-    // Ensure a user exists for each role
-    const roles = ['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'];
-    const defaultPassHash = await bcrypt.hash('password123', 10);
-
-    for (const role of roles) {
-      const username = role;
+    for (const userData of defaultUsers) {
+      const hashed = await User.hashPassword(userData.password);
       await User.findOrCreate({
-        where: { username },
-        defaults: { username, password_hash: defaultPassHash, role }
+        where: { username: userData.username },
+        defaults: { username: userData.username, password_hash: hashed, role: userData.role }
       });
     }
-
-    const loanProducts = [
-      {
-        product_name: 'Salary Advance',
-        description: 'Short-term advance for salaried members',
-        interest_rate: 5.0,
-        rate_type: 'per_annum',
-        min_amount: 100000,
-        max_amount: 2000000,
-        max_tenor_months: 12,
-        status: 'active'
-      },
-      {
-        product_name: 'Agriculture Loan',
-        description: 'Loan for agricultural input and equipment',
-        interest_rate: 8.0,
-        rate_type: 'per_annum',
-        min_amount: 500000,
-        max_amount: 10000000,
-        max_tenor_months: 24,
-        status: 'active'
-      }
-    ];
 
     for (const product of loanProducts) {
       await LoanProduct.findOrCreate({ where: { product_name: product.product_name }, defaults: product });
     }
 
-    console.log('✅ Database seeded successfully');
+    console.log('Database seeded successfully');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Seed failed:', error);
+    console.error('Seed failed:', error);
     process.exit(1);
   }
 }

@@ -4,10 +4,11 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { body, param } = require('express-validator');
-const { Member, Transaction, User } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { Member, Transaction } = require('../models');
+const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
-const { generateMembershipNo } = require('../utils/helpers');
+const { generateMembershipNo, isTruthy } = require('../utils/helpers');
+const { MEMBER_WRITE } = require('../utils/roles');
 const router = express.Router();
 
 const uploadDir = './uploads/photos';
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 } });
 
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const members = await Member.findAll({
             order: [['createdAt', 'DESC']]
@@ -33,7 +34,7 @@ router.get('/', authenticate, async (req, res) => {
     }
 });
 
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const member = await Member.findByPk(req.params.id);
         if (!member) return res.status(404).json({ error: 'Member not found' });
@@ -43,14 +44,13 @@ router.get('/:id', authenticate, async (req, res) => {
     }
 });
 
-router.post('/', authenticate, authorize('admin', 'manager'), upload.single('photo'), validate([
+router.post('/', authorize(...MEMBER_WRITE), upload.single('photo'), validate([
     body('full_name').trim().notEmpty().withMessage('Full name is required'),
     body('nin').trim().notEmpty().withMessage('NIN is required'),
     body('member_password').notEmpty().withMessage('Member password is required').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
     body('next_of_kin_name').trim().notEmpty().withMessage('Next of kin name is required'),
     body('next_of_kin_phone').trim().notEmpty().withMessage('Next of kin phone is required'),
-    body('share_capital').optional().isFloat({ min: 0 }).withMessage('Share capital must be a non-negative number'),
-    body('entrance_fee_paid').optional().isBoolean().withMessage('Entrance fee paid must be true or false')
+    body('share_capital').optional().isFloat({ min: 0 }).withMessage('Share capital must be a non-negative number')
 ]), async (req, res) => {
     try {
         const body = req.body;
@@ -63,6 +63,18 @@ router.post('/', authenticate, authorize('admin', 'manager'), upload.single('pho
         const existing = await Member.findOne({ where: { nin: body.nin } });
         if (existing) return res.status(409).json({ error: 'NIN already registered' });
 
+        let village = body.village;
+        let parish = body.parish;
+        let sub_county = body.sub_county;
+        let district = body.district;
+        if (body.address && !village) {
+            const parts = String(body.address).split(',').map((part) => part.trim());
+            village = parts[0] || village;
+            parish = parts[1] || parish;
+            sub_county = parts[2] || sub_county;
+            district = parts[3] || district;
+        }
+
         const membership_no = await generateMembershipNo();
         const hashedPassword = await bcrypt.hash(body.member_password, 10);
 
@@ -70,23 +82,23 @@ router.post('/', authenticate, authorize('admin', 'manager'), upload.single('pho
             membership_no,
             full_name: body.full_name,
             gender: body.gender,
-            date_of_birth: body.date_of_birth,
+            date_of_birth: body.date_of_birth || null,
             nin: body.nin,
             phone: body.phone,
             member_password: hashedPassword,
             marital_status: body.marital_status,
-            village: body.village,
-            parish: body.parish,
-            sub_county: body.sub_county,
-            district: body.district,
+            village,
+            parish,
+            sub_county,
+            district,
             occupation: body.occupation,
             stage_name: body.stage_name,
             next_of_kin_name: body.next_of_kin_name,
             next_of_kin_phone: body.next_of_kin_phone,
-            entrance_fee_paid: body.entrance_fee_paid === 'true',
+            entrance_fee_paid: isTruthy(body.entrance_fee_paid),
             share_capital: parseFloat(body.share_capital) || 0,
             photo_url: photoPath,
-            status: body.status || 'pending',
+            status: body.status || 'active',
             registration_date: new Date(),
             registered_by: req.user.id
         });
@@ -108,7 +120,7 @@ router.post('/', authenticate, authorize('admin', 'manager'), upload.single('pho
     }
 });
 
-router.put('/:id', authenticate, authorize('admin', 'manager'), upload.single('photo'), validate([
+router.put('/:id', authorize(...MEMBER_WRITE), upload.single('photo'), validate([
     param('id').isInt().withMessage('Member ID must be an integer'),
     body('phone').optional().trim().isLength({ min: 7 }).withMessage('Phone number is invalid'),
     body('status').optional().isIn(['active', 'inactive', 'pending']).withMessage('Status must be active, inactive, or pending')
@@ -127,7 +139,7 @@ router.put('/:id', authenticate, authorize('admin', 'manager'), upload.single('p
     }
 });
 
-router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
+router.delete('/:id', authorize(...MEMBER_WRITE), async (req, res) => {
     try {
         const member = await Member.findByPk(req.params.id);
         if (!member) return res.status(404).json({ error: 'Member not found' });

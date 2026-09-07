@@ -1,12 +1,13 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const { FixedDeposit, Member, Transaction } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { generateDepositAccountNo } = require('../utils/helpers');
+const { DEPOSIT_WRITE } = require('../utils/roles');
 const router = express.Router();
 
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const { member_id } = req.query;
         const where = {};
@@ -37,7 +38,7 @@ router.get('/', authenticate, async (req, res) => {
     }
 });
 
-router.post('/', authenticate, authorize('admin', 'manager'), validate([
+router.post('/', authorize(...DEPOSIT_WRITE), validate([
     body('member_id').isInt().withMessage('Member ID is required'),
     body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
     body('interest_rate').isFloat({ gt: 0 }).withMessage('Interest rate must be greater than 0'),
@@ -101,7 +102,7 @@ router.post('/', authenticate, authorize('admin', 'manager'), validate([
 });
 
 // Calculate and add quarterly interest
-router.post('/:id/interest', authenticate, authorize('admin', 'manager'), validate([
+router.post('/:id/interest', authorize(...DEPOSIT_WRITE), validate([
     param('id').isInt().withMessage('Deposit ID must be an integer')
 ]), async (req, res) => {
     try {

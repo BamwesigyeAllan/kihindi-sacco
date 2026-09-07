@@ -1,12 +1,13 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const { SavingsAccount, SavingsTransaction, Member, SavingsAlert, WithdrawalReceipt, Transaction } = require('../models');
-const { authenticate, authorize } = require('../middleware/auth');
+const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
+const { SAVINGS_WRITE } = require('../utils/roles');
 const router = express.Router();
 
 // Get all savings accounts
-router.get('/', authenticate, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const accounts = await SavingsAccount.findAll({
             include: [{ model: Member, attributes: ['id', 'full_name', 'phone', 'nin'] }],
@@ -19,7 +20,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // Get a specific member's savings account
-router.get('/member/:memberId', authenticate, validate([
+router.get('/member/:memberId', validate([
     param('memberId').isInt().withMessage('Member ID must be an integer')
 ]), async (req, res) => {
     try {
@@ -35,7 +36,7 @@ router.get('/member/:memberId', authenticate, validate([
 });
 
 // Get alerts for a member
-router.get('/alerts/:memberId', authenticate, async (req, res) => {
+router.get('/alerts/:memberId', async (req, res) => {
     try {
         const alerts = await SavingsAlert.findAll({
             where: { member_id: req.params.memberId, is_read: false },
@@ -48,7 +49,7 @@ router.get('/alerts/:memberId', authenticate, async (req, res) => {
 });
 
 // Mark alert as read
-router.put('/alerts/:alertId', authenticate, async (req, res) => {
+router.put('/alerts/:alertId', async (req, res) => {
     try {
         await SavingsAlert.update({ is_read: true }, { where: { id: req.params.alertId } });
         res.json({ success: true });
@@ -58,7 +59,7 @@ router.put('/alerts/:alertId', authenticate, async (req, res) => {
 });
 
 // Deposit with milestone alerts
-router.post('/deposit', authenticate, authorize('admin', 'manager', 'officer'), validate([
+router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
     body('member_id').isInt().withMessage('Member ID must be an integer'),
     body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
     body('description').optional().trim(),
@@ -128,7 +129,7 @@ router.post('/deposit', authenticate, authorize('admin', 'manager', 'officer'), 
 });
 
 // Withdrawal with ID verification and receipt
-router.post('/withdraw', authenticate, authorize('admin', 'manager', 'officer'), validate([
+router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
     body('member_id').isInt().withMessage('Member ID must be an integer'),
     body('amount').isFloat({ gt: 0 }).withMessage('Amount must be greater than 0'),
     body('national_id').trim().notEmpty().withMessage('National ID is required')
