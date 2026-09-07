@@ -9,11 +9,11 @@ const User = sequelize.define('User', {
     role: {
         type: DataTypes.ENUM(
             'admin',
-            'chairman',
-            'loan_officer',
-            'cashier',
-            'treasurer',
-            'officer'
+            'chairperson',
+            'manager',
+            'loans_officer',
+            'officer',
+            'treasurer'
         ),
         defaultValue: 'officer'
     }

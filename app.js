@@ -47,10 +47,11 @@ const PORT = config.port;
 
 const defaultUsers = [
     { username: 'admin', password: 'admin123', role: 'admin' },
-    { username: 'chairman', password: 'chairman123', role: 'chairman' },
-    { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
-    { username: 'cashier', password: 'cashier123', role: 'cashier' },
-    { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
+    { username: 'chairperson', password: 'password123', role: 'chairperson' },
+    { username: 'manager', password: 'password123', role: 'manager' },
+    { username: 'loans_officer', password: 'password123', role: 'loans_officer' },
+    { username: 'officer', password: 'password123', role: 'officer' },
+    { username: 'treasurer', password: 'password123', role: 'treasurer' }
 ];
 
 const defaultProducts = [
