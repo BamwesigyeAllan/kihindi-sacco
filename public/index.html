@@ -946,8 +946,7 @@
         <span>KIHINDI</span> SACCO
       </div>
       <div class="user-info" id="userInfo">
-        <span id="userName">System</span>
-        <span class="badge" id="userRole">ADMIN</span>
+        <span class="badge" id="userRole" style="display:none;">ADMIN</span>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </nav>
@@ -1039,16 +1038,14 @@
       document.getElementById('appShell').style.display = 'none';
     }
 
-    function normalizeDisplayUserName(username) {
-      if (!username) return 'User';
-      return username.toLowerCase() === 'admin' ? 'System' : username;
-    }
-
     function showApp() {
+      const userRoleEl = document.getElementById('userRole');
+      const isDefaultAdmin = (currentUser?.username || '').toLowerCase() === 'admin' || (currentUser?.role || '').toLowerCase() === 'admin';
+
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appShell').style.display = 'block';
-      document.getElementById('userName').textContent = normalizeDisplayUserName(currentUser.username);
-      document.getElementById('userRole').textContent = (currentUser.role || '').toUpperCase();
+      userRoleEl.textContent = (currentUser.role || '').toUpperCase();
+      userRoleEl.style.display = isDefaultAdmin ? 'none' : 'inline-flex';
       document.getElementById('logoSettingsNav').style.display = ['admin', 'chairperson'].includes(getUserRole()) ? 'flex' : 'none';
       loadSaccoLogo();
       loadPage('dashboard');
