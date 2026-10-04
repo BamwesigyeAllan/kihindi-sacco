@@ -351,6 +351,7 @@
       justify-content: center;
       align-items: center;
       z-index: 200;
+      -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
     }
     .modal.active { display: flex; }
@@ -454,6 +455,267 @@
       .sidebar { width: 180px; }
       .main-content { margin-left: 180px; padding: 0.8rem; }
       .stats-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Modern cooperative dashboard */
+    :root {
+      --green-900: #12372c;
+      --green-800: #174a38;
+      --green-700: #21684b;
+      --green-600: #2f8860;
+      --gold: #d5a83b;
+      --gold-light: #f2d477;
+      --bg: #f4f7f5;
+      --border: #e5ece8;
+      --text: #172a22;
+      --text-muted: #74847c;
+      --shadow: 0 8px 24px rgba(25, 55, 42, 0.055);
+      --shadow-hover: 0 14px 32px rgba(25, 55, 42, 0.1);
+      --radius: 18px;
+      --radius-sm: 11px;
+    }
+    body { background: var(--bg); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #d5e1da; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a9bcaf; }
+    .top-nav {
+      position: fixed;
+      inset: 0 0 auto;
+      height: 72px;
+      padding: 0 2rem;
+      background: rgba(255,255,255,0.96);
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 3px 16px rgba(20, 50, 38, 0.035);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
+    .top-nav .brand { color: var(--green-900); letter-spacing: -0.04em; }
+    .top-nav .brand i { color: var(--green-700); }
+    .top-nav .brand span { color: var(--green-700); }
+    .top-nav .user-info { gap: 0.75rem; color: var(--text); }
+    .top-nav .user-info .badge {
+      background: #edf5f0;
+      color: var(--green-800);
+      padding: 0.35rem 0.7rem;
+      letter-spacing: 0.04em;
+    }
+    .top-nav .user-info .logout-btn {
+      background: #f4f7f5;
+      color: var(--text);
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--border);
+    }
+    .top-nav .user-info .logout-btn:hover { background: #eaf1ed; }
+    .sidebar {
+      top: 72px;
+      width: 258px;
+      padding: 1.5rem 1rem;
+      background: #fff;
+      color: var(--text);
+      border-right: 1px solid var(--border);
+    }
+    .sidebar nav::before {
+      content: 'WORKSPACE';
+      display: block;
+      padding: 0.25rem 0.9rem 0.8rem;
+      color: #99a79f;
+      font-size: 0.67rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+    }
+    .sidebar nav a {
+      padding: 0.78rem 0.9rem;
+      margin-bottom: 0.35rem;
+      color: #68786f;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+      background: #eff6f1;
+      color: var(--green-800);
+    }
+    .sidebar nav a.active {
+      box-shadow: inset 3px 0 0 var(--green-700);
+      font-weight: 700;
+    }
+    .sidebar nav a i { color: #80958a; }
+    .sidebar nav a.active i { color: var(--green-700); }
+    .main-content {
+      margin: 72px 0 0 258px;
+      padding: 2rem clamp(1.25rem, 3vw, 2.75rem);
+      min-height: calc(100vh - 72px);
+    }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h1 { font-size: 1.55rem; font-weight: 750; letter-spacing: -0.04em; }
+    .page-header h1 i { color: var(--green-700); }
+    .stats-grid { gap: 1rem; margin-bottom: 1.25rem; }
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 150px;
+      padding: 1.2rem 1.25rem;
+      border: 1px solid #e8eeea;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      right: -36px;
+      bottom: -46px;
+      border-radius: 50%;
+      background: #f2f7f3;
+      pointer-events: none;
+    }
+    .stat-card:hover { border-color: #d5e5da; }
+    .stat-card .stat-icon {
+      float: none;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      margin-bottom: 1rem;
+      border-radius: 13px;
+      background: #edf5f0;
+      color: var(--green-700);
+      font-size: 1.05rem;
+    }
+    .stat-card:nth-child(2) .stat-icon { background: #fdf5df; color: #b58a25; }
+    .stat-card:nth-child(3) .stat-icon { background: #eef2fb; color: #6177b7; }
+    .stat-card:nth-child(4) .stat-icon { background: #f9eeee; color: #b16d63; }
+    .stat-card .stat-number {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+      font-size: clamp(1.25rem, 2vw, 1.65rem);
+      letter-spacing: -0.045em;
+      overflow-wrap: anywhere;
+    }
+    .stat-card .stat-label { position: relative; z-index: 1; font-size: 0.79rem; font-weight: 600; }
+    .card {
+      padding: 1.35rem;
+      border: 1px solid #e8eeea;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card-header h2 { color: var(--text); font-size: 1rem; font-weight: 750; }
+    .card-header h2 i { color: var(--green-700); }
+    .card-header .view-all { color: var(--green-700); font-weight: 700; }
+    table thead th {
+      background: #f7f9f8;
+      color: #819087;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      padding: 0.8rem 0.7rem;
+      border-bottom: 1px solid var(--border);
+    }
+    table tbody td { padding: 0.85rem 0.7rem; border-bottom-color: #eef2ef; }
+    table tbody tr:hover { background: #f8fbf9; }
+    .dashboard-intro {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.35rem;
+    }
+    .dashboard-intro .eyebrow {
+      margin-bottom: 0.4rem;
+      color: var(--green-700);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+    }
+    .dashboard-intro h1 {
+      color: var(--text);
+      font-size: clamp(1.55rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.055em;
+    }
+    .dashboard-intro p { margin-top: 0.35rem; color: var(--text-muted); font-size: 0.88rem; }
+    .dashboard-date {
+      flex: 0 0 auto;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: #62746a;
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+    .dashboard-actions {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important;
+      gap: 0.75rem !important;
+    }
+    .dashboard-actions .btn,
+    .dashboard-actions .btn-gold {
+      min-height: 46px;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--green-800);
+      text-align: left;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(20,50,38,0.025);
+      cursor: pointer;
+    }
+    .dashboard-actions .btn:hover,
+    .dashboard-actions .btn-gold:hover {
+      border-color: #cbded1;
+      background: #f4f9f5;
+      transform: translateY(-1px);
+    }
+    .dashboard-actions .btn i { margin-right: 0.4rem; color: var(--green-700); }
+    .activity-card .card-header { margin-bottom: 0.5rem; }
+    .activity-card .card-subtitle { margin-top: 0.25rem; color: var(--text-muted); font-size: 0.78rem; }
+    .activity-card .empty-state { padding: 1.5rem; text-align: center; color: var(--text-muted); }
+    .login-container {
+      border: 1px solid rgba(255,255,255,0.75);
+      border-radius: 22px;
+      box-shadow: 0 24px 70px rgba(22, 54, 39, 0.13);
+    }
+    #loginScreen {
+      background: radial-gradient(circle at 15% 20%, rgba(46,130,88,0.1), transparent 28%),
+                  radial-gradient(circle at 90% 85%, rgba(213,168,59,0.12), transparent 27%),
+                  var(--bg);
+    }
+    @media (max-width: 768px) {
+      .top-nav { height: 64px; padding: 0 1rem; }
+      .top-nav .brand { font-size: 1.08rem; }
+      .sidebar { top: 64px; width: 210px; }
+      .main-content { margin: 64px 0 0 210px; padding: 1.25rem 1rem; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .top-nav .user-info { gap: 0.4rem; }
+      .top-nav .user-info .logout-btn { padding: 0.48rem 0.6rem; }
+    }
+    @media (max-width: 576px) {
+      .top-nav { height: 60px; }
+      .top-nav .brand { font-size: 0.95rem; gap: 6px; }
+      .top-nav .brand i { font-size: 1.2rem; }
+      .top-nav .user-info > span:first-child { display: none; }
+      .top-nav .user-info .badge { font-size: 0.62rem; padding: 0.3rem 0.5rem; }
+      .top-nav .user-info .logout-btn { font-size: 0; gap: 0; }
+      .top-nav .user-info .logout-btn i { font-size: 0.9rem; }
+      .sidebar { top: 60px; width: 68px; padding: 1rem 0.5rem; }
+      .sidebar nav::before { padding: 0.25rem 0 0.7rem; font-size: 0; }
+      .sidebar nav a { justify-content: center; gap: 0; padding: 0.78rem 0.25rem; font-size: 0; }
+      .sidebar nav a i { width: auto; font-size: 1rem; }
+      .main-content { margin: 60px 0 0 68px; padding: 1rem 0.75rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+      .stat-card { min-height: 135px; padding: 0.9rem; }
+      .stat-card .stat-icon { width: 36px; height: 36px; margin-bottom: 0.75rem; }
+      .stat-card .stat-label { font-size: 0.7rem; }
+      .dashboard-intro { align-items: flex-start; flex-direction: column; }
+      .dashboard-date { padding: 0.5rem 0.7rem; }
+      .card { padding: 1rem; }
+      .card-header { align-items: flex-start; }
     }
   </style>
 </head>
@@ -671,27 +933,30 @@
 
       apiFetch('/reports/dashboard')
         .then(data => {
+          const today = new Date().toLocaleDateString(undefined, {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          });
           stats = `
             <div class="stats-grid">
               <div class="stat-card">
                 <i class="fas fa-user-friends stat-icon"></i>
                 <div class="stat-number">${data.totalMembers || 0}</div>
-                <div class="stat-label">Members</div>
+                <div class="stat-label">Active members</div>
               </div>
               <div class="stat-card">
                 <i class="fas fa-piggy-bank stat-icon"></i>
                 <div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div>
-                <div class="stat-label">Savings</div>
+                <div class="stat-label">Total savings</div>
               </div>
               <div class="stat-card">
                 <i class="fas fa-coins stat-icon"></i>
                 <div class="stat-number">UGX ${Number(data.totalDeposits || 0).toLocaleString()}</div>
-                <div class="stat-label">Fixed Deposits</div>
+                <div class="stat-label">Fixed deposits</div>
               </div>
               <div class="stat-card">
                 <i class="fas fa-hand-holding-usd stat-icon"></i>
                 <div class="stat-number">UGX ${Number(data.outstandingLoans || 0).toLocaleString()}</div>
-                <div class="stat-label">Outstanding Loans</div>
+                <div class="stat-label">Outstanding loans</div>
               </div>
             </div>
           `;
@@ -700,9 +965,12 @@
             quickActions = `
               <div class="card">
                 <div class="card-header">
-                  <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                  <div>
+                    <h2><i class="fas fa-bolt"></i> Quick actions</h2>
+                    <p class="card-subtitle">Common tasks, one click away</p>
+                  </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem;">
+                <div class="dashboard-actions">
                   <button class="btn" onclick="loadPage('members')"><i class="fas fa-user-plus"></i> Register Member</button>
                   <button class="btn btn-gold" onclick="loadPage('member-applications')"><i class="fas fa-file-signature"></i> Review Applications</button>
                   <button class="btn" onclick="loadPage('loan-applications')"><i class="fas fa-file-invoice"></i> Review Loans</button>
@@ -713,9 +981,12 @@
             quickActions = `
               <div class="card">
                 <div class="card-header">
-                  <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                  <div>
+                    <h2><i class="fas fa-bolt"></i> Quick actions</h2>
+                    <p class="card-subtitle">Shortcuts for your daily workflow</p>
+                  </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+                <div class="dashboard-actions">
                   <button class="btn" onclick="loadPage('loans')"><i class="fas fa-hand-holding-usd"></i> Manage Loans</button>
                   <button class="btn btn-gold" onclick="loadPage('loan-applications')"><i class="fas fa-file-invoice"></i> Review Applications</button>
                 </div>
@@ -725,9 +996,12 @@
             quickActions = `
               <div class="card">
                 <div class="card-header">
-                  <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                  <div>
+                    <h2><i class="fas fa-bolt"></i> Quick actions</h2>
+                    <p class="card-subtitle">Shortcuts for your daily workflow</p>
+                  </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+                <div class="dashboard-actions">
                   <button class="btn" onclick="loadPage('savings')"><i class="fas fa-piggy-bank"></i> Savings Deposit</button>
                   <button class="btn btn-gold" onclick="loadPage('savings')"><i class="fas fa-minus"></i> Withdraw</button>
                 </div>
@@ -736,18 +1010,21 @@
           }
 
           let recentHtml = `
-            <div class="card">
+            <div class="card activity-card">
               <div class="card-header">
-                <h2><i class="fas fa-clock"></i> Recent Transactions</h2>
-                <a href="#" class="view-all">View All →</a>
+                <div>
+                  <h2><i class="fas fa-clock"></i> Recent transactions</h2>
+                  <p class="card-subtitle">The latest activity across your cooperative</p>
+                </div>
+                <a href="#" class="view-all" onclick="loadPage('reports'); return false;">View reports <i class="fas fa-arrow-right"></i></a>
               </div>
               <div class="table-responsive">
                 <table>
-                  <thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Amount</th></tr></thead>
+                  <thead><tr><th>Date</th><th>Member</th><th>Transaction</th><th>Amount</th></tr></thead>
                   <tbody>
                     ${data.recentTransactions && data.recentTransactions.length ? data.recentTransactions.map(t => `
-                      <tr><td>${t.created_at}</td><td>${t.Member?.full_name || 'N/A'}</td><td>${t.type}</td><td>UGX ${Number(t.amount).toLocaleString()}</td></tr>
-                    `).join('') : '<tr><td colspan="4" style="text-align:center;color:#999;">No transactions</td></tr>'}
+                      <tr><td>${t.created_at}</td><td>${t.Member?.full_name || 'N/A'}</td><td>${t.type}</td><td><strong>UGX ${Number(t.amount).toLocaleString()}</strong></td></tr>
+                    `).join('') : '<tr><td colspan="4" class="empty-state">No transactions to show yet</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -755,7 +1032,14 @@
           `;
 
           document.getElementById('mainContent').innerHTML = `
-            <div class="page-header"><h1><i class="fas fa-chart-pie"></i> Dashboard</h1></div>
+            <div class="dashboard-intro">
+              <div>
+                <div class="eyebrow">KIHINDI SACCO · OVERVIEW</div>
+                <h1>Your cooperative at a glance</h1>
+                <p>Track your portfolio and stay on top of daily operations.</p>
+              </div>
+              <div class="dashboard-date"><i class="far fa-calendar-alt"></i> ${today}</div>
+            </div>
             ${stats}
             ${quickActions}
             ${recentHtml}
