@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KIHINDI SACCO – Management System</title>
-  <link rel="icon" href="/icons/kihindi-sacco-logo.jpg" />
-  <link rel="apple-touch-icon" href="/icons/kihindi-sacco-logo.jpg" />
+  <link rel="icon" href="icons/kihindi-sacco-logo.jpg" />
+  <link rel="apple-touch-icon" href="icons/kihindi-sacco-logo.jpg" />
   <link rel="manifest" href="/settings/manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -807,13 +807,16 @@
     .activity-card .card-subtitle { margin-top: 0.25rem; color: var(--text-muted); font-size: 0.78rem; }
     .activity-card .empty-state { padding: 1.5rem; text-align: center; color: var(--text-muted); }
     .login-container {
-      border: 1px solid rgba(255,255,255,0.75);
-      border-top: 4px solid var(--gold);
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(255,255,255,0.6);
       border-radius: 22px;
-      box-shadow: 0 24px 70px rgba(3, 35, 27, 0.28);
+      box-shadow: 0 30px 70px rgba(0,0,0,0.4);
     }
     #loginScreen {
-      background: radial-gradient(ellipse at 50% 0%, #1d765d 0%, #0b4337 58%, #07352d 100%);
+      background-image: linear-gradient(160deg, rgba(8,52,38,0.74), rgba(10,61,46,0.6)), url('https://kihindisacco.org/assets/logo/bodaboda.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     .brand-logo {
       width: 42px;
@@ -832,7 +835,20 @@
       object-fit: contain;
       margin: 0 auto 1rem;
     }
-    .login-container h1 { color: var(--green-900); letter-spacing: -0.04em; }
+    .login-container h1 { color: #0a3d2e; letter-spacing: -0.04em; }
+    .login-container .motto { color: #c9a227; }
+    .login-container input {
+      background: #f6f9fb;
+      border-color: #dfe7ee;
+      color: #1a2332;
+    }
+    .login-container .btn {
+      background: linear-gradient(135deg, #12875f, #0a3d2e);
+      box-shadow: 0 12px 24px rgba(13,110,79,0.35);
+    }
+    .login-container .btn:hover {
+      background: linear-gradient(135deg, #0d6e4f, #083a2d);
+    }
     .receipt {
       max-width: 540px;
       margin: 0 auto;
@@ -926,7 +942,7 @@
   <!-- LOGIN SCREEN -->
   <div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
     <div class="login-container">
-      <img class="login-logo" src="/icons/kihindi-sacco-logo.jpg" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
+      <img class="login-logo" src="icons/kihindi-sacco-logo.jpg" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
       <h1>KIHINDI SACCO</h1>
       <div class="motto">Faith in God Leads to Success</div>
       <form id="loginForm">
@@ -951,7 +967,7 @@
     <!-- TOP NAVBAR -->
     <nav class="top-nav">
       <div class="brand">
-        <img class="brand-logo" src="/icons/kihindi-sacco-logo.jpg" alt="" />
+        <img class="brand-logo" src="icons/kihindi-sacco-logo.jpg" alt="" />
         <span>KIHINDI</span> SACCO
       </div>
       <div class="user-info" id="userInfo">
@@ -1005,7 +1021,7 @@
     let charts = {};
     let allMembers = [];
     let allLoans = [];
-    let saccoLogoUrl = '/icons/kihindi-sacco-logo.jpg';
+    let saccoLogoUrl = 'icons/kihindi-sacco-logo.jpg';
 
     // ============================================================
     // AUTH
