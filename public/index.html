@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KIHINDI SACCO – Management System</title>
+  <link rel="icon" href="/icons/icon.svg" />
+  <link rel="apple-touch-icon" href="/icons/icon.svg" />
+  <link rel="manifest" href="/settings/manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -681,6 +684,74 @@
       border-radius: 22px;
       box-shadow: 0 24px 70px rgba(22, 54, 39, 0.13);
     }
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #fffdf5;
+      box-shadow: 0 2px 8px rgba(17, 43, 31, 0.12);
+    }
+    .logo-settings-nav { display: none; }
+    .login-logo {
+      display: block;
+      width: min(220px, 75%);
+      aspect-ratio: 1;
+      object-fit: contain;
+      margin: 0 auto 1rem;
+    }
+    .login-container h1 { letter-spacing: -0.04em; }
+    .receipt {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 1rem;
+      color: #172a22;
+      font-family: Arial, sans-serif;
+    }
+    .receipt-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #d5a20a;
+    }
+    .receipt-logo { width: 88px; height: 88px; object-fit: contain; flex: 0 0 auto; }
+    .receipt-header h2 { margin: 0 0 0.25rem; color: #174a38; font-size: 1.05rem; }
+    .receipt-header p { color: #66766d; font-size: 0.8rem; }
+    .receipt-title { margin: 1.1rem 0; color: #174a38; text-align: center; letter-spacing: 0.12em; }
+    .receipt-details { width: 100%; border-collapse: collapse; }
+    .receipt-details th, .receipt-details td { padding: 0.7rem 0.4rem; border-bottom: 1px solid #e5ece8; text-align: left; }
+    .receipt-details th { width: 42%; color: #74847c; font-size: 0.82rem; font-weight: 600; }
+    .receipt-details td { font-weight: 700; overflow-wrap: anywhere; }
+    .receipt-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem; }
+    .receipt-signatures div { padding-top: 0.5rem; border-top: 1px solid #88968e; color: #66766d; font-size: 0.75rem; }
+    .receipt-note { margin-top: 1.5rem; color: #74847c; text-align: center; font-size: 0.75rem; }
+    @media print {
+      body * { visibility: hidden !important; }
+      #modal.active, #modal.active * { visibility: visible !important; }
+      #modal.active {
+        display: block !important;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        background: #fff;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+      #modal.active .modal-content {
+        width: 100%;
+        max-width: none;
+        max-height: none;
+        padding: 0;
+        overflow: visible;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .receipt-actions, .modal-content .close { display: none !important; }
+    }
     #loginScreen {
       background: radial-gradient(circle at 15% 20%, rgba(46,130,88,0.1), transparent 28%),
                   radial-gradient(circle at 90% 85%, rgba(213,168,59,0.12), transparent 27%),
@@ -724,6 +795,7 @@
   <!-- LOGIN SCREEN -->
   <div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
     <div class="login-container">
+      <img class="login-logo" src="/icons/icon.svg" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
       <h1>KIHINDI SACCO</h1>
       <div class="motto">Faith in God Leads to Success</div>
       <form id="loginForm">
@@ -748,7 +820,7 @@
     <!-- TOP NAVBAR -->
     <nav class="top-nav">
       <div class="brand">
-        <i class="fas fa-hand-holding-heart"></i>
+        <img class="brand-logo" src="/icons/icon.svg" alt="" />
         <span>KIHINDI</span> SACCO
       </div>
       <div class="user-info" id="userInfo">
@@ -770,6 +842,7 @@
         <a data-page="loans"><i class="fas fa-hand-holding-usd"></i> Loans</a>
         <a data-page="reports"><i class="fas fa-flag"></i> Reports</a>
         <a data-page="staff"><i class="fas fa-user-cog"></i> Staff Access</a>
+        <a data-page="logo-settings" id="logoSettingsNav" class="logo-settings-nav"><i class="fas fa-image"></i> SACCO Logo</a>
         <a onclick="logout()" style="margin-top:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1rem;">
           <i class="fas fa-sign-out-alt"></i> Logout
         </a>
@@ -802,6 +875,7 @@
     let charts = {};
     let allMembers = [];
     let allLoans = [];
+    let saccoLogoUrl = '/icons/icon.svg';
 
     // ============================================================
     // AUTH
@@ -848,7 +922,26 @@
       document.getElementById('appShell').style.display = 'block';
       document.getElementById('userName').textContent = currentUser.username;
       document.getElementById('userRole').textContent = currentUser.role;
+      document.getElementById('logoSettingsNav').style.display = ['admin', 'chairperson'].includes(getUserRole()) ? 'flex' : 'none';
+      loadSaccoLogo();
       loadPage('dashboard');
+    }
+
+    function loadSaccoLogo() {
+      fetch('/settings/logo', { headers: { 'Authorization': `Bearer ${token}` } })
+        .then(res => res.ok ? res.json() : null)
+        .then(data => {
+          if (data?.logoUrl) {
+            saccoLogoUrl = data.logoUrl;
+            document.querySelectorAll('.login-logo, .brand-logo, .receipt-logo').forEach(image => {
+              image.src = saccoLogoUrl;
+            });
+            document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
+              link.href = saccoLogoUrl;
+            });
+          }
+        })
+        .catch(() => {});
     }
 
     // ============================================================
@@ -893,6 +986,7 @@
         case 'loans': loadLoans(); break;
         case 'reports': loadReports(); break;
         case 'staff': loadStaff(); break;
+        case 'logo-settings': loadLogoSettings(); break;
         default: document.getElementById('mainContent').innerHTML = '<p>Page not found</p>';
       }
     }
@@ -916,11 +1010,54 @@
       document.getElementById('modal').classList.remove('active');
     }
 
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[character]);
+    }
+
+    function showWithdrawalReceipt(data) {
+      const receipt = data.receipt || {};
+      const amount = Number(receipt.amount || 0).toLocaleString('en-UG');
+      openModal(`
+        <article class="receipt">
+          <header class="receipt-header">
+            <img class="receipt-logo" src="${escapeHtml(saccoLogoUrl)}" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
+            <div>
+              <h2>MBARARA CITY KIHINDI BODA RIDER'S SACCO</h2>
+              <p>Faith in God Leads to Success</p>
+            </div>
+          </header>
+          <h3 class="receipt-title">SAVINGS WITHDRAWAL RECEIPT</h3>
+          <table class="receipt-details">
+            <tbody>
+              <tr><th>Receipt number</th><td>${escapeHtml(data.receipt_no)}</td></tr>
+              <tr><th>Member name</th><td>${escapeHtml(receipt.member_name)}</td></tr>
+              <tr><th>Account number</th><td>${escapeHtml(receipt.account_no)}</td></tr>
+              <tr><th>National ID</th><td>${escapeHtml(receipt.national_id)}</td></tr>
+              <tr><th>Withdrawal date</th><td>${escapeHtml(receipt.date)}</td></tr>
+              <tr><th>Amount paid</th><td>UGX ${amount}</td></tr>
+              <tr><th>New account balance</th><td>UGX ${Number(data.newBalance || 0).toLocaleString('en-UG')}</td></tr>
+            </tbody>
+          </table>
+          <div class="receipt-signatures">
+            <div>Member's signature</div>
+            <div>Cashier's signature</div>
+          </div>
+          <p class="receipt-note">Thank you for banking with Kihindi SACCO.</p>
+          <div class="form-actions receipt-actions">
+            <button type="button" class="btn-secondary" onclick="closeModal()">Close</button>
+            <button type="button" class="btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print receipt</button>
+          </div>
+        </article>
+      `);
+    }
+
     function getUserRole() {
       return currentUser ? currentUser.role : null;
     }
     function isAdmin() {
-      return getUserRole() === 'admin' || getUserRole() === 'chairman';
+      return ['admin', 'chairperson', 'chairman'].includes(getUserRole());
     }
 
     // ============================================================
@@ -1515,7 +1652,7 @@
           .then(data => {
             if (data.success) {
               showToast('Withdrawal successful!');
-              closeModal();
+              showWithdrawalReceipt(data);
               loadSavings();
             } else {
               showToast(data.error || 'Failed', 'error');
@@ -1671,6 +1808,62 @@
     // ============================================================
     // STAFF
     // ============================================================
+    function loadLogoSettings() {
+      document.getElementById('mainContent').innerHTML = `
+        <div class="page-header"><h1><i class="fas fa-image"></i> SACCO Logo</h1></div>
+        <div class="card" style="max-width:680px;">
+          <div class="card-header">
+            <div>
+              <h2>Update your SACCO logo</h2>
+              <p class="card-subtitle">Choose an image from your computer, including your Downloads folder.</p>
+            </div>
+          </div>
+          <form id="logoUploadForm">
+            <div class="form-group" style="text-align:center;">
+              <img id="logoPreview" src="${escapeHtml(saccoLogoUrl)}" alt="Current SACCO logo" style="width:180px;height:180px;object-fit:contain;margin:0 auto 1rem;border:1px solid var(--border);border-radius:12px;padding:0.5rem;background:#fff;" />
+              <label for="logoFile" style="display:block;text-align:left;">Select logo image</label>
+              <input id="logoFile" name="logo" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" required />
+              <small style="display:block;text-align:left;color:var(--text-muted);margin-top:0.4rem;">PNG, JPG, or WebP · Maximum 5 MB</small>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary"><i class="fas fa-upload"></i> Upload logo</button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      const fileInput = document.getElementById('logoFile');
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) document.getElementById('logoPreview').src = URL.createObjectURL(file);
+      });
+
+      document.getElementById('logoUploadForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        try {
+          const response = await fetch('/settings/logo', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: formData
+          });
+          const data = await response.json();
+          if (!response.ok || !data.success) throw new Error(data.error || 'Logo upload failed');
+          saccoLogoUrl = data.logoUrl;
+          document.querySelectorAll('.login-logo, .brand-logo, .receipt-logo').forEach(image => {
+            image.src = saccoLogoUrl;
+          });
+          document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
+            link.href = saccoLogoUrl;
+          });
+          showToast('SACCO logo updated successfully');
+          loadLogoSettings();
+        } catch (error) {
+          showToast(error.message || 'Logo upload failed', 'error');
+        }
+      });
+    }
+
     function loadStaff() {
       if (!isAdmin()) {
         showToast('Permission denied.', 'error');
@@ -1773,6 +1966,7 @@
     // ============================================================
     // INIT
     // ============================================================
+    loadSaccoLogo();
     const savedUser = localStorage.getItem('user');
     if (token && savedUser) {
       currentUser = JSON.parse(savedUser);

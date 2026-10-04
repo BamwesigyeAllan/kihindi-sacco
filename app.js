@@ -21,6 +21,7 @@ const reportRoutes = require('./routes/reports');
 const memberApplicationRoutes = require('./routes/memberApplications');
 const loanApplicationRoutes = require('./routes/loanApplications');
 const userRoutes = require('./routes/users');
+const settingsRoutes = require('./routes/settings');
 
 app.use('/auth', authRoutes);
 app.use('/members', authenticate, memberRoutes);
@@ -31,6 +32,7 @@ app.use('/reports', authenticate, reportRoutes);
 app.use('/member-applications', authenticate, memberApplicationRoutes);
 app.use('/loan-applications', authenticate, loanApplicationRoutes);
 app.use('/users', authenticate, userRoutes);
+app.use('/settings', settingsRoutes);
 
 app.get('/health', (req, res) => res.json({
     status: 'OK',

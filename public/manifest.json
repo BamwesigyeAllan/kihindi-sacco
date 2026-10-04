@@ -1,11 +1,11 @@
 {
-  "name": "KIHINDI SACCO Management",
-  "short_name": "KIHINDI SACCO",
-  "description": "KIHINDI SACCO Management System - Member, Savings, Loans & Deposits",
+  "name": "Mbarara City Kihindi Boda Rider's SACCO",
+  "short_name": "Kihindi SACCO",
+  "description": "Mbarara City Kihindi Boda Rider's SACCO management system",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1A4D2E",
-  "theme_color": "#D4A017",
+  "background_color": "#fffdf5",
+  "theme_color": "#d5a20a",
   "orientation": "portrait",
   "icons": [
     {

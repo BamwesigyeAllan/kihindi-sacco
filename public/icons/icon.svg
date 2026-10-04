@@ -1,5 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="48" fill="#1A4D2E"/>
-  <path d="M72 92h112v24H72zM72 128h112v24H72zM72 164h80v24H72z" fill="#D4A017"/>
-  <circle cx="184" cy="176" r="24" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">Kihindi SACCO emblem</title>
+  <rect width="256" height="256" rx="48" fill="#fffdf5"/>
+  <circle cx="128" cy="128" r="116" fill="#fffdf5" stroke="#d5a20a" stroke-width="8"/>
+  <circle cx="128" cy="128" r="99" fill="none" stroke="#e3b51b" stroke-width="4"/>
+  <circle cx="128" cy="128" r="73" fill="#fff" stroke="#d5a20a" stroke-width="5"/>
+  <path d="M128 55v76M55 128h146" stroke="#d5a20a" stroke-width="4"/>
+  <path d="M73 76q18-8 34 2v37q-17-8-34 0zm34 2q17-10 34-2v39q-17-8-34 0z" fill="#fff" stroke="#171717" stroke-width="3"/>
+  <path d="m164 86 5 17 8-16-2 18 14-11-9 16 18-3-15 10 17 6-18 2 12 14-17-8 3 18-10-15-8 17-1-18-14 11 9-16-18 3 15-10-17-6 18-2-12-14 17 8z" fill="#e8b315"/>
+  <circle cx="170" cy="111" r="15" fill="#f1bd22" stroke="#fff0ae" stroke-width="3"/>
+  <g fill="none" stroke="#171717" stroke-linecap="round" stroke-linejoin="round" stroke-width="5">
+    <circle cx="89" cy="177" r="14" fill="#fff"/><circle cx="166" cy="177" r="14" fill="#fff"/>
+    <path d="m89 177 21-25 18 25H89l12-17h30l16 17 19-4m-49-21 11-4h26l13 8-8 8h-29z" fill="#c92332"/>
+    <path d="m126 177 24 0m16-4 10-20 15-3m-35 4-3-16m-7 1 17-4"/>
+  </g>
 </svg>

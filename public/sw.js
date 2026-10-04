@@ -1,5 +1,5 @@
-const CACHE_NAME = 'kihindi-sacco-v1';
-const urlsToCache = ['/', '/index.html'];
+const CACHE_NAME = 'kihindi-sacco-v3';
+const urlsToCache = ['/', '/index.html', '/icons/icon.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -8,6 +8,10 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (new URL(event.request.url).pathname === '/settings/manifest.webmanifest') {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((response) => response || fetch(event.request))
   );
