@@ -15,10 +15,10 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --green-900: #0a3d2e;
-      --green-800: #0d4d3d;
-      --green-700: #1a6d57;
-      --green-600: #2a8f74;
+      --green-900: #073b2e;
+      --green-800: #0b4a39;
+      --green-700: #17664f;
+      --green-600: #278268;
       --green-500: #4eaf8e;
       --gold: #d4a62a;
       --gold-deep: #b88a1f;
@@ -584,10 +584,10 @@
 
     /* Modern cooperative dashboard */
     :root {
-      --green-900: #0a3d2e;
-      --green-800: #0d4d3d;
-      --green-700: #1a6d57;
-      --green-600: #2a8f74;
+      --green-900: #073b2e;
+      --green-800: #0b4a39;
+      --green-700: #17664f;
+      --green-600: #278268;
       --gold: #d4a62a;
       --gold-light: #f2d57a;
       --bg: linear-gradient(135deg, #083e33 0%, #1c7b63 100%);
@@ -673,7 +673,7 @@
       min-height: calc(100vh - 72px);
     }
     .page-header { margin-bottom: 1.5rem; }
-    .page-header h1 { font-size: 1.55rem; font-weight: 750; letter-spacing: -0.04em; }
+    .page-header h1 { color: var(--green-900); font-size: 1.55rem; font-weight: 750; letter-spacing: -0.04em; }
     .page-header h1 i { color: var(--green-700); }
     .stats-grid { gap: 1rem; margin-bottom: 1.25rem; }
     .stat-card {
@@ -716,7 +716,7 @@
       position: relative;
       z-index: 1;
       margin-bottom: 0.25rem;
-      color: var(--text);
+      color: var(--green-900);
       font-size: clamp(1.25rem, 2vw, 1.65rem);
       letter-spacing: -0.045em;
       overflow-wrap: anywhere;
@@ -728,7 +728,7 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
-    .card-header h2 { color: var(--text); font-size: 1rem; font-weight: 750; }
+    .card-header h2 { color: var(--green-900); font-size: 1rem; font-weight: 750; }
     .card-header h2 i { color: var(--green-700); }
     .card-header .view-all { color: var(--green-700); font-weight: 700; }
     table thead th {
@@ -743,32 +743,37 @@
     table tbody tr:hover { background: #f8fbf9; }
     .dashboard-intro {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: space-between;
       gap: 1rem;
       margin-bottom: 1.35rem;
+      padding: 1.5rem clamp(1.25rem, 2.5vw, 2rem);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      background: linear-gradient(120deg, #073b2e 0%, #0b4a39 58%, #17664f 100%);
+      box-shadow: 0 14px 30px rgba(7, 59, 46, 0.16);
     }
     .dashboard-intro .eyebrow {
       margin-bottom: 0.4rem;
-      color: var(--green-700);
+      color: var(--gold-light);
       font-size: 0.68rem;
       font-weight: 800;
       letter-spacing: 0.14em;
     }
     .dashboard-intro h1 {
-      color: var(--text);
+      color: #ffffff;
       font-size: clamp(1.55rem, 3vw, 2rem);
       font-weight: 800;
       letter-spacing: -0.055em;
     }
-    .dashboard-intro p { margin-top: 0.35rem; color: var(--text-muted); font-size: 0.88rem; }
+    .dashboard-intro p { margin-top: 0.35rem; color: #d9e9e1; font-size: 0.88rem; }
     .dashboard-date {
       flex: 0 0 auto;
       padding: 0.65rem 0.85rem;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.35);
       border-radius: 12px;
-      background: #fff;
-      color: #62746a;
+      background: rgba(255,255,255,0.96);
+      color: var(--green-900);
       font-size: 0.78rem;
       font-weight: 650;
     }
@@ -803,8 +808,12 @@
     .activity-card .empty-state { padding: 1.5rem; text-align: center; color: var(--text-muted); }
     .login-container {
       border: 1px solid rgba(255,255,255,0.75);
+      border-top: 4px solid var(--gold);
       border-radius: 22px;
-      box-shadow: 0 24px 70px rgba(22, 54, 39, 0.13);
+      box-shadow: 0 24px 70px rgba(3, 35, 27, 0.28);
+    }
+    #loginScreen {
+      background: radial-gradient(ellipse at 50% 0%, #1d765d 0%, #0b4337 58%, #07352d 100%);
     }
     .brand-logo {
       width: 42px;
@@ -823,7 +832,7 @@
       object-fit: contain;
       margin: 0 auto 1rem;
     }
-    .login-container h1 { letter-spacing: -0.04em; }
+    .login-container h1 { color: var(--green-900); letter-spacing: -0.04em; }
     .receipt {
       max-width: 540px;
       margin: 0 auto;
