@@ -20,7 +20,7 @@ function getLogo() {
     const filename = fs.readdirSync(logoDir)
         .filter((entry) => /^sacco-logo-\d+\.(png|jpe?g|webp)$/i.test(entry))
         .sort((a, b) => b.localeCompare(a))[0];
-    return filename ? `/uploads/branding/${filename}` : '/icons/icon.svg';
+    return filename ? `/uploads/branding/${filename}` : '/icons/kihindi-sacco-logo.jpg';
 }
 
 const upload = multer({
@@ -61,8 +61,8 @@ router.get('/manifest.webmanifest', (req, res) => {
             description: "Mbarara City Kihindi Boda Rider's SACCO management system",
             start_url: '/',
             display: 'standalone',
-            background_color: '#fffdf5',
-            theme_color: '#d5a20a',
+            background_color: '#f3f6f4',
+            theme_color: '#0f4c3d',
             orientation: 'portrait',
             icons: [{ src: logoUrl, sizes: 'any', type, purpose: 'any' }]
         });

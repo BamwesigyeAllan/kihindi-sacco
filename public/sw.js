@@ -1,5 +1,5 @@
 const CACHE_NAME = 'kihindi-sacco-v3';
-const urlsToCache = ['/', '/index.html', '/icons/icon.svg'];
+const urlsToCache = ['/', '/index.html', '/icons/kihindi-sacco-logo.jpg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

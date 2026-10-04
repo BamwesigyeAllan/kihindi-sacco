@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KIHINDI SACCO – Management System</title>
-  <link rel="icon" href="/icons/icon.svg" />
-  <link rel="apple-touch-icon" href="/icons/icon.svg" />
+  <link rel="icon" href="/icons/kihindi-sacco-logo.jpg" />
+  <link rel="apple-touch-icon" href="/icons/kihindi-sacco-logo.jpg" />
   <link rel="manifest" href="/settings/manifest.webmanifest" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,21 +15,21 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --green-900: #0f2b1d;
-      --green-800: #1a4d2e;
-      --green-700: #2a6d3e;
-      --green-600: #3a8d4e;
-      --gold: #d4a017;
-      --gold-light: #f0c040;
-      --bg: #f5f2e6;
+      --green-900: #0a3d2e;
+      --green-800: #0f4c3d;
+      --green-700: #195e4f;
+      --green-600: #2d7a5d;
+      --gold: #d4a62a;
+      --gold-light: #f0d06a;
+      --bg: #f3f6f4;
       --white: #ffffff;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
-      --shadow-hover: 0 8px 30px rgba(0,0,0,0.12);
-      --radius: 12px;
-      --radius-sm: 8px;
-      --border: #e8e5dd;
-      --text: #1a1a2e;
-      --text-muted: #6b6b7b;
+      --shadow: 0 10px 28px rgba(10, 61, 46, 0.08);
+      --shadow-hover: 0 18px 38px rgba(10, 61, 46, 0.12);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --border: #e7eee9;
+      --text: #172a22;
+      --text-muted: #5d6f68;
       --font: 'Plus Jakarta Sans', sans-serif;
     }
     body {
@@ -462,18 +462,18 @@
 
     /* Modern cooperative dashboard */
     :root {
-      --green-900: #12372c;
-      --green-800: #174a38;
-      --green-700: #21684b;
-      --green-600: #2f8860;
-      --gold: #d5a83b;
-      --gold-light: #f2d477;
-      --bg: #f4f7f5;
+      --green-900: #0a3d2e;
+      --green-800: #0f4c3d;
+      --green-700: #165d4d;
+      --green-600: #2b7a59;
+      --gold: #d4a62a;
+      --gold-light: #f0d06a;
+      --bg: #f3f6f4;
       --border: #e5ece8;
       --text: #172a22;
-      --text-muted: #74847c;
-      --shadow: 0 8px 24px rgba(25, 55, 42, 0.055);
-      --shadow-hover: 0 14px 32px rgba(25, 55, 42, 0.1);
+      --text-muted: #6d7c74;
+      --shadow: 0 8px 24px rgba(10, 61, 46, 0.06);
+      --shadow-hover: 0 14px 32px rgba(10, 61, 46, 0.1);
       --radius: 18px;
       --radius-sm: 11px;
     }
@@ -795,7 +795,7 @@
   <!-- LOGIN SCREEN -->
   <div id="loginScreen" style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
     <div class="login-container">
-      <img class="login-logo" src="/icons/icon.svg" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
+      <img class="login-logo" src="/icons/kihindi-sacco-logo.jpg" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
       <h1>KIHINDI SACCO</h1>
       <div class="motto">Faith in God Leads to Success</div>
       <form id="loginForm">
@@ -820,7 +820,7 @@
     <!-- TOP NAVBAR -->
     <nav class="top-nav">
       <div class="brand">
-        <img class="brand-logo" src="/icons/icon.svg" alt="" />
+        <img class="brand-logo" src="/icons/kihindi-sacco-logo.jpg" alt="" />
         <span>KIHINDI</span> SACCO
       </div>
       <div class="user-info" id="userInfo">
@@ -875,7 +875,7 @@
     let charts = {};
     let allMembers = [];
     let allLoans = [];
-    let saccoLogoUrl = '/icons/icon.svg';
+    let saccoLogoUrl = '/icons/kihindi-sacco-logo.jpg';
 
     // ============================================================
     // AUTH

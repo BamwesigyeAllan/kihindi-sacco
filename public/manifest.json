@@ -4,14 +4,14 @@
   "description": "Mbarara City Kihindi Boda Rider's SACCO management system",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fffdf5",
-  "theme_color": "#d5a20a",
+  "background_color": "#f3f6f4",
+  "theme_color": "#0f4c3d",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icons/icon.svg",
+      "src": "/icons/kihindi-sacco-logo.jpg",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any"
     }
   ]
