@@ -337,15 +337,135 @@
     }
 
     .badge {
-      padding: 0.15rem 0.5rem;
-      border-radius: 20px;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
       font-size: 0.7rem;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: capitalize;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 78px;
     }
-    .badge-active { background: #d4edda; color: #155724; }
-    .badge-pending { background: #fff3cd; color: #856404; }
-    .badge-approved { background: #cce5ff; color: #004085; }
-    .badge-rejected { background: #f8d7da; color: #721c24; }
+    .badge-active { background: #dff6e7; color: #166d4c; }
+    .badge-pending { background: #fff4d6; color: #8a6800; border: 1px solid #f1d67d; }
+    .badge-approved { background: #e8f7ee; color: #176c46; border: 1px solid #a9d7bc; }
+    .badge-rejected { background: #ffe9e8; color: #b42318; border: 1px solid #efb1aa; }
+
+    .status-filter-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .status-filter {
+      border: 1px solid var(--border);
+      background: #f3f7f4;
+      color: var(--green-800);
+      border-radius: 999px;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.8rem;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .status-filter:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(13, 77, 61, 0.08);
+    }
+    .status-filter.pending { background: #fff8dc; color: #8a6800; border-color: #edd67f; }
+    .status-filter.pending.active,
+    .status-filter.pending:hover { background: #fbe7a1; color: #7f5a00; }
+    .status-filter.approved { background: #ebf9f0; color: #166d4c; border-color: #afd9bf; }
+    .status-filter.approved.active,
+    .status-filter.approved:hover { background: #d8f3e1; color: #0d5d3d; }
+    .status-filter.rejected { background: #fff1f0; color: #b42318; border-color: #efbbba; }
+    .status-filter.rejected.active,
+    .status-filter.rejected:hover { background: #ffdfe0; color: #9f221b; }
+
+    .status-action {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0.38rem 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .status-action.approve {
+      background: #eafaf0;
+      color: #166d4c;
+      border-color: #b8e0c4;
+    }
+    .status-action.approve:hover {
+      background: #dff5e6;
+      box-shadow: 0 6px 14px rgba(22, 109, 76, 0.12);
+    }
+    .status-action.reject {
+      background: #fff1f0;
+      color: #b42318;
+      border-color: #efbcb8;
+    }
+    .status-action.reject:hover {
+      background: #ffe3e1;
+      box-shadow: 0 6px 14px rgba(180, 35, 24, 0.1);
+    }
+    .table-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .table-action {
+      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 0.38rem 0.8rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .table-action.view {
+      background: #f2f6f4;
+      color: var(--green-800);
+      border-color: #dfeae3;
+    }
+    .table-action.view:hover {
+      background: #e6f1eb;
+      box-shadow: 0 6px 14px rgba(13, 77, 61, 0.08);
+    }
+    .table-action.edit {
+      background: #f6f7f8;
+      color: #2a3b34;
+      border-color: #dfe5e1;
+    }
+    .table-action.edit:hover {
+      background: #edf1f0;
+      box-shadow: 0 6px 14px rgba(34, 53, 47, 0.08);
+    }
+    .table-action.delete {
+      background: #fff1f0;
+      color: #b42318;
+      border-color: #f0b9b3;
+    }
+    .table-action.delete:hover {
+      background: #ffe3e1;
+      box-shadow: 0 6px 14px rgba(180, 35, 24, 0.1);
+    }
 
     .modal {
       display: none;
@@ -1202,8 +1322,10 @@
               <td>${m.phone}</td>
               <td><span class="badge badge-${m.status}">${m.status}</span></td>
               <td>
-                <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="viewMember(${m.id})">View</button>
-                <button class="btn btn-gold" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editMember(${m.id})">Edit</button>
+                <div class="table-actions">
+                  <button class="table-action view" onclick="viewMember(${m.id})"><i class="fas fa-eye"></i> View</button>
+                  <button class="table-action edit" onclick="editMember(${m.id})"><i class="fas fa-pen"></i> Edit</button>
+                </div>
               </td>
             </tr>
           `).join('');
@@ -1312,11 +1434,13 @@
               <td>${app.phone}</td>
               <td><span class="badge badge-${app.status}">${app.status}</span></td>
               <td>
-                ${app.status === 'pending' ? `
-                  <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="reviewMemberApp(${app.id}, 'approved')">Approve</button>
-                  <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;background:#c0392b;" onclick="reviewMemberApp(${app.id}, 'rejected')">Reject</button>
-                ` : ''}
-                <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="viewMemberApp(${app.id})">View</button>
+                <div class="table-actions">
+                  ${app.status === 'pending' ? `
+                    <button class="status-action approve" onclick="reviewMemberApp(${app.id}, 'approved')"><i class="fas fa-check"></i> Approve</button>
+                    <button class="status-action reject" onclick="reviewMemberApp(${app.id}, 'rejected')"><i class="fas fa-xmark"></i> Reject</button>
+                  ` : ''}
+                  <button class="table-action view" onclick="viewMemberApp(${app.id})"><i class="fas fa-eye"></i> View</button>
+                </div>
               </td>
             </tr>
           `).join('');
@@ -1427,7 +1551,31 @@
     }
 
     function viewMemberApp(id) {
-      showToast(`View application ${id} – coming soon`, 'info');
+      apiFetch(`/member-applications/${id}`)
+        .then(app => {
+          const detailRows = [
+            ['Name', app.full_name],
+            ['NIN', app.nin],
+            ['Phone', app.phone],
+            ['Email', app.email || 'N/A'],
+            ['Status', app.status],
+            ['Created', app.createdAt ? new Date(app.createdAt).toLocaleString() : 'N/A'],
+            ['Address', [app.village, app.parish, app.sub_county, app.district].filter(Boolean).join(', ') || 'N/A']
+          ].map(([label, value]) => `
+            <tr>
+              <th style="text-align:left;padding:0.5rem 0.75rem;color:#4e5d56;">${escapeHtml(label)}</th>
+              <td style="padding:0.5rem 0.75rem;">${escapeHtml(value || 'N/A')}</td>
+            </tr>
+          `).join('');
+
+          openModal(`
+            <h2><i class="fas fa-file-signature"></i> Member Application Details</h2>
+            <table style="width:100%;border-collapse:collapse;">
+              <tbody>${detailRows}</tbody>
+            </table>
+          `);
+        })
+        .catch(() => showToast('Error loading application', 'error'));
     }
 
     // ============================================================
@@ -1445,8 +1593,8 @@
               <td><span class="badge badge-${app.status}">${app.status}</span></td>
               <td>
                 ${app.status === 'pending' ? `
-                  <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="reviewLoanApp(${app.id}, 'approved')">Approve</button>
-                  <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;background:#c0392b;" onclick="reviewLoanApp(${app.id}, 'rejected')">Reject</button>
+                  <button class="status-action approve" onclick="reviewLoanApp(${app.id}, 'approved')"><i class="fas fa-check"></i> Approve</button>
+                  <button class="status-action reject" onclick="reviewLoanApp(${app.id}, 'rejected')"><i class="fas fa-xmark"></i> Reject</button>
                 ` : ''}
               </td>
             </tr>
@@ -1458,10 +1606,10 @@
                 <h2>All Applications</h2>
                 <button class="btn" onclick="openLoanApplicationForm()"><i class="fas fa-plus"></i> Apply Loan</button>
               </div>
-              <div style="margin-bottom:1rem;display:flex;gap:1rem;flex-wrap:wrap;">
-                <button class="btn" onclick="filterLoanApps('pending')">Pending</button>
-                <button class="btn btn-gold" onclick="filterLoanApps('approved')">Approved</button>
-                <button class="btn" onclick="filterLoanApps('rejected')">Rejected</button>
+              <div class="status-filter-group">
+                <button class="status-filter pending active" onclick="filterLoanApps('pending')"><i class="fas fa-clock"></i> Pending</button>
+                <button class="status-filter approved" onclick="filterLoanApps('approved')"><i class="fas fa-check-circle"></i> Approved</button>
+                <button class="status-filter rejected" onclick="filterLoanApps('rejected')"><i class="fas fa-times-circle"></i> Rejected</button>
               </div>
               <div class="table-responsive">
                 <table>
@@ -1880,8 +2028,10 @@
               <td>${u.username}</td>
               <td>${u.role}</td>
               <td>
-                <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="editUser(${u.id})">Edit</button>
-                <button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;background:#c0392b;" onclick="deleteUser(${u.id})">Delete</button>
+                <div class="table-actions">
+                  <button class="table-action edit" onclick="editUser(${u.id})"><i class="fas fa-pen"></i> Edit</button>
+                  <button class="table-action delete" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i> Delete</button>
+                </div>
               </td>
             </tr>
           `).join('');
@@ -1945,7 +2095,60 @@
       });
     }
 
-    function editUser(id) { showToast('Edit user – coming soon', 'info'); }
+    function editUser(id) {
+      apiFetch(`/users/${id}`)
+        .then(user => {
+          const form = `
+            <h2><i class="fas fa-user-edit"></i> Edit Staff</h2>
+            <form id="editUserForm">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" value="${escapeHtml(user.username)}" required>
+              </div>
+              <div class="form-group">
+                <label>Role</label>
+                <select name="role">
+                  ${['admin', 'chairman', 'loan_officer', 'cashier'].map(role => `
+                    <option value="${role}" ${role === user.role ? 'selected' : ''}>${role.replace('_', ' ')}</option>
+                  `).join('')}
+                </select>
+              </div>
+              <div class="form-group">
+                <label>New Password (optional)</label>
+                <input type="password" name="password" placeholder="Leave blank to keep current password">
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Update</button>
+              </div>
+            </form>
+          `;
+          openModal(form);
+
+          document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const payload = { username: formData.get('username'), role: formData.get('role') };
+            const password = String(formData.get('password') || '').trim();
+            if (password) payload.password = password;
+
+            apiFetch(`/users/${id}`, {
+              method: 'PUT',
+              body: JSON.stringify(payload)
+            }).then(data => {
+              if (data.success) {
+                showToast('Staff updated');
+                closeModal();
+                loadStaff();
+              } else {
+                showToast(data.error || 'Update failed', 'error');
+              }
+            }).catch(() => showToast('Server error', 'error'));
+          });
+        })
+        .catch(() => showToast('Error loading user', 'error'));
+    }
+
     function deleteUser(id) {
       if (!confirm('Delete this user?')) return;
       apiFetch(`/users/${id}`, { method: 'DELETE' })
@@ -1960,10 +2163,93 @@
     }
 
     // ============================================================
-    // VIEW / EDIT MEMBER (placeholders)
+    // VIEW / EDIT MEMBER
     // ============================================================
-    function viewMember(id) { showToast(`View member ${id} – coming soon`, 'info'); }
-    function editMember(id) { showToast(`Edit member ${id} – coming soon`, 'info'); }
+    function viewMember(id) {
+      apiFetch(`/members/${id}`)
+        .then(member => {
+          const details = [
+            ['Membership No', member.membership_no],
+            ['Full name', member.full_name],
+            ['NIN', member.nin],
+            ['Phone', member.phone],
+            ['Status', member.status],
+            ['Address', [member.village, member.parish, member.sub_county, member.district].filter(Boolean).join(', ') || 'N/A'],
+            ['Next of kin', member.next_of_kin_name],
+            ['Next of kin phone', member.next_of_kin_phone]
+          ];
+
+          openModal(`
+            <h2><i class="fas fa-user"></i> Member Details</h2>
+            <table style="width:100%;border-collapse:collapse;">
+              <tbody>
+                ${details.map(([label, value]) => `
+                  <tr>
+                    <th style="text-align:left;padding:0.5rem 0.75rem;color:#4e5d56;">${escapeHtml(label)}</th>
+                    <td style="padding:0.5rem 0.75rem;">${escapeHtml(value || 'N/A')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `);
+        })
+        .catch(() => showToast('Error loading member', 'error'));
+    }
+
+    function editMember(id) {
+      apiFetch(`/members/${id}`)
+        .then(member => {
+          const form = `
+            <h2><i class="fas fa-user-edit"></i> Edit Member</h2>
+            <form id="editMemberForm">
+              <div class="form-row">
+                <div class="form-group"><label>Full Name</label><input type="text" name="full_name" value="${escapeHtml(member.full_name || '')}" required></div>
+                <div class="form-group"><label>Phone</label><input type="tel" name="phone" value="${escapeHtml(member.phone || '')}"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>NIN</label><input type="text" name="nin" value="${escapeHtml(member.nin || '')}" required></div>
+                <div class="form-group"><label>Status</label>
+                  <select name="status">
+                    ${['active', 'inactive', 'pending'].map(status => `<option value="${status}" ${status === member.status ? 'selected' : ''}>${status}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Village</label><input type="text" name="village" value="${escapeHtml(member.village || '')}"></div>
+                <div class="form-group"><label>District</label><input type="text" name="district" value="${escapeHtml(member.district || '')}"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Next of Kin Name</label><input type="text" name="next_of_kin_name" value="${escapeHtml(member.next_of_kin_name || '')}"></div>
+                <div class="form-group"><label>Next of Kin Phone</label><input type="tel" name="next_of_kin_phone" value="${escapeHtml(member.next_of_kin_phone || '')}"></div>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Update</button>
+              </div>
+            </form>
+          `;
+          openModal(form);
+
+          document.getElementById('editMemberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const payload = Object.fromEntries(formData.entries());
+            apiFetch(`/members/${id}`, {
+              method: 'PUT',
+              body: JSON.stringify(payload)
+            }).then(data => {
+              if (data.success) {
+                showToast('Member updated');
+                closeModal();
+                loadMembers();
+              } else {
+                showToast(data.error || 'Update failed', 'error');
+              }
+            }).catch(() => showToast('Server error', 'error'));
+          });
+        })
+        .catch(() => showToast('Error loading member', 'error'));
+    }
 
     // ============================================================
     // INIT
