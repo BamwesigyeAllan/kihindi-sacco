@@ -946,8 +946,8 @@
         <span>KIHINDI</span> SACCO
       </div>
       <div class="user-info" id="userInfo">
-        <span id="userName">Admin</span>
-        <span class="badge" id="userRole">admin</span>
+        <span id="userName">System</span>
+        <span class="badge" id="userRole">ADMIN</span>
         <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </div>
     </nav>
@@ -1039,11 +1039,16 @@
       document.getElementById('appShell').style.display = 'none';
     }
 
+    function normalizeDisplayUserName(username) {
+      if (!username) return 'User';
+      return username.toLowerCase() === 'admin' ? 'System' : username;
+    }
+
     function showApp() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appShell').style.display = 'block';
-      document.getElementById('userName').textContent = currentUser.username;
-      document.getElementById('userRole').textContent = currentUser.role;
+      document.getElementById('userName').textContent = normalizeDisplayUserName(currentUser.username);
+      document.getElementById('userRole').textContent = (currentUser.role || '').toUpperCase();
       document.getElementById('logoSettingsNav').style.display = ['admin', 'chairperson'].includes(getUserRole()) ? 'flex' : 'none';
       loadSaccoLogo();
       loadPage('dashboard');
@@ -2025,7 +2030,7 @@
           let rows = data.map(u => `
             <tr>
               <td>${u.id}</td>
-              <td>${u.username}</td>
+              <td>${u.username && u.username.toLowerCase() === 'admin' ? 'System' : u.username}</td>
               <td>${u.role}</td>
               <td>
                 <div class="table-actions">
