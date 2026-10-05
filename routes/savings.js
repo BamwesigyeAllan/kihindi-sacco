@@ -145,7 +145,7 @@ router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
                 time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
                 description: description || 'Savings deposit',
                 payment_mode: payment_mode || 'cash',
-                reference_no: reference_no || receipt_no,
+                reference_no: reference_no || '',
                 status: 'SUCCESS',
                 surcharge: 0,
                 excise: 0,

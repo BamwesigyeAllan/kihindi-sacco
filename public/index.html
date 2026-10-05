@@ -1362,20 +1362,20 @@
       const excise = Number(receipt.excise || 0);
       const total = receipt.total !== undefined ? Number(receipt.total) : amount + surcharge + excise;
       const rows = [
-        ['Account No.', receipt.account_no],
-        ['Depositor phone', receipt.phone],
+        ['Account No.', receipt.account_no || '—'],
+        ['Depositor phone', receipt.phone || '—'],
         ['Transaction', receiptType],
-        ['Customer', receipt.member_name],
-        ['Date', receipt.date],
-        ['Time', receipt.time],
+        ['Customer', receipt.member_name || '—'],
+        ['Date', receipt.date || '—'],
+        ['Time', receipt.time || '—'],
         ['Reference', receipt.reference_no || '—'],
-        ['Receipt No.', data.receipt_no],
+        ['Receipt No.', data.receipt_no || '—'],
         ['Status', receipt.status || 'SUCCESS'],
         ['Amount', currency(amount)],
         ['Surcharge', currency(surcharge)],
         ['Excise', currency(excise)],
         ['TOTAL', currency(total), 'receipt-total']
-      ].filter(([, value]) => value !== undefined && value !== null && value !== '');
+      ];
       openModal(`
         <article class="receipt">
           <header class="receipt-header">
