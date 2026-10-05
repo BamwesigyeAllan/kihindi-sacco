@@ -1160,6 +1160,33 @@
       })[character]);
     }
 
+    async function loadActiveMembers({ requireSavingsAccount = false } = {}) {
+      const requests = [apiFetch('/members')];
+      if (requireSavingsAccount) requests.push(apiFetch('/savings'));
+      const [members, savingsAccounts] = await Promise.all(requests);
+      if (!Array.isArray(members)) throw new Error(members?.error || 'Could not load members');
+
+      const eligibleIds = requireSavingsAccount
+        ? new Set((Array.isArray(savingsAccounts) ? savingsAccounts : [])
+            .filter(account => account.status === 'active')
+            .map(account => Number(account.member_id)))
+        : null;
+      return members
+        .filter(member => member.status === 'active' && (!eligibleIds || eligibleIds.has(Number(member.id))))
+        .sort((left, right) => String(left.full_name).localeCompare(String(right.full_name)));
+    }
+
+    function buildMemberOptions(members, selectedId = '') {
+      return [
+        '<option value="">Choose a member…</option>',
+        ...members.map(member => `
+          <option value="${Number(member.id)}" data-national-id="${escapeHtml(member.nin || '')}" ${Number(member.id) === Number(selectedId) ? 'selected' : ''}>
+            ${escapeHtml(member.membership_no || 'No membership number')} — ${escapeHtml(member.full_name)} (ID: ${Number(member.id)})
+          </option>
+        `)
+      ].join('');
+    }
+
     function showWithdrawalReceipt(data) {
       const receipt = data.receipt || {};
       const amount = Number(receipt.amount || 0).toLocaleString('en-UG');
@@ -1659,16 +1686,24 @@
     }
 
     function openLoanApplicationForm() {
-      apiFetch('/loans/products')
-        .then(products => {
+      Promise.all([apiFetch('/loans/products'), loadActiveMembers()])
+        .then(([products, members]) => {
+          if (!Array.isArray(products) || !products.length) {
+            showToast('No active loan products are available.', 'error');
+            return;
+          }
+          if (!members.length) {
+            showToast('Register an active member before applying for a loan.', 'error');
+            return;
+          }
           let productOptions = products.map(p => `
-            <option value="${p.id}" data-rate="${p.interest_rate}">${p.product_name} (${p.interest_rate}% p.a.)</option>
+            <option value="${Number(p.id)}" data-rate="${Number(p.interest_rate)}">${escapeHtml(p.product_name)} (${Number(p.interest_rate)}% p.a.)</option>
           `).join('');
 
           const form = `
             <h2><i class="fas fa-hand-holding-usd"></i> Apply for Loan</h2>
             <form id="loanAppForm">
-              <div class="form-group"><label>Member ID</label><input type="number" name="member_id" required></div>
+              <div class="form-group"><label for="loanMemberSelect">Member *</label><select id="loanMemberSelect" name="member_id" required>${buildMemberOptions(members)}</select></div>
               <div class="form-group"><label>Loan Product</label><select name="product_id" required>${productOptions}</select></div>
               <div class="form-row">
                 <div class="form-group"><label>Amount (UGX)</label><input type="number" name="amount" required></div>
@@ -1698,6 +1733,11 @@
             const formData = new FormData(this);
             const obj = {};
             formData.forEach((v,k) => obj[k] = v);
+            obj.member_id = Number(obj.member_id);
+            obj.product_id = Number(obj.product_id);
+            obj.amount = Number(obj.amount);
+            obj.repayment_period_months = Number(obj.repayment_period_months);
+            obj.insurance_fee = Number(obj.insurance_fee || 0);
             apiFetch('/loan-applications', {
               method: 'POST',
               body: JSON.stringify(obj)
@@ -1780,70 +1820,81 @@
     }
 
     function showSavingsDeposit() {
-      const form = `
-        <h2><i class="fas fa-plus-circle"></i> Savings Deposit</h2>
-        <form id="depositForm">
-          <div class="form-group"><label>Member ID</label><input type="number" name="member_id" required></div>
-          <div class="form-group"><label>Amount (UGX)</label><input type="number" name="amount" required></div>
-          <div class="form-group"><label>Description</label><input type="text" name="description"></div>
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-            <button type="submit" class="btn-primary">Deposit</button>
-          </div>
-        </form>
-      `;
-      openModal(form);
-      document.getElementById('depositForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const obj = {};
-        formData.forEach((v,k) => obj[k] = v);
-        apiFetch('/savings/deposit', { method: 'POST', body: JSON.stringify(obj) })
-          .then(data => {
-            if (data.success) {
-              showToast('Deposit successful!');
-              closeModal();
-              loadSavings();
-            } else {
-              showToast(data.error || 'Failed', 'error');
-            }
-          })
-          .catch(() => showToast('Server error', 'error'));
-      });
+      openSavingsTransactionForm('deposit');
     }
 
     function showSavingsWithdraw() {
-      const form = `
-        <h2><i class="fas fa-minus-circle"></i> Savings Withdrawal</h2>
-        <form id="withdrawForm">
-          <div class="form-group"><label>Member ID</label><input type="number" name="member_id" required></div>
-          <div class="form-group"><label>Amount (UGX)</label><input type="number" name="amount" required></div>
-          <div class="form-group"><label>National ID</label><input type="text" name="national_id" required></div>
-          <div class="form-group"><label>Description</label><input type="text" name="description"></div>
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
-            <button type="submit" class="btn-primary">Withdraw</button>
-          </div>
-        </form>
-      `;
-      openModal(form);
-      document.getElementById('withdrawForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const obj = {};
-        formData.forEach((v,k) => obj[k] = v);
-        apiFetch('/savings/withdraw', { method: 'POST', body: JSON.stringify(obj) })
-          .then(data => {
-            if (data.success) {
+      openSavingsTransactionForm('withdrawal');
+    }
+
+    async function openSavingsTransactionForm(type) {
+      const isWithdrawal = type === 'withdrawal';
+      const endpoint = isWithdrawal ? '/savings/withdraw' : '/savings/deposit';
+      const title = isWithdrawal ? 'Savings Withdrawal' : 'Savings Deposit';
+      const buttonText = isWithdrawal ? 'Withdraw' : 'Deposit';
+
+      try {
+        const members = await loadActiveMembers({ requireSavingsAccount: isWithdrawal });
+        if (!members.length) {
+          showToast(isWithdrawal
+            ? 'No active savings accounts are available for withdrawal.'
+            : 'Register an active member before making a savings deposit.', 'error');
+          return;
+        }
+
+        openModal(`
+          <h2><i class="fas ${isWithdrawal ? 'fa-minus-circle' : 'fa-plus-circle'}"></i> ${title}</h2>
+          <form id="savingsTransactionForm">
+            <div class="form-group">
+              <label for="savingsMemberSelect">Member *</label>
+              <select id="savingsMemberSelect" name="member_id" required>${buildMemberOptions(members)}</select>
+            </div>
+            ${isWithdrawal ? `
+              <div class="form-group"><label for="savingsNationalId">National ID (verified from member record)</label><input id="savingsNationalId" type="text" name="national_id" readonly required></div>
+            ` : ''}
+            <div class="form-group"><label for="savingsAmount">Amount (UGX) *</label><input id="savingsAmount" type="number" name="amount" min="1" step="0.01" required></div>
+            <div class="form-group"><label for="savingsDescription">Description</label><input id="savingsDescription" type="text" name="description"></div>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+              <button type="submit" class="btn-primary">${buttonText}</button>
+            </div>
+          </form>
+        `);
+
+        const form = document.getElementById('savingsTransactionForm');
+        const memberSelect = document.getElementById('savingsMemberSelect');
+        if (isWithdrawal) {
+          const nationalIdInput = document.getElementById('savingsNationalId');
+          const updateNationalId = () => {
+            nationalIdInput.value = memberSelect.selectedOptions[0]?.dataset.nationalId || '';
+          };
+          memberSelect.addEventListener('change', updateNationalId);
+          updateNationalId();
+        }
+
+        form.addEventListener('submit', async event => {
+          event.preventDefault();
+          const payload = Object.fromEntries(new FormData(form).entries());
+          payload.member_id = Number(payload.member_id);
+          payload.amount = Number(payload.amount);
+          try {
+            const data = await apiFetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
+            if (!data.success) throw new Error(data.error || `${buttonText} failed`);
+            if (isWithdrawal) {
               showToast('Withdrawal successful!');
               showWithdrawalReceipt(data);
-              loadSavings();
             } else {
-              showToast(data.error || 'Failed', 'error');
+              showToast(`Deposit successful! New balance: UGX ${Number(data.newBalance || 0).toLocaleString()}`);
+              closeModal();
             }
-          })
-          .catch(() => showToast('Server error', 'error'));
-      });
+            loadSavings();
+          } catch (error) {
+            showToast(error.message || `${buttonText} failed`, 'error');
+          }
+        });
+      } catch (error) {
+        showToast(error.message || 'Could not load active members', 'error');
+      }
     }
 
     function loadDeposits() {
@@ -1881,24 +1932,20 @@
     }
 
     function openDepositForm() {
-      apiFetch('/members')
-        .then(members => {
-          const activeMembers = (Array.isArray(members) ? members : []).filter(member => member.status === 'active');
+      loadActiveMembers()
+        .then(activeMembers => {
           if (!activeMembers.length) {
             showToast('Register an active member before opening a fixed deposit.', 'error');
             return;
           }
 
-          const memberOptions = activeMembers.map(member => `
-            <option value="${Number(member.id)}">${escapeHtml(member.membership_no)} — ${escapeHtml(member.full_name)}</option>
-          `).join('');
           const today = new Date().toISOString().slice(0, 10);
           openModal(`
             <h2><i class="fas fa-coins"></i> Open Fixed Deposit</h2>
             <form id="fixedDepositForm">
               <div class="form-group">
                 <label for="fixedDepositMember">Member *</label>
-                <select id="fixedDepositMember" name="member_id" required>${memberOptions}</select>
+                <select id="fixedDepositMember" name="member_id" required>${buildMemberOptions(activeMembers)}</select>
               </div>
               <div class="form-row">
                 <div class="form-group"><label for="fixedDepositAmount">Amount (UGX) *</label><input id="fixedDepositAmount" type="number" name="amount" min="1" step="0.01" required></div>
