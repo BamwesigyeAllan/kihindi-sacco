@@ -4,6 +4,7 @@ const { SavingsAccount, SavingsTransaction, Member, SavingsAlert, WithdrawalRece
 const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { SAVINGS_WRITE } = require('../utils/roles');
+const { formatUgandaDate, formatUgandaTime } = require('../utils/dateTime');
 const router = express.Router();
 
 // Get all savings accounts
@@ -141,8 +142,8 @@ router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
                 phone: member.phone,
                 account_no: account.account_no,
                 amount: Number(amount),
-                date: transactionDate.toLocaleDateString('en-UG'),
-                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: formatUgandaDate(transactionDate),
+                time: formatUgandaTime(transactionDate),
                 description: description || 'Savings deposit',
                 payment_mode: payment_mode || 'cash',
                 reference_no: reference_no || '',
@@ -230,8 +231,8 @@ router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
                 account_no: account.account_no,
                 phone: member.phone,
                 amount,
-                date: transactionDate.toLocaleDateString('en-UG'),
-                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: formatUgandaDate(transactionDate),
+                time: formatUgandaTime(transactionDate),
                 national_id,
                 membership_no: member.membership_no,
                 description: description || 'Savings withdrawal',

@@ -5,6 +5,7 @@ const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
 const { generateDepositAccountNo } = require('../utils/helpers');
 const { DEPOSIT_WRITE } = require('../utils/roles');
+const { formatUgandaDate, formatUgandaTime } = require('../utils/dateTime');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -101,8 +102,8 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
                 membership_no: member.membership_no,
                 account_no,
                 amount: Number(amount),
-                date: transactionDate.toLocaleDateString('en-UG'),
-                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: formatUgandaDate(transactionDate),
+                time: formatUgandaTime(transactionDate),
                 phone: member.phone,
                 description: 'Fixed deposit opened',
                 payment_mode: payment_mode || 'cash',
@@ -113,7 +114,7 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
                 total: Number(amount),
                 interest_rate: Number(interest_rate),
                 tenor_months: Number(tenor_months),
-                maturity_date: maturity.toLocaleDateString('en-UG'),
+                maturity_date: formatUgandaDate(maturity),
                 interest_payment: interest_payment || 'quarterly'
             },
             quarterly_interest: Number(amount) * (Number(interest_rate) / 100) / 4,

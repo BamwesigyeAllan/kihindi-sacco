@@ -2,6 +2,7 @@ const express = require('express');
 const { Loan, Member, LoanProduct, LoanRepayment, Transaction } = require('../models');
 const { authorize } = require('../middleware/auth');
 const { INSURANCE_VIEW, LOAN_WRITE, LOAN_APPROVE } = require('../utils/roles');
+const { formatUgandaDate, formatUgandaTime } = require('../utils/dateTime');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -111,8 +112,8 @@ router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
                 member_name: loan.Member?.full_name,
                 account_no: loan.loan_id,
                 amount: Number(loan.amount),
-                date: transactionDate.toLocaleDateString('en-UG'),
-                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: formatUgandaDate(transactionDate),
+                time: formatUgandaTime(transactionDate),
                 phone: loan.Member?.phone,
                 description: `Loan disbursed: ${loan.loan_id}`,
                 payment_mode: req.body.payment_mode || 'bank',
@@ -174,8 +175,8 @@ router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
                 member_name: loan.Member?.full_name,
                 account_no: loan.loan_id,
                 amount: Number(amount_paid),
-                date: transactionDate.toLocaleDateString('en-UG'),
-                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                date: formatUgandaDate(transactionDate),
+                time: formatUgandaTime(transactionDate),
                 phone: loan.Member?.phone,
                 description: `Repayment for loan ${loan.loan_id}`,
                 payment_mode: payment_mode || 'cash',
