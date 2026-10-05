@@ -673,8 +673,8 @@
       min-height: calc(100vh - 72px);
     }
     .page-header { margin-bottom: 1.5rem; }
-    .page-header h1 { color: var(--green-900); font-size: 1.55rem; font-weight: 750; letter-spacing: -0.04em; }
-    .page-header h1 i { color: var(--green-700); }
+    .page-header h1 { color: var(--gold-light); font-size: 1.55rem; font-weight: 750; letter-spacing: -0.04em; }
+    .page-header h1 i { color: var(--gold); }
     .stats-grid { gap: 1rem; margin-bottom: 1.25rem; }
     .stat-card {
       position: relative;
@@ -729,7 +729,7 @@
       box-shadow: var(--shadow);
     }
     .card-header h2 { color: var(--green-900); font-size: 1rem; font-weight: 750; }
-    .card-header h2 i { color: var(--green-700); }
+    .card-header h2 i { color: var(--gold); }
     .card-header .view-all { color: var(--green-700); font-weight: 700; }
     table thead th {
       background: #f7f9f8;
@@ -874,6 +874,132 @@
     .receipt-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem; }
     .receipt-signatures div { padding-top: 0.5rem; border-top: 1px solid #88968e; color: #66766d; font-size: 0.75rem; }
     .receipt-note { margin-top: 1.5rem; color: #74847c; text-align: center; font-size: 0.75rem; }
+    .reports-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.35rem;
+      padding: 1.4rem 1.5rem;
+      border: 1px solid #e8eeea;
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .reports-title-group { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+    .reports-logo {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 auto;
+      padding: 3px;
+      border: 1px solid #e8dfba;
+      border-radius: 50%;
+      background: #fffdf5;
+      object-fit: contain;
+    }
+    .reports-heading .eyebrow {
+      color: var(--gold-deep);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+    .report-section-label {
+      color: var(--gold-light);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+    .reports-heading h1 {
+      margin: 0.3rem 0;
+      color: var(--green-900);
+      font-size: clamp(1.55rem, 2.6vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.055em;
+    }
+    .reports-heading h1::after {
+      display: block;
+      width: 42px;
+      height: 3px;
+      margin-top: 0.45rem;
+      border-radius: 999px;
+      background: var(--gold);
+      content: '';
+    }
+    .reports-heading p { color: var(--text-muted); font-size: 0.87rem; }
+    .report-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .report-actions button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.7rem 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #fff;
+      color: var(--green-800);
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 750;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .report-actions button:hover { border-color: #b8d2c1; background: #f4f9f5; transform: translateY(-1px); }
+    .report-actions .report-export-primary { background: var(--green-800); border-color: var(--green-800); color: #fff; }
+    .report-actions .report-export-primary:hover { background: var(--green-700); }
+    .report-kpis .stat-card { min-height: 126px; }
+    .report-kpis .stat-card .stat-icon { margin-bottom: 0.75rem; }
+    .report-chart-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.4rem 0;
+    }
+    .report-chart-card { min-width: 0; margin: 0; padding: 1.2rem; }
+    .report-chart-card header { min-height: 54px; margin-bottom: 0.7rem; }
+    .report-chart-card h2 { margin: 0; color: var(--green-900); font-size: 0.96rem; font-weight: 800; letter-spacing: -0.02em; }
+    .report-chart-card p { margin-top: 0.25rem; color: var(--text-muted); font-size: 0.72rem; }
+    .report-chart-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+      padding: 0.3rem 0.55rem;
+      border-radius: 999px;
+      background: #eff6f1;
+      color: var(--green-800);
+      font-size: 0.65rem;
+      font-weight: 750;
+    }
+    .report-chart-canvas { position: relative; height: 250px; }
+    .report-chart-canvas canvas { position: relative; z-index: 1; }
+    .report-chart-empty {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-size: 0.82rem;
+    }
+    .report-activity-card { margin-top: 1rem; }
+    .report-activity-card .card-subtitle { margin-top: 0.25rem; color: var(--text-muted); font-size: 0.76rem; }
+    @media (max-width: 1100px) {
+      .report-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .report-chart-card:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 700px) {
+      .reports-heading { align-items: flex-start; flex-direction: column; padding: 1.1rem; }
+      .reports-title-group { align-items: flex-start; gap: 0.75rem; }
+      .reports-logo { width: 48px; height: 48px; }
+      .report-chart-grid { grid-template-columns: 1fr; }
+      .report-chart-card:last-child { grid-column: auto; }
+      .report-chart-canvas { height: 270px; }
+      .report-actions { width: 100%; }
+      .report-actions button { flex: 1; justify-content: center; }
+    }
     @media print {
       body * { visibility: hidden !important; }
       #modal.active, #modal.active * { visibility: visible !important; }
@@ -1019,6 +1145,32 @@
     let allLoanApplications = [];
     let loanApplicationStatus = 'pending';
     let saccoLogoUrl = 'icons/kihindi-sacco-logo.jpg';
+    const isLocalLiveServer = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+      && window.location.port !== '5000';
+    const API_BASE_URL = isLocalLiveServer ? 'http://localhost:5000' : '';
+
+    function apiUrl(endpoint) {
+      return `${API_BASE_URL}${endpoint}`;
+    }
+
+    function assetUrl(path) {
+      if (!path || /^(https?:|data:)/i.test(path)) return path;
+      return isLocalLiveServer && path.startsWith('/') ? `${API_BASE_URL}${path}` : path;
+    }
+
+    function updateSaccoLogoImages() {
+      const fallbackLogo = 'icons/kihindi-sacco-logo.jpg';
+      document.querySelectorAll('.login-logo, .brand-logo, .receipt-logo, .reports-logo').forEach(image => {
+        image.onerror = () => {
+          image.onerror = null;
+          image.src = assetUrl(fallbackLogo);
+        };
+        image.src = assetUrl(saccoLogoUrl);
+      });
+      document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
+        link.href = assetUrl(saccoLogoUrl);
+      });
+    }
 
     // ============================================================
     // AUTH
@@ -1031,7 +1183,7 @@
     });
 
     function login(username, password) {
-      fetch('/auth/login', {
+      fetch(apiUrl('/auth/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -1048,7 +1200,9 @@
           showToast(data.error || 'Login failed', 'error');
         }
       })
-      .catch(() => showToast('Server error', 'error'));
+      .catch(() => showToast(isLocalLiveServer
+        ? 'Cannot reach the local API. Start it in VS Code with npm.cmd run dev, then try again.'
+        : 'Server error', 'error'));
     }
 
     function logout() {
@@ -1072,17 +1226,12 @@
     }
 
     function loadSaccoLogo() {
-      fetch('/settings/logo', { headers: { 'Authorization': `Bearer ${token}` } })
+      fetch(apiUrl('/settings/logo'), { headers: { 'Authorization': `Bearer ${token}` } })
         .then(res => res.ok ? res.json() : null)
         .then(data => {
           if (data?.logoUrl) {
             saccoLogoUrl = data.logoUrl;
-            document.querySelectorAll('.login-logo, .brand-logo, .receipt-logo').forEach(image => {
-              image.src = saccoLogoUrl;
-            });
-            document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
-              link.href = saccoLogoUrl;
-            });
+            updateSaccoLogoImages();
           }
         })
         .catch(() => {});
@@ -1092,7 +1241,7 @@
     // API HELPER
     // ============================================================
     function apiFetch(endpoint, options = {}) {
-      return fetch(endpoint, {
+      return fetch(apiUrl(endpoint), {
         ...options,
         headers: {
           'Content-Type': 'application/json',
@@ -1448,7 +1597,7 @@
       document.getElementById('memberForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
-        fetch('/members', {
+        fetch(apiUrl('/members'), {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData
@@ -2094,41 +2243,69 @@
     function loadReports() {
       apiFetch('/reports/dashboard')
         .then(data => {
-          let html = `
-            <div class="page-header"><h1><i class="fas fa-flag"></i> Reports</h1></div>
-            <div class="stats-grid">
-              <div class="stat-card"><div class="stat-number">${data.totalMembers || 0}</div><div class="stat-label">Members</div></div>
-              <div class="stat-card"><div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div><div class="stat-label">Savings</div></div>
-              <div class="stat-card"><div class="stat-number">UGX ${Number(data.totalDeposits || 0).toLocaleString()}</div><div class="stat-label">Fixed Deposits</div></div>
-              <div class="stat-card"><div class="stat-number">UGX ${Number(data.outstandingLoans || 0).toLocaleString()}</div><div class="stat-label">Loans</div></div>
-            </div>
-            <div class="card">
-              <div class="card-header">
-                <h2><i class="fas fa-chart-bar"></i> Analytics</h2>
+          const recentTransactions = Array.isArray(data.recentTransactions) ? data.recentTransactions : [];
+          const transactionRows = recentTransactions.map(transaction => `
+            <tr>
+              <td>${escapeHtml(transaction.createdAt || transaction.created_at
+                ? new Date(transaction.createdAt || transaction.created_at).toLocaleDateString()
+                : '—')}</td>
+              <td>${escapeHtml(transaction.Member?.full_name || 'N/A')}</td>
+              <td>${escapeHtml(String(transaction.type || '—').replace(/_/g, ' '))}</td>
+              <td><strong>UGX ${Number(transaction.amount || 0).toLocaleString()}</strong></td>
+            </tr>
+          `).join('');
+          document.getElementById('mainContent').innerHTML = `
+            <section class="reports-heading">
+              <div class="reports-title-group">
+                <img class="reports-logo" src="${escapeHtml(assetUrl(saccoLogoUrl))}" alt="KIHINDI SACCO logo" />
                 <div>
-                  <button class="btn" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
-                  <button class="btn btn-gold" onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Excel</button>
+                  <div class="eyebrow">KIHINDI SACCO · INSIGHTS</div>
+                  <h1>Analytics &amp; reports</h1>
+                  <p>A clear view of member activity and your cooperative’s portfolio.</p>
                 </div>
               </div>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1rem;">
-                <div style="background:#faf8f2; padding:1rem; border-radius:var(--radius-sm);">
-                  <h4 style="margin-bottom:0.5rem;">Deposits by Month</h4>
-                  <canvas id="depositsChart" height="180"></canvas>
-                </div>
-                <div style="background:#faf8f2; padding:1rem; border-radius:var(--radius-sm);">
-                  <h4 style="margin-bottom:0.5rem;">Loans by Product</h4>
-                  <canvas id="loansChart" height="180"></canvas>
-                </div>
+              <div class="report-actions" aria-label="Export reports">
+                <button class="report-export-primary" onclick="exportReport('pdf')"><i class="fas fa-file-pdf"></i> Print / PDF</button>
+                <button onclick="exportReport('excel')"><i class="fas fa-file-excel"></i> Export CSV</button>
               </div>
-            </div>
+            </section>
+            <section class="stats-grid report-kpis" aria-label="Portfolio summary">
+              <article class="stat-card"><i class="fas fa-user-group stat-icon"></i><div class="stat-number">${Number(data.totalMembers || 0).toLocaleString()}</div><div class="stat-label">Active members</div></article>
+              <article class="stat-card"><i class="fas fa-piggy-bank stat-icon"></i><div class="stat-number">UGX ${Number(data.totalSavings || 0).toLocaleString()}</div><div class="stat-label">Total savings</div></article>
+              <article class="stat-card"><i class="fas fa-coins stat-icon"></i><div class="stat-number">UGX ${Number(data.totalDeposits || 0).toLocaleString()}</div><div class="stat-label">Fixed deposits</div></article>
+              <article class="stat-card"><i class="fas fa-hand-holding-dollar stat-icon"></i><div class="stat-number">UGX ${Number(data.outstandingLoans || 0).toLocaleString()}</div><div class="stat-label">Outstanding loans</div></article>
+            </section>
+            <div class="report-section-label">Portfolio breakdown</div>
+            <section class="report-chart-grid" aria-label="Portfolio pie charts">
+              <article class="card report-chart-card">
+                <header><h2>Deposit mix by month</h2><p>Share of fixed deposits opened each month</p><span class="report-chart-tag"><i class="fas fa-chart-pie"></i> Fixed deposits</span></header>
+                <div class="report-chart-canvas"><canvas id="depositsChart" aria-label="Pie chart of fixed deposits by month"></canvas><div id="depositsChartEmpty" class="report-chart-empty">No fixed-deposit data available yet.</div></div>
+              </article>
+              <article class="card report-chart-card">
+                <header><h2>Loans by product</h2><p>How the loan portfolio is distributed</p><span class="report-chart-tag"><i class="fas fa-chart-pie"></i> Loan portfolio</span></header>
+                <div class="report-chart-canvas"><canvas id="loansChart" aria-label="Pie chart of loans by product"></canvas><div id="loansChartEmpty" class="report-chart-empty">No loan data available yet.</div></div>
+              </article>
+              <article class="card report-chart-card">
+                <header><h2>Portfolio composition</h2><p>Savings, fixed deposits, and outstanding loans</p><span class="report-chart-tag"><i class="fas fa-chart-pie"></i> Total portfolio</span></header>
+                <div class="report-chart-canvas"><canvas id="portfolioChart" aria-label="Pie chart of SACCO portfolio composition"></canvas><div id="portfolioChartEmpty" class="report-chart-empty">Portfolio totals will appear when activity is recorded.</div></div>
+              </article>
+            </section>
+            <section class="card report-activity-card">
+              <div class="card-header">
+                <div><h2><i class="fas fa-clock-rotate-left"></i> Recent activity</h2><p class="card-subtitle">Latest transactions recorded across the SACCO.</p></div>
+              </div>
+              <div class="table-responsive"><table>
+                <thead><tr><th>Date</th><th>Member</th><th>Transaction</th><th>Amount</th></tr></thead>
+                <tbody>${transactionRows || '<tr><td colspan="4" class="empty-state">No transactions recorded yet.</td></tr>'}</tbody>
+              </table></div>
+            </section>
           `;
-          document.getElementById('mainContent').innerHTML = html;
-          loadCharts();
+          loadCharts(data);
         })
         .catch(() => showToast('Error loading reports', 'error'));
     }
 
-    function loadCharts() {
+    function loadCharts(summary = {}) {
       if (typeof Chart === 'undefined') {
         showToast('Charts are unavailable. Check your internet connection and try again.', 'error');
         return;
@@ -2139,45 +2316,75 @@
         apiFetch('/reports/loans-chart')
       ])
         .then(([depositData, loanData]) => {
-          const depositsCanvas = document.getElementById('depositsChart');
-          const loansCanvas = document.getElementById('loansChart');
-          if (!depositsCanvas || !loansCanvas) return;
+          if (!document.getElementById('depositsChart')) return;
 
           Object.values(charts).forEach(chart => chart?.destroy());
           charts = {};
 
           const deposits = Array.isArray(depositData) ? depositData : [];
           const loans = Array.isArray(loanData) ? loanData : [];
-          charts.deposits = new Chart(depositsCanvas, {
-            type: 'bar',
-            data: {
-              labels: deposits.map(row => row.month || 'Unknown'),
-              datasets: [{
-                label: 'Fixed deposits (UGX)',
-                data: deposits.map(row => Number(row.total || 0)),
-                backgroundColor: '#278268',
-                borderRadius: 6
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: { y: { beginAtZero: true, ticks: { callback: value => `UGX ${Number(value).toLocaleString()}` } } }
+          const palette = ['#17664f', '#d4a62a', '#4eaf8e', '#6d83c4', '#b88a1f', '#a6c7a9', '#c87963', '#557c91', '#a9a0c3', '#91a768', '#d18c43', '#49665b'];
+          const currency = amount => `UGX ${Number(amount || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+          const renderPie = (canvasId, emptyId, labels, values, colors = palette) => {
+            const canvas = document.getElementById(canvasId);
+            const emptyState = document.getElementById(emptyId);
+            if (!canvas || !emptyState) return;
+            const validPoints = labels.map((label, index) => ({ label, value: Number(values[index] || 0) }))
+              .filter(point => Number.isFinite(point.value) && point.value > 0);
+            if (!validPoints.length) {
+              canvas.style.display = 'none';
+              emptyState.style.display = 'flex';
+              return;
             }
-          });
-          charts.loans = new Chart(loansCanvas, {
-            type: 'doughnut',
-            data: {
-              labels: loans.map(row => row.product || 'Other'),
-              datasets: [{
-                label: 'Loans (UGX)',
-                data: loans.map(row => Number(row.total || 0)),
-                backgroundColor: ['#17664f', '#d4a62a', '#4eaf8e', '#b88a1f', '#073b2e', '#9bc8ad']
-              }]
-            },
-            options: { responsive: true, maintainAspectRatio: false }
-          });
+            canvas.style.display = 'block';
+            emptyState.style.display = 'none';
+            charts[canvasId] = new Chart(canvas, {
+              type: 'pie',
+              data: {
+                labels: validPoints.map(point => point.label),
+                datasets: [{
+                  data: validPoints.map(point => point.value),
+                  backgroundColor: validPoints.map((_, index) => colors[index % colors.length]),
+                  borderColor: '#ffffff',
+                  borderWidth: 3,
+                  hoverOffset: 9,
+                  hoverBorderWidth: 4
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 650, easing: 'easeOutQuart' },
+                layout: { padding: 8 },
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, boxWidth: 8, color: '#5f7369', font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' } }
+                  },
+                  tooltip: {
+                    backgroundColor: '#073b2e',
+                    padding: 12,
+                    cornerRadius: 10,
+                    callbacks: {
+                      label: context => {
+                        const total = context.dataset.data.reduce((sum, value) => sum + Number(value || 0), 0);
+                        const percent = total ? (Number(context.raw || 0) / total * 100).toFixed(1) : '0.0';
+                        return ` ${context.label}: ${currency(context.raw)} (${percent}%)`;
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          };
+
+          renderPie('depositsChart', 'depositsChartEmpty', deposits.map(row => row.month || 'Unknown'), deposits.map(row => row.total));
+          renderPie('loansChart', 'loansChartEmpty', loans.map(row => row.product || 'Other'), loans.map(row => row.total));
+          renderPie('portfolioChart', 'portfolioChartEmpty', ['Savings', 'Fixed deposits', 'Outstanding loans'], [
+            summary.totalSavings,
+            summary.totalDeposits,
+            summary.outstandingLoans
+          ], ['#17664f', '#d4a62a', '#6d83c4']);
         })
         .catch(() => showToast('Error loading report charts', 'error'));
     }
@@ -2247,6 +2454,7 @@
         const metricRows = metrics.map(([label, value]) => `
           <tr><th>${escapeHtml(label)}</th><td>${Number(value).toLocaleString()}</td></tr>
         `).join('');
+        const reportLogoUrl = new URL(assetUrl(saccoLogoUrl), window.location.href).href;
         const transactionRows = transactions.map(item => `
           <tr>
             <td>${escapeHtml(item.createdAt || item.created_at || '—')}</td>
@@ -2257,14 +2465,15 @@
         `).join('') || '<tr><td colspan="4">No transactions to show.</td></tr>';
         const depositRows = deposits.map(row => `<tr><td>${escapeHtml(row.month || 'Unknown')}</td><td>UGX ${Number(row.total || 0).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="2">No fixed-deposit data.</td></tr>';
         const loanRows = loans.map(row => `<tr><td>${escapeHtml(row.product || 'Other')}</td><td>UGX ${Number(row.total || 0).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="2">No loan data.</td></tr>';
+        printWindow.addEventListener('load', () => printWindow.print(), { once: true });
         printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>KIHINDI SACCO Report</title><style>
-          body{font:14px Arial,sans-serif;color:#172a22;margin:32px}h1,h2{color:#0b4a39}h1{margin-bottom:4px}p{color:#5f7369;margin-top:0}section{margin:24px 0}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;padding:8px;border:1px solid #dfeadf}th{background:#f3f7f4}.metrics{max-width:600px}@media print{body{margin:12mm}}
-          </style></head><body><h1>KIHINDI SACCO</h1><p>Management report · Generated ${escapeHtml(generatedAt)}</p>
+          body{font:14px Arial,sans-serif;color:#172a22;margin:32px}.brand{display:flex;align-items:center;gap:16px;padding-bottom:16px;border-bottom:2px solid #d4a62a}.brand img{width:76px;height:76px;object-fit:contain}.brand h1,.brand p{margin:0}h1,h2{color:#0b4a39}p{color:#5f7369;margin-top:0}section{margin:24px 0}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;padding:8px;border:1px solid #dfeadf}th{background:#f3f7f4}.metrics{max-width:600px}@media print{body{margin:12mm}}
+          </style></head><body><header class="brand"><img src="${escapeHtml(reportLogoUrl)}" alt="KIHINDI SACCO logo"><div><h1>KIHINDI SACCO</h1><p>Management report · Generated ${escapeHtml(generatedAt)}</p></div></header>
           <section><h2>Summary</h2><table class="metrics"><tbody>${metricRows}</tbody></table></section>
           <section><h2>Fixed deposits by month</h2><table><thead><tr><th>Month</th><th>Amount</th></tr></thead><tbody>${depositRows}</tbody></table></section>
           <section><h2>Loans by product</h2><table><thead><tr><th>Product</th><th>Amount</th></tr></thead><tbody>${loanRows}</tbody></table></section>
           <section><h2>Recent transactions</h2><table><thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Amount</th></tr></thead><tbody>${transactionRows}</tbody></table></section>
-          <script>window.addEventListener('load',()=>window.print());<\/script></body></html>`);
+          `);
         printWindow.document.close();
       } catch (error) {
         printWindow?.close();
@@ -2287,7 +2496,7 @@
           </div>
           <form id="logoUploadForm">
             <div class="form-group" style="text-align:center;">
-              <img id="logoPreview" src="${escapeHtml(saccoLogoUrl)}" alt="Current SACCO logo" style="width:180px;height:180px;object-fit:contain;margin:0 auto 1rem;border:1px solid var(--border);border-radius:12px;padding:0.5rem;background:#fff;" />
+              <img id="logoPreview" src="${escapeHtml(assetUrl(saccoLogoUrl))}" alt="Current SACCO logo" style="width:180px;height:180px;object-fit:contain;margin:0 auto 1rem;border:1px solid var(--border);border-radius:12px;padding:0.5rem;background:#fff;" />
               <label for="logoFile" style="display:block;text-align:left;">Select logo image</label>
               <input id="logoFile" name="logo" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" required />
               <small style="display:block;text-align:left;color:var(--text-muted);margin-top:0.4rem;">PNG, JPG, or WebP · Maximum 5 MB</small>
@@ -2309,7 +2518,7 @@
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         try {
-          const response = await fetch('/settings/logo', {
+          const response = await fetch(apiUrl('/settings/logo'), {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
@@ -2317,12 +2526,7 @@
           const data = await response.json();
           if (!response.ok || !data.success) throw new Error(data.error || 'Logo upload failed');
           saccoLogoUrl = data.logoUrl;
-          document.querySelectorAll('.login-logo, .brand-logo, .receipt-logo').forEach(image => {
-            image.src = saccoLogoUrl;
-          });
-          document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
-            link.href = saccoLogoUrl;
-          });
+          updateSaccoLogoImages();
           showToast('SACCO logo updated successfully');
           loadLogoSettings();
         } catch (error) {
