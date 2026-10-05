@@ -88,8 +88,9 @@ router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
             due_date: status === 'active' ? new Date(Date.now() + loan.repayment_period_months * 30 * 24 * 60 * 60 * 1000) : null
         });
 
+        let transaction = null;
         if (status === 'active') {
-            await Transaction.create({
+            transaction = await Transaction.create({
                 member_id: loan.member_id,
                 type: 'loan_disbursement',
                 amount: loan.amount,
@@ -99,7 +100,22 @@ router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
             });
         }
 
-        res.json({ success: true, loan });
+        const receipt_no = transaction ? `LD-${transaction.id}` : null;
+        res.json({
+            success: true,
+            loan,
+            receipt_no,
+            receipt: status === 'active' ? {
+                transaction_type: 'Loan disbursement',
+                member_name: loan.Member?.full_name,
+                account_no: loan.loan_id,
+                amount: Number(loan.amount),
+                date: new Date(disbursement_date || Date.now()).toLocaleDateString('en-UG'),
+                description: `Loan disbursed: ${loan.loan_id}`,
+                payment_mode: req.body.payment_mode || 'bank',
+                new_balance: Number(loan.balance)
+            } : null
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -119,7 +135,7 @@ router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
         const remaining = Number(loan.balance) - Number(amount_paid);
         const newStatus = remaining <= 0 ? 'completed' : 'active';
 
-        await LoanRepayment.create({
+        const repayment = await LoanRepayment.create({
             loan_id: loan.id,
             amount_paid,
             payment_date: new Date(payment_date || Date.now()),
@@ -139,7 +155,24 @@ router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
             created_by: req.user.id
         });
 
-        res.json({ success: true, loan, remaining });
+        const receipt_no = `LR-${repayment.id}`;
+        res.json({
+            success: true,
+            loan,
+            remaining,
+            receipt_no,
+            receipt: {
+                transaction_type: 'Loan repayment',
+                member_name: loan.Member?.full_name,
+                account_no: loan.loan_id,
+                amount: Number(amount_paid),
+                date: new Date(payment_date || Date.now()).toLocaleDateString('en-UG'),
+                description: `Repayment for loan ${loan.loan_id}`,
+                payment_mode: payment_mode || 'cash',
+                reference_no: reference_no || '',
+                new_balance: Math.max(0, remaining)
+            }
+        });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -60,6 +60,7 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
         maturity.setMonth(maturity.getMonth() + parseInt(tenor_months));
 
         const account_no = await generateDepositAccountNo(start);
+        const receipt_no = account_no;
 
         const deposit = await FixedDeposit.create({
             account_no,
@@ -92,6 +93,22 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
         res.status(201).json({
             success: true,
             deposit,
+            receipt_no,
+            receipt: {
+                transaction_type: 'Fixed deposit opening',
+                member_name: member.full_name,
+                membership_no: member.membership_no,
+                account_no,
+                amount: Number(amount),
+                date: start.toLocaleDateString('en-UG'),
+                description: 'Fixed deposit opened',
+                payment_mode: payment_mode || 'cash',
+                reference_no: reference_no || '',
+                interest_rate: Number(interest_rate),
+                tenor_months: Number(tenor_months),
+                maturity_date: maturity.toLocaleDateString('en-UG'),
+                interest_payment: interest_payment || 'quarterly'
+            },
             quarterly_interest: Number(amount) * (Number(interest_rate) / 100) / 4,
             maturity_date: maturity
         });

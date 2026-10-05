@@ -1336,28 +1336,42 @@
       ].join('');
     }
 
-    function showWithdrawalReceipt(data) {
+    function showTransactionReceipt(data) {
       const receipt = data.receipt || {};
-      const amount = Number(receipt.amount || 0).toLocaleString('en-UG');
+      const receiptType = receipt.transaction_type || 'Transaction';
+      const currency = value => `UGX ${Number(value || 0).toLocaleString('en-UG', { maximumFractionDigits: 2 })}`;
+      const rows = [
+        ['Receipt number', data.receipt_no],
+        ['Member name', receipt.member_name],
+        ['Membership number', receipt.membership_no],
+        ['Account number', receipt.account_no],
+        ['Transaction', receiptType],
+        ['Description', receipt.description],
+        ['Date', receipt.date],
+        ['Amount', currency(receipt.amount)],
+        ['Payment method', receipt.payment_mode],
+        ['Reference', receipt.reference_no],
+        ['National ID', receipt.national_id],
+        ['Interest rate', receipt.interest_rate ? `${receipt.interest_rate}% p.a.` : ''],
+        ['Tenor', receipt.tenor_months ? `${receipt.tenor_months} months` : ''],
+        ['Maturity date', receipt.maturity_date],
+        ['Interest payment', receipt.interest_payment],
+        ['Remaining loan balance', receipt.new_balance !== undefined ? currency(receipt.new_balance) : ''],
+        ['New account balance', data.newBalance !== undefined ? currency(data.newBalance) : '']
+      ].filter(([, value]) => value !== undefined && value !== null && value !== '');
       openModal(`
         <article class="receipt">
           <header class="receipt-header">
-            <img class="receipt-logo" src="${escapeHtml(saccoLogoUrl)}" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
+            <img class="receipt-logo" src="${escapeHtml(assetUrl(saccoLogoUrl))}" alt="Mbarara City Kihindi Boda Rider's SACCO logo" />
             <div>
               <h2>MBARARA CITY KIHINDI BODA RIDER'S SACCO</h2>
               <p>Faith in God Leads to Success</p>
             </div>
           </header>
-          <h3 class="receipt-title">SAVINGS WITHDRAWAL RECEIPT</h3>
+          <h3 class="receipt-title">${escapeHtml(receiptType.toUpperCase())} RECEIPT</h3>
           <table class="receipt-details">
             <tbody>
-              <tr><th>Receipt number</th><td>${escapeHtml(data.receipt_no)}</td></tr>
-              <tr><th>Member name</th><td>${escapeHtml(receipt.member_name)}</td></tr>
-              <tr><th>Account number</th><td>${escapeHtml(receipt.account_no)}</td></tr>
-              <tr><th>National ID</th><td>${escapeHtml(receipt.national_id)}</td></tr>
-              <tr><th>Withdrawal date</th><td>${escapeHtml(receipt.date)}</td></tr>
-              <tr><th>Amount paid</th><td>UGX ${amount}</td></tr>
-              <tr><th>New account balance</th><td>UGX ${Number(data.newBalance || 0).toLocaleString('en-UG')}</td></tr>
+              ${rows.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}
             </tbody>
           </table>
           <div class="receipt-signatures">
@@ -2003,6 +2017,12 @@
             ` : ''}
             <div class="form-group"><label for="savingsAmount">Amount (UGX) *</label><input id="savingsAmount" type="number" name="amount" min="1" step="0.01" required></div>
             <div class="form-group"><label for="savingsDescription">Description</label><input id="savingsDescription" type="text" name="description"></div>
+            <div class="form-row">
+              <div class="form-group"><label for="savingsPaymentMode">Payment method</label>
+                <select id="savingsPaymentMode" name="payment_mode"><option value="cash">Cash</option><option value="bank">Bank</option><option value="mmo">Mobile money</option></select>
+              </div>
+              <div class="form-group"><label for="savingsReference">Reference number</label><input id="savingsReference" type="text" name="reference_no" maxlength="50"></div>
+            </div>
             <div class="form-actions">
               <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
               <button type="submit" class="btn-primary">${buttonText}</button>
@@ -2029,14 +2049,8 @@
           try {
             const data = await apiFetch(endpoint, { method: 'POST', body: JSON.stringify(payload) });
             if (!data.success) throw new Error(data.error || `${buttonText} failed`);
-            if (isWithdrawal) {
-              showToast('Withdrawal successful!');
-              showWithdrawalReceipt(data);
-            } else {
-              showToast(`Deposit successful! New balance: UGX ${Number(data.newBalance || 0).toLocaleString()}`);
-              closeModal();
-            }
             loadSavings();
+            showTransactionReceipt(data);
           } catch (error) {
             showToast(error.message || `${buttonText} failed`, 'error');
           }
@@ -2149,9 +2163,8 @@
             try {
               const data = await apiFetch('/deposits', { method: 'POST', body: JSON.stringify(payload) });
               if (!data.success) throw new Error(data.error || 'Could not open fixed deposit');
-              showToast(`Fixed deposit ${data.deposit.account_no} opened successfully`);
-              closeModal();
               loadDeposits();
+              showTransactionReceipt(data);
             } catch (error) {
               showToast(error.message || 'Could not open fixed deposit', 'error');
             }
@@ -2208,8 +2221,9 @@
       })
         .then(data => {
           if (!data.success) throw new Error(data.error || 'Could not disburse loan');
-          showToast('Loan disbursed successfully');
           loadLoans();
+          if (data.receipt) showTransactionReceipt(data);
+          else showToast('Loan updated successfully');
         })
         .catch(error => showToast(error.message || 'Could not disburse loan', 'error'));
     }
@@ -2228,8 +2242,8 @@
       })
       .then(data => {
         if (data.success) {
-          showToast('Repayment recorded!');
           loadLoans();
+          showTransactionReceipt(data);
         } else {
           showToast(data.error || 'Failed', 'error');
         }
