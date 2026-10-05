@@ -61,6 +61,7 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
 
         const account_no = await generateDepositAccountNo(start);
         const receipt_no = account_no;
+        const transactionDate = new Date();
 
         const deposit = await FixedDeposit.create({
             account_no,
@@ -100,10 +101,16 @@ router.post('/', authorize(...DEPOSIT_WRITE), validate([
                 membership_no: member.membership_no,
                 account_no,
                 amount: Number(amount),
-                date: start.toLocaleDateString('en-UG'),
+                date: transactionDate.toLocaleDateString('en-UG'),
+                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                phone: member.phone,
                 description: 'Fixed deposit opened',
                 payment_mode: payment_mode || 'cash',
                 reference_no: reference_no || '',
+                status: 'SUCCESS',
+                surcharge: 0,
+                excise: 0,
+                total: Number(amount),
                 interest_rate: Number(interest_rate),
                 tenor_months: Number(tenor_months),
                 maturity_date: maturity.toLocaleDateString('en-UG'),

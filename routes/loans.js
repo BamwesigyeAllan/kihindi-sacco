@@ -89,6 +89,7 @@ router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
         });
 
         let transaction = null;
+        const transactionDate = new Date(disbursement_date || Date.now());
         if (status === 'active') {
             transaction = await Transaction.create({
                 member_id: loan.member_id,
@@ -110,9 +111,15 @@ router.put('/:id', authorize(...LOAN_APPROVE), async (req, res) => {
                 member_name: loan.Member?.full_name,
                 account_no: loan.loan_id,
                 amount: Number(loan.amount),
-                date: new Date(disbursement_date || Date.now()).toLocaleDateString('en-UG'),
+                date: transactionDate.toLocaleDateString('en-UG'),
+                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                phone: loan.Member?.phone,
                 description: `Loan disbursed: ${loan.loan_id}`,
                 payment_mode: req.body.payment_mode || 'bank',
+                status: 'SUCCESS',
+                surcharge: 0,
+                excise: 0,
+                total: Number(loan.amount),
                 new_balance: Number(loan.balance)
             } : null
         });
@@ -134,11 +141,12 @@ router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
 
         const remaining = Number(loan.balance) - Number(amount_paid);
         const newStatus = remaining <= 0 ? 'completed' : 'active';
+        const transactionDate = new Date(payment_date || Date.now());
 
         const repayment = await LoanRepayment.create({
             loan_id: loan.id,
             amount_paid,
-            payment_date: new Date(payment_date || Date.now()),
+            payment_date: transactionDate,
             payment_mode: payment_mode || 'cash',
             reference_no,
             created_by: req.user.id
@@ -166,10 +174,16 @@ router.post('/:id/repay', authorize(...LOAN_WRITE), async (req, res) => {
                 member_name: loan.Member?.full_name,
                 account_no: loan.loan_id,
                 amount: Number(amount_paid),
-                date: new Date(payment_date || Date.now()).toLocaleDateString('en-UG'),
+                date: transactionDate.toLocaleDateString('en-UG'),
+                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                phone: loan.Member?.phone,
                 description: `Repayment for loan ${loan.loan_id}`,
                 payment_mode: payment_mode || 'cash',
                 reference_no: reference_no || '',
+                status: 'SUCCESS',
+                surcharge: 0,
+                excise: 0,
+                total: Number(amount_paid),
                 new_balance: Math.max(0, remaining)
             }
         });

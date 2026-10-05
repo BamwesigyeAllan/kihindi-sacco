@@ -850,30 +850,42 @@
       background: linear-gradient(135deg, #0d6e4f, #083a2d);
     }
     .receipt {
-      max-width: 540px;
+      width: 56mm;
+      height: 146mm;
+      max-width: 100%;
       margin: 0 auto;
-      padding: 1rem;
+      padding: 3mm;
+      box-sizing: border-box;
+      overflow: hidden;
       color: #172a22;
-      font-family: Arial, sans-serif;
+      background: #fff;
+      font: 8pt/1.2 Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
     }
     .receipt-header {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #d5a20a;
+      gap: 2mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px solid #d5a20a;
     }
-    .receipt-logo { width: 88px; height: 88px; object-fit: contain; flex: 0 0 auto; }
-    .receipt-header h2 { margin: 0 0 0.25rem; color: #174a38; font-size: 1.05rem; }
-    .receipt-header p { color: #66766d; font-size: 0.8rem; }
-    .receipt-title { margin: 1.1rem 0; color: #174a38; text-align: center; letter-spacing: 0.12em; }
-    .receipt-details { width: 100%; border-collapse: collapse; }
-    .receipt-details th, .receipt-details td { padding: 0.7rem 0.4rem; border-bottom: 1px solid #e5ece8; text-align: left; }
-    .receipt-details th { width: 42%; color: #74847c; font-size: 0.82rem; font-weight: 600; }
-    .receipt-details td { font-weight: 700; overflow-wrap: anywhere; }
-    .receipt-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2.5rem; }
-    .receipt-signatures div { padding-top: 0.5rem; border-top: 1px solid #88968e; color: #66766d; font-size: 0.75rem; }
-    .receipt-note { margin-top: 1.5rem; color: #74847c; text-align: center; font-size: 0.75rem; }
+    .receipt-logo { width: 12mm; height: 12mm; object-fit: contain; flex: 0 0 auto; }
+    .receipt-header h2 { margin: 0 0 1mm; color: #174a38; font-size: 7.2pt; line-height: 1.15; }
+    .receipt-header p { color: #66766d; font-size: 6.5pt; }
+    .receipt-title { margin: 2mm 0 1.5mm; color: #174a38; text-align: center; font-size: 8pt; letter-spacing: 0.06em; }
+    .receipt-details { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .receipt-details th, .receipt-details td { padding: 1.15mm 0.5mm; border-bottom: 0.2mm dashed #d8e2dc; text-align: left; vertical-align: top; font-size: 6.6pt; line-height: 1.15; }
+    .receipt-details th { width: 34%; color: #66766d; font-weight: 500; }
+    .receipt-details td { color: #172a22; font-weight: 700; overflow-wrap: anywhere; }
+    .receipt-details tr.receipt-total th,
+    .receipt-details tr.receipt-total td { border-top: 0.5mm solid #174a38; border-bottom: 0; padding-top: 1.5mm; font-size: 7.5pt; font-weight: 800; }
+    .receipt-details tr.receipt-status td { color: #17664f; text-transform: uppercase; }
+    .receipt-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-top: auto; padding-top: 4mm; }
+    .receipt-signatures div { min-width: 0; padding-top: 5mm; border-top: 0.2mm solid #66766d; color: #46564e; text-align: center; font-size: 6pt; }
+    .receipt-note { margin-top: 3mm; color: #46564e; text-align: center; font-size: 6.3pt; }
+    .receipt-actions { display: flex; justify-content: center; gap: 1.5mm; margin-top: 2mm; }
+    .receipt-actions button { padding: 1.5mm 2mm; border-radius: 1.5mm; font-size: 6.5pt; white-space: nowrap; }
     .reports-heading {
       display: flex;
       align-items: flex-end;
@@ -1001,28 +1013,33 @@
       .report-actions button { flex: 1; justify-content: center; }
     }
     @media print {
+      @page { size: 56mm 146mm; margin: 0; }
       body * { visibility: hidden !important; }
       #modal.active, #modal.active * { visibility: visible !important; }
       #modal.active {
         display: block !important;
         position: absolute;
-        inset: 0;
-        width: 100%;
-        height: auto;
+        top: 0;
+        left: 0;
+        width: 56mm;
+        height: 146mm;
         padding: 0;
         background: #fff;
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
       }
       #modal.active .modal-content {
-        width: 100%;
-        max-width: none;
-        max-height: none;
+        width: 56mm;
+        max-width: 56mm;
+        height: 146mm;
+        max-height: 146mm;
         padding: 0;
         overflow: visible;
         border-radius: 0;
         box-shadow: none;
       }
+      #modalBody, #modal.active .modal-content { margin: 0; }
+      .receipt { width: 56mm; height: 146mm; max-width: none; margin: 0; padding: 3mm; overflow: hidden; }
       .receipt-actions, .modal-content .close { display: none !important; }
     }
     @media (max-width: 768px) {
@@ -1340,24 +1357,24 @@
       const receipt = data.receipt || {};
       const receiptType = receipt.transaction_type || 'Transaction';
       const currency = value => `UGX ${Number(value || 0).toLocaleString('en-UG', { maximumFractionDigits: 2 })}`;
+      const amount = Number(receipt.amount || 0);
+      const surcharge = Number(receipt.surcharge || 0);
+      const excise = Number(receipt.excise || 0);
+      const total = receipt.total !== undefined ? Number(receipt.total) : amount + surcharge + excise;
       const rows = [
-        ['Receipt number', data.receipt_no],
-        ['Member name', receipt.member_name],
-        ['Membership number', receipt.membership_no],
-        ['Account number', receipt.account_no],
+        ['Account No.', receipt.account_no],
+        ['Depositor phone', receipt.phone],
         ['Transaction', receiptType],
-        ['Description', receipt.description],
+        ['Customer', receipt.member_name],
         ['Date', receipt.date],
-        ['Amount', currency(receipt.amount)],
-        ['Payment method', receipt.payment_mode],
-        ['Reference', receipt.reference_no],
-        ['National ID', receipt.national_id],
-        ['Interest rate', receipt.interest_rate ? `${receipt.interest_rate}% p.a.` : ''],
-        ['Tenor', receipt.tenor_months ? `${receipt.tenor_months} months` : ''],
-        ['Maturity date', receipt.maturity_date],
-        ['Interest payment', receipt.interest_payment],
-        ['Remaining loan balance', receipt.new_balance !== undefined ? currency(receipt.new_balance) : ''],
-        ['New account balance', data.newBalance !== undefined ? currency(data.newBalance) : '']
+        ['Time', receipt.time],
+        ['Reference', receipt.reference_no || '—'],
+        ['Receipt No.', data.receipt_no],
+        ['Status', receipt.status || 'SUCCESS'],
+        ['Amount', currency(amount)],
+        ['Surcharge', currency(surcharge)],
+        ['Excise', currency(excise)],
+        ['TOTAL', currency(total), 'receipt-total']
       ].filter(([, value]) => value !== undefined && value !== null && value !== '');
       openModal(`
         <article class="receipt">
@@ -1371,14 +1388,14 @@
           <h3 class="receipt-title">${escapeHtml(receiptType.toUpperCase())} RECEIPT</h3>
           <table class="receipt-details">
             <tbody>
-              ${rows.map(([label, value]) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}
+              ${rows.map(([label, value, className = '']) => `<tr class="${className}"><th>${escapeHtml(label)}</th><td>${escapeHtml(value)}</td></tr>`).join('')}
             </tbody>
           </table>
           <div class="receipt-signatures">
-            <div>Member's signature</div>
-            <div>Cashier's signature</div>
+            <div>Customer signature</div>
+            <div>Cashier signature</div>
           </div>
-          <p class="receipt-note">Thank you for banking with Kihindi SACCO.</p>
+          <p class="receipt-note">For inquiries, call 0763276725<br>Thank you for using our services.</p>
           <div class="form-actions receipt-actions">
             <button type="button" class="btn-secondary" onclick="closeModal()">Close</button>
             <button type="button" class="btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Print receipt</button>

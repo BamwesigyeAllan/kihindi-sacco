@@ -92,6 +92,7 @@ router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
 
         const oldBalance = Number(account.balance);
         const newBalance = oldBalance + Number(amount);
+        const transactionDate = new Date();
         await account.update({ balance: newBalance });
 
         const savingsTransaction = await SavingsTransaction.create({
@@ -99,7 +100,7 @@ router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
             type: 'deposit',
             amount,
             description: description || 'Savings deposit',
-            transaction_date: new Date(),
+            transaction_date: transactionDate,
             reference_no,
             created_by: req.user.id
         });
@@ -137,12 +138,18 @@ router.post('/deposit', authorize(...SAVINGS_WRITE), validate([
                 transaction_type: 'Savings deposit',
                 member_name: member.full_name,
                 membership_no: member.membership_no,
+                phone: member.phone,
                 account_no: account.account_no,
                 amount: Number(amount),
-                date: new Date().toLocaleDateString('en-UG'),
+                date: transactionDate.toLocaleDateString('en-UG'),
+                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
                 description: description || 'Savings deposit',
                 payment_mode: payment_mode || 'cash',
-                reference_no: reference_no || ''
+                reference_no: reference_no || receipt_no,
+                status: 'SUCCESS',
+                surcharge: 0,
+                excise: 0,
+                total: Number(amount)
             }
         });
     } catch (error) {
@@ -180,6 +187,7 @@ router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
         }
 
         const newBalance = Number(account.balance) - Number(amount);
+        const transactionDate = new Date();
         await account.update({ balance: newBalance });
 
         await SavingsTransaction.create({
@@ -187,7 +195,7 @@ router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
             type: 'withdrawal',
             amount,
             description: description || 'Savings withdrawal',
-            transaction_date: new Date(),
+            transaction_date: transactionDate,
             reference_no,
             created_by: req.user.id
         });
@@ -199,7 +207,7 @@ router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
             amount,
             national_id,
             receipt_no,
-            withdrawal_date: new Date()
+            withdrawal_date: transactionDate
         });
 
         await Transaction.create({
@@ -220,13 +228,19 @@ router.post('/withdraw', authorize(...SAVINGS_WRITE), validate([
                 transaction_type: 'Savings withdrawal',
                 member_name: member.full_name,
                 account_no: account.account_no,
+                phone: member.phone,
                 amount,
-                date: new Date().toLocaleDateString('en-UG'),
+                date: transactionDate.toLocaleDateString('en-UG'),
+                time: transactionDate.toLocaleTimeString('en-UG', { hour: '2-digit', minute: '2-digit', hour12: true }),
                 national_id,
                 membership_no: member.membership_no,
                 description: description || 'Savings withdrawal',
                 payment_mode: payment_mode || 'cash',
-                reference_no: reference_no || ''
+                reference_no: reference_no || receipt_no,
+                status: 'SUCCESS',
+                surcharge: 0,
+                excise: 0,
+                total: Number(amount)
             }
         });
     } catch (error) {
