@@ -761,7 +761,7 @@
       letter-spacing: 0.14em;
     }
     .dashboard-intro h1 {
-      color: #ffffff;
+      color: #fdfcfc;
       font-size: clamp(1.55rem, 3vw, 2rem);
       font-weight: 800;
       letter-spacing: -0.055em;
@@ -813,7 +813,7 @@
       box-shadow: 0 30px 70px rgba(0,0,0,0.4);
     }
     #loginScreen {
-      background-image: linear-gradient(160deg, rgba(8,52,38,0.74), rgba(10,61,46,0.6)), url('https://kihindisacco.org/assets/logo/bodaboda.jpg');
+      background-image: linear-gradient(160deg, rgba(8,52,38,0.74), rgba(10,61,46,0.6)), url('images/welcome-background.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -898,11 +898,6 @@
         box-shadow: none;
       }
       .receipt-actions, .modal-content .close { display: none !important; }
-    }
-    #loginScreen {
-      background: radial-gradient(circle at 15% 20%, rgba(46,130,88,0.1), transparent 28%),
-                  radial-gradient(circle at 90% 85%, rgba(213,168,59,0.12), transparent 27%),
-                  var(--bg);
     }
     @media (max-width: 768px) {
       .top-nav { height: 64px; padding: 0 1rem; }
@@ -1021,6 +1016,8 @@
     let charts = {};
     let allMembers = [];
     let allLoans = [];
+    let allLoanApplications = [];
+    let loanApplicationStatus = 'pending';
     let saccoLogoUrl = 'icons/kihindi-sacco-logo.jpg';
 
     // ============================================================
@@ -1245,7 +1242,7 @@
             </div>
           `;
 
-          if (role === 'admin' || role === 'chairman') {
+          if (role === 'admin' || role === 'chairperson' || role === 'chairman') {
             quickActions = `
               <div class="card">
                 <div class="card-header">
@@ -1261,7 +1258,7 @@
                 </div>
               </div>
             `;
-          } else if (role === 'loan_officer') {
+          } else if (role === 'loans_officer' || role === 'loan_officer') {
             quickActions = `
               <div class="card">
                 <div class="card-header">
@@ -1276,7 +1273,7 @@
                 </div>
               </div>
             `;
-          } else if (role === 'cashier') {
+          } else if (role === 'manager' || role === 'treasurer' || role === 'officer' || role === 'cashier') {
             quickActions = `
               <div class="card">
                 <div class="card-header">
@@ -1375,8 +1372,6 @@
     }
 
     function openMemberForm() {
-      // ... (same as previous – uses /members endpoint)
-      // I'll include a simplified version – you can expand as needed.
       const form = `
         <h2><i class="fas fa-user-plus"></i> Register Member</h2>
         <form id="memberForm" enctype="multipart/form-data">
@@ -1609,22 +1604,9 @@
     function loadLoanApplications() {
       apiFetch('/loan-applications')
         .then(data => {
-          let rows = data.map(app => `
-            <tr>
-              <td>${app.id}</td>
-              <td>${app.Member?.full_name || 'N/A'}</td>
-              <td>${app.LoanProduct?.product_name || 'N/A'}</td>
-              <td>UGX ${Number(app.amount).toLocaleString()}</td>
-              <td><span class="badge badge-${app.status}">${app.status}</span></td>
-              <td>
-                ${app.status === 'pending' ? `
-                  <button class="status-action approve" onclick="reviewLoanApp(${app.id}, 'approved')"><i class="fas fa-check"></i> Approve</button>
-                  <button class="status-action reject" onclick="reviewLoanApp(${app.id}, 'rejected')"><i class="fas fa-xmark"></i> Reject</button>
-                ` : ''}
-              </td>
-            </tr>
-          `).join('');
-          let html = `
+          allLoanApplications = Array.isArray(data) ? data : [];
+          loanApplicationStatus = 'pending';
+          const html = `
             <div class="page-header"><h1><i class="fas fa-file-invoice"></i> Loan Applications</h1></div>
             <div class="card">
               <div class="card-header">
@@ -1632,21 +1614,48 @@
                 <button class="btn" onclick="openLoanApplicationForm()"><i class="fas fa-plus"></i> Apply Loan</button>
               </div>
               <div class="status-filter-group">
-                <button class="status-filter pending active" onclick="filterLoanApps('pending')"><i class="fas fa-clock"></i> Pending</button>
-                <button class="status-filter approved" onclick="filterLoanApps('approved')"><i class="fas fa-check-circle"></i> Approved</button>
-                <button class="status-filter rejected" onclick="filterLoanApps('rejected')"><i class="fas fa-times-circle"></i> Rejected</button>
+                <button class="status-filter pending active" data-status="pending" onclick="filterLoanApps('pending')"><i class="fas fa-clock"></i> Pending</button>
+                <button class="status-filter approved" data-status="approved" onclick="filterLoanApps('approved')"><i class="fas fa-check-circle"></i> Approved</button>
+                <button class="status-filter rejected" data-status="rejected" onclick="filterLoanApps('rejected')"><i class="fas fa-times-circle"></i> Rejected</button>
               </div>
               <div class="table-responsive">
                 <table>
                   <thead><tr><th>#</th><th>Member</th><th>Product</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-                  <tbody>${rows || '<tr><td colspan="6" style="text-align:center;color:#999;">No applications</td></tr>'}</tbody>
+                  <tbody id="loanApplicationsRows"></tbody>
                 </table>
               </div>
             </div>
           `;
           document.getElementById('mainContent').innerHTML = html;
+          renderLoanApplications();
         })
         .catch(() => showToast('Error loading loan applications', 'error'));
+    }
+
+    function renderLoanApplications() {
+      const tbody = document.getElementById('loanApplicationsRows');
+      if (!tbody) return;
+
+      const applications = allLoanApplications.filter(app => app.status === loanApplicationStatus);
+      const rows = applications.map(app => `
+            <tr>
+              <td>${escapeHtml(app.id)}</td>
+              <td>${escapeHtml(app.Member?.full_name || 'N/A')}</td>
+              <td>${escapeHtml(app.LoanProduct?.product_name || 'N/A')}</td>
+              <td>UGX ${Number(app.amount || 0).toLocaleString()}</td>
+              <td><span class="badge badge-${escapeHtml(app.status)}">${escapeHtml(app.status)}</span></td>
+              <td>
+                ${app.status === 'pending' ? `
+                  <button class="status-action approve" onclick="reviewLoanApp(${Number(app.id)}, 'approved')"><i class="fas fa-check"></i> Approve</button>
+                  <button class="status-action reject" onclick="reviewLoanApp(${Number(app.id)}, 'rejected')"><i class="fas fa-xmark"></i> Reject</button>
+                ` : ''}
+              </td>
+            </tr>
+          `).join('');
+      tbody.innerHTML = rows || '<tr><td colspan="6" class="empty-state">No applications in this status</td></tr>';
+      document.querySelectorAll('.status-filter[data-status]').forEach(button => {
+        button.classList.toggle('active', button.dataset.status === loanApplicationStatus);
+      });
     }
 
     function openLoanApplicationForm() {
@@ -1677,7 +1686,7 @@
           `;
           openModal(form);
           const role = getUserRole();
-          const allowed = ['admin', 'chairman', 'loan_officer', 'treasurer'];
+          const allowed = ['admin', 'chairperson', 'chairman', 'loans_officer', 'loan_officer', 'treasurer'];
           if (role && allowed.includes(role)) {
             document.getElementById('insuranceGroup').style.display = 'block';
           } else {
@@ -1726,14 +1735,14 @@
     }
 
     function filterLoanApps(status) {
-      // Reload the page and filter – in a real implementation you'd pass a query param
-      showToast(`Filtering ${status} applications`, 'info');
+      if (!['pending', 'approved', 'rejected'].includes(status)) return;
+      loanApplicationStatus = status;
+      renderLoanApplications();
     }
 
     // ============================================================
-    // SAVINGS, DEPOSITS, LOANS, REPORTS, STAFF (simplified)
+    // SAVINGS, DEPOSITS, LOANS, REPORTS, STAFF
     // ============================================================
-    // (I'll include minimal versions for brevity – you can reuse your earlier full versions)
 
     function loadSavings() {
       apiFetch('/savings')
@@ -1872,24 +1881,106 @@
     }
 
     function openDepositForm() {
-      // Simplified – you can copy your full version from earlier
-      showToast('Open Deposit form – coming soon', 'info');
+      apiFetch('/members')
+        .then(members => {
+          const activeMembers = (Array.isArray(members) ? members : []).filter(member => member.status === 'active');
+          if (!activeMembers.length) {
+            showToast('Register an active member before opening a fixed deposit.', 'error');
+            return;
+          }
+
+          const memberOptions = activeMembers.map(member => `
+            <option value="${Number(member.id)}">${escapeHtml(member.membership_no)} — ${escapeHtml(member.full_name)}</option>
+          `).join('');
+          const today = new Date().toISOString().slice(0, 10);
+          openModal(`
+            <h2><i class="fas fa-coins"></i> Open Fixed Deposit</h2>
+            <form id="fixedDepositForm">
+              <div class="form-group">
+                <label for="fixedDepositMember">Member *</label>
+                <select id="fixedDepositMember" name="member_id" required>${memberOptions}</select>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="fixedDepositAmount">Amount (UGX) *</label><input id="fixedDepositAmount" type="number" name="amount" min="1" step="0.01" required></div>
+                <div class="form-group"><label for="fixedDepositRate">Interest rate (% p.a.) *</label><input id="fixedDepositRate" type="number" name="interest_rate" min="0.01" step="0.01" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="fixedDepositTenor">Tenor (months) *</label><input id="fixedDepositTenor" type="number" name="tenor_months" min="1" step="1" required></div>
+                <div class="form-group"><label for="fixedDepositStart">Start date *</label><input id="fixedDepositStart" type="date" name="start_date" value="${today}" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="fixedDepositInterestPayment">Interest payment</label>
+                  <select id="fixedDepositInterestPayment" name="interest_payment">
+                    <option value="quarterly">Quarterly</option><option value="monthly">Monthly</option><option value="at_maturity">At maturity</option>
+                  </select>
+                </div>
+                <div class="form-group"><label for="fixedDepositPaymentMode">Payment mode</label>
+                  <select id="fixedDepositPaymentMode" name="payment_mode">
+                    <option value="cash">Cash</option><option value="bank">Bank</option><option value="mmo">Mobile money</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="fixedDepositReference">Reference number</label><input id="fixedDepositReference" type="text" name="reference_no" maxlength="50"></div>
+                <div class="form-group"><label for="fixedDepositAmountWords">Amount in words</label><input id="fixedDepositAmountWords" type="text" name="amount_words" maxlength="255"></div>
+              </div>
+              <p id="fixedDepositEstimate" class="card-subtitle" aria-live="polite">Enter the amount and rate to estimate quarterly interest.</p>
+              <div class="form-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Open deposit</button>
+              </div>
+            </form>
+          `);
+
+          const form = document.getElementById('fixedDepositForm');
+          const updateEstimate = () => {
+            const amount = Number(form.elements.amount.value);
+            const rate = Number(form.elements.interest_rate.value);
+            const estimate = document.getElementById('fixedDepositEstimate');
+            estimate.textContent = amount > 0 && rate > 0
+              ? `Estimated quarterly interest: UGX ${(amount * rate / 400).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+              : 'Enter the amount and rate to estimate quarterly interest.';
+          };
+          form.elements.amount.addEventListener('input', updateEstimate);
+          form.elements.interest_rate.addEventListener('input', updateEstimate);
+          form.addEventListener('submit', async event => {
+            event.preventDefault();
+            const payload = Object.fromEntries(new FormData(form).entries());
+            payload.member_id = Number(payload.member_id);
+            payload.amount = Number(payload.amount);
+            payload.interest_rate = Number(payload.interest_rate);
+            payload.tenor_months = Number(payload.tenor_months);
+            try {
+              const data = await apiFetch('/deposits', { method: 'POST', body: JSON.stringify(payload) });
+              if (!data.success) throw new Error(data.error || 'Could not open fixed deposit');
+              showToast(`Fixed deposit ${data.deposit.account_no} opened successfully`);
+              closeModal();
+              loadDeposits();
+            } catch (error) {
+              showToast(error.message || 'Could not open fixed deposit', 'error');
+            }
+          });
+        })
+        .catch(() => showToast('Error loading active members', 'error'));
     }
 
     function loadLoans() {
       apiFetch('/loans')
         .then(data => {
-          let rows = data.map(l => `
+          allLoans = Array.isArray(data) ? data : [];
+          const canDisburse = ['admin', 'chairperson', 'loans_officer', 'chairman', 'loan_officer'].includes(getUserRole());
+          let rows = allLoans.map(l => `
             <tr>
-              <td>${l.loan_id}</td>
-              <td>${l.Member?.full_name || 'N/A'}</td>
-              <td>${l.LoanProduct?.product_name || 'N/A'}</td>
+              <td>${escapeHtml(l.loan_id)}</td>
+              <td>${escapeHtml(l.Member?.full_name || 'N/A')}</td>
+              <td>${escapeHtml(l.LoanProduct?.product_name || 'N/A')}</td>
               <td>UGX ${Number(l.amount).toLocaleString()}</td>
               <td>UGX ${Number(l.balance).toLocaleString()}</td>
               <td>${l.insurance_fee ? 'UGX ' + Number(l.insurance_fee).toLocaleString() : '-'}</td>
-              <td><span class="badge badge-${l.status}">${l.status}</span></td>
+              <td><span class="badge badge-${escapeHtml(l.status)}">${escapeHtml(l.status)}</span></td>
               <td>
-                ${l.status === 'active' ? `<button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="repayLoan('${l.loan_id}')">Repay</button>` : ''}
+                ${l.status === 'active' ? `<button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="repayLoan(${Number(l.id)})">Repay</button>` : ''}
+                ${l.status === 'pending' && canDisburse ? `<button class="btn" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="disburseLoan(${Number(l.id)})">Disburse</button>` : ''}
               </td>
             </tr>
           `).join('');
@@ -1913,12 +2004,31 @@
         .catch(() => showToast('Error loading loans', 'error'));
     }
 
+    function disburseLoan(id) {
+      if (!confirm('Disburse this loan and activate its repayment schedule?')) return;
+      apiFetch(`/loans/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status: 'active' })
+      })
+        .then(data => {
+          if (!data.success) throw new Error(data.error || 'Could not disburse loan');
+          showToast('Loan disbursed successfully');
+          loadLoans();
+        })
+        .catch(error => showToast(error.message || 'Could not disburse loan', 'error'));
+    }
+
     function repayLoan(loanId) {
       const amount = prompt('Enter repayment amount:');
       if (!amount) return;
+      const amountPaid = Number(amount);
+      if (!Number.isFinite(amountPaid) || amountPaid <= 0) {
+        showToast('Enter a valid repayment amount greater than zero.', 'error');
+        return;
+      }
       apiFetch(`/loans/${loanId}/repay`, {
         method: 'POST',
-        body: JSON.stringify({ amount_paid: parseFloat(amount), payment_mode: 'cash' })
+        body: JSON.stringify({ amount_paid: amountPaid, payment_mode: 'cash' })
       })
       .then(data => {
         if (data.success) {
@@ -1935,7 +2045,6 @@
     // REPORTS
     // ============================================================
     function loadReports() {
-      // Similar to previous – reuse
       apiFetch('/reports/dashboard')
         .then(data => {
           let html = `
@@ -1973,11 +2082,147 @@
     }
 
     function loadCharts() {
-      // Same as earlier – you can reuse the full implementation
+      if (typeof Chart === 'undefined') {
+        showToast('Charts are unavailable. Check your internet connection and try again.', 'error');
+        return;
+      }
+
+      Promise.all([
+        apiFetch('/reports/deposits-chart'),
+        apiFetch('/reports/loans-chart')
+      ])
+        .then(([depositData, loanData]) => {
+          const depositsCanvas = document.getElementById('depositsChart');
+          const loansCanvas = document.getElementById('loansChart');
+          if (!depositsCanvas || !loansCanvas) return;
+
+          Object.values(charts).forEach(chart => chart?.destroy());
+          charts = {};
+
+          const deposits = Array.isArray(depositData) ? depositData : [];
+          const loans = Array.isArray(loanData) ? loanData : [];
+          charts.deposits = new Chart(depositsCanvas, {
+            type: 'bar',
+            data: {
+              labels: deposits.map(row => row.month || 'Unknown'),
+              datasets: [{
+                label: 'Fixed deposits (UGX)',
+                data: deposits.map(row => Number(row.total || 0)),
+                backgroundColor: '#278268',
+                borderRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true, ticks: { callback: value => `UGX ${Number(value).toLocaleString()}` } } }
+            }
+          });
+          charts.loans = new Chart(loansCanvas, {
+            type: 'doughnut',
+            data: {
+              labels: loans.map(row => row.product || 'Other'),
+              datasets: [{
+                label: 'Loans (UGX)',
+                data: loans.map(row => Number(row.total || 0)),
+                backgroundColor: ['#17664f', '#d4a62a', '#4eaf8e', '#b88a1f', '#073b2e', '#9bc8ad']
+              }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        })
+        .catch(() => showToast('Error loading report charts', 'error'));
     }
 
-    function exportReport(type) {
-      showToast(`Exporting ${type} report... (Demo)`, 'info');
+    async function exportReport(type) {
+      if (!['pdf', 'excel'].includes(type)) return;
+      const printWindow = type === 'pdf' ? window.open('', '_blank') : null;
+      if (type === 'pdf' && !printWindow) {
+        showToast('Allow pop-ups to print or save the PDF report.', 'error');
+        return;
+      }
+
+      try {
+        const [summary, depositData, loanData] = await Promise.all([
+          apiFetch('/reports/dashboard'),
+          apiFetch('/reports/deposits-chart'),
+          apiFetch('/reports/loans-chart')
+        ]);
+        const deposits = Array.isArray(depositData) ? depositData : [];
+        const loans = Array.isArray(loanData) ? loanData : [];
+        const transactions = Array.isArray(summary.recentTransactions) ? summary.recentTransactions : [];
+        const metrics = [
+          ['Active members', Number(summary.totalMembers || 0)],
+          ['Savings (UGX)', Number(summary.totalSavings || 0)],
+          ['Fixed deposits (UGX)', Number(summary.totalDeposits || 0)],
+          ['Outstanding loans (UGX)', Number(summary.outstandingLoans || 0)]
+        ];
+        const generatedAt = new Date().toLocaleString();
+
+        if (type === 'excel') {
+          const csvCell = value => {
+            let text = String(value ?? '');
+            if (typeof value === 'string' && /^[=+@\-\t\r]/.test(text)) text = `'${text}`;
+            return `"${text.replace(/"/g, '""')}"`;
+          };
+          const rows = [
+            ['KIHINDI SACCO REPORT', generatedAt],
+            [],
+            ['Summary', 'Value'],
+            ...metrics,
+            [],
+            ['Fixed deposits by month', 'Amount (UGX)'],
+            ...deposits.map(row => [row.month || 'Unknown', Number(row.total || 0)]),
+            [],
+            ['Loans by product', 'Amount (UGX)'],
+            ...loans.map(row => [row.product || 'Other', Number(row.total || 0)]),
+            [],
+            ['Recent transactions', 'Member', 'Type', 'Amount (UGX)', 'Date'],
+            ...transactions.map(item => [
+              item.reference || '', item.Member?.full_name || 'N/A', item.type || '', Number(item.amount || 0), item.createdAt || item.created_at || ''
+            ])
+          ];
+          const csv = rows.map(row => row.map(csvCell).join(',')).join('\r\n');
+          const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `kihindi-sacco-report-${new Date().toISOString().slice(0, 10)}.csv`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+          showToast('Report downloaded as an Excel-compatible CSV file.');
+          return;
+        }
+
+        const metricRows = metrics.map(([label, value]) => `
+          <tr><th>${escapeHtml(label)}</th><td>${Number(value).toLocaleString()}</td></tr>
+        `).join('');
+        const transactionRows = transactions.map(item => `
+          <tr>
+            <td>${escapeHtml(item.createdAt || item.created_at || '—')}</td>
+            <td>${escapeHtml(item.Member?.full_name || 'N/A')}</td>
+            <td>${escapeHtml(item.type || '—')}</td>
+            <td>UGX ${Number(item.amount || 0).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No transactions to show.</td></tr>';
+        const depositRows = deposits.map(row => `<tr><td>${escapeHtml(row.month || 'Unknown')}</td><td>UGX ${Number(row.total || 0).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="2">No fixed-deposit data.</td></tr>';
+        const loanRows = loans.map(row => `<tr><td>${escapeHtml(row.product || 'Other')}</td><td>UGX ${Number(row.total || 0).toLocaleString()}</td></tr>`).join('') || '<tr><td colspan="2">No loan data.</td></tr>';
+        printWindow.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>KIHINDI SACCO Report</title><style>
+          body{font:14px Arial,sans-serif;color:#172a22;margin:32px}h1,h2{color:#0b4a39}h1{margin-bottom:4px}p{color:#5f7369;margin-top:0}section{margin:24px 0}table{width:100%;border-collapse:collapse;margin-top:10px}th,td{text-align:left;padding:8px;border:1px solid #dfeadf}th{background:#f3f7f4}.metrics{max-width:600px}@media print{body{margin:12mm}}
+          </style></head><body><h1>KIHINDI SACCO</h1><p>Management report · Generated ${escapeHtml(generatedAt)}</p>
+          <section><h2>Summary</h2><table class="metrics"><tbody>${metricRows}</tbody></table></section>
+          <section><h2>Fixed deposits by month</h2><table><thead><tr><th>Month</th><th>Amount</th></tr></thead><tbody>${depositRows}</tbody></table></section>
+          <section><h2>Loans by product</h2><table><thead><tr><th>Product</th><th>Amount</th></tr></thead><tbody>${loanRows}</tbody></table></section>
+          <section><h2>Recent transactions</h2><table><thead><tr><th>Date</th><th>Member</th><th>Type</th><th>Amount</th></tr></thead><tbody>${transactionRows}</tbody></table></section>
+          <script>window.addEventListener('load',()=>window.print());<\/script></body></html>`);
+        printWindow.document.close();
+      } catch (error) {
+        printWindow?.close();
+        showToast(error.message || 'Could not export the report', 'error');
+      }
     }
 
     // ============================================================
@@ -2088,10 +2333,9 @@
           <div class="form-group"><label>Password</label><input type="password" name="password" required></div>
           <div class="form-group"><label>Role</label>
             <select name="role">
-              <option value="admin">Admin</option>
-              <option value="chairman">Chairman</option>
-              <option value="loan_officer">Loan Officer</option>
-              <option value="cashier">Cashier</option>
+              ${['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'].map(role => `
+                <option value="${role}">${role.replace('_', ' ').replace(/^\w/, character => character.toUpperCase())}</option>
+              `).join('')}
             </select>
           </div>
           <div class="form-actions">
@@ -2133,7 +2377,7 @@
               <div class="form-group">
                 <label>Role</label>
                 <select name="role">
-                  ${['admin', 'chairman', 'loan_officer', 'cashier'].map(role => `
+                  ${['admin', 'chairperson', 'manager', 'loans_officer', 'officer', 'treasurer'].map(role => `
                     <option value="${role}" ${role === user.role ? 'selected' : ''}>${role.replace('_', ' ')}</option>
                   `).join('')}
                 </select>

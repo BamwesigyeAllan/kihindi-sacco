@@ -2,9 +2,9 @@ const { sequelize, User, LoanProduct } = require('../models');
 
 const defaultUsers = [
   { username: 'admin', password: 'admin123', role: 'admin' },
-  { username: 'chairman', password: 'chairman123', role: 'chairman' },
-  { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
-  { username: 'cashier', password: 'cashier123', role: 'cashier' },
+  { username: 'chairperson', password: 'chairman123', role: 'chairperson' },
+  { username: 'loans_officer', password: 'loans123', role: 'loans_officer' },
+  { username: 'officer', password: 'cashier123', role: 'officer' },
   { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
 ];
 
