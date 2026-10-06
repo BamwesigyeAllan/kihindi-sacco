@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: kihindi-sacco
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_DIALECT
+        value: postgres
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kihindi-sacco-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: INITIAL_ADMIN_USERNAME
+        value: admin
+      - key: INITIAL_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: kihindi-sacco-db
+    databaseName: kihindi_sacco
+    user: kihindi_sacco
+    plan: free
+    region: oregon

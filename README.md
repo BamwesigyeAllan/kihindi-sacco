@@ -1,89 +1,51 @@
-# KIHINDI SACCO Backend
+# KIHINDI SACCO Management System
 
-Backend API for the KIHINDI SACCO management system.
-
-Built with Express.js, Sequelize, and MySQL.
+A single-service Express application with a static browser interface, Sequelize data models, and a local SQLite or managed PostgreSQL/MySQL database.
 
 ## Requirements
 
-- Node.js 18+ / 20+
+- Node.js 20 or later (Node.js 22 LTS recommended)
 - npm
-- MySQL (or compatible MariaDB)
 
-## Setup
+## Run locally (SQLite)
 
-### 1. Install dependencies
+1. Install dependencies: `npm ci`
+2. Copy `.env.example` to `.env` and keep `NODE_ENV=development` and `DB_DIALECT=sqlite`.
+3. Start the app with `npm run dev` (or `npm start`).
+4. Open <http://localhost:5000>. The API health check is <http://localhost:5000/health>.
 
-```bash
-npm install
-```
+The SQLite database is created automatically at `data/kihindi.sqlite`; the directory is created if needed. In development, the app creates the default staff accounts and sample loan products on first startup. The local admin login is `admin` / `admin123`; change its password before using real member data. Do not use development credentials or the example JWT secret in a deployed environment.
 
-### 2. Create environment configuration
+To use a local PostgreSQL or MySQL database instead, set `DB_DIALECT`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` in `.env`. Alternatively, set `DATABASE_URL`; `DB_SSL=true` enables TLS for providers that require it.
 
-```bash
-copy .env.example .env
-```
+## Deploy to Render
 
-### 3. Edit `.env`
+1. Push this repository to GitHub and create a Render Blueprint using `render.yaml`.
+2. When prompted, set `INITIAL_ADMIN_PASSWORD` to a unique password. Render generates `JWT_SECRET` and connects the web service to PostgreSQL.
+3. Wait for the service to become live, then open the Render service URL. Render checks `/health` after deploy.
+4. Sign in using username `admin` and the initial admin password you configured. Once an admin already exists in the database, the bootstrap variables can be removed; the app never inserts the development accounts in production.
 
-Update the settings to match your local MySQL environment:
+The Blueprint uses free Render plans for evaluation. Free web instances can sleep, and free PostgreSQL databases are temporary and have limited storage/retention; upgrade both plans before storing real financial or member data. The Render filesystem is ephemeral on the free web plan, so member photos and the SACCO logo can be lost after a restart/redeploy. For persistent uploads, attach a persistent disk on a paid web plan and set `UPLOAD_DIR` to its mount path (for example, `/var/data/uploads`). Keep the PostgreSQL database separate from the web filesystem.
 
-```env
-PORT=5000
-DB_DIALECT=mysql
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=
-DB_NAME=kihindi_sacco
-JWT_SECRET=your-super-secret-key-change-this-in-production
-```
+### Production environment variables
 
-### 4. Start the application
+- `NODE_ENV=production`
+- `DB_DIALECT=postgres` and `DATABASE_URL` (Render supplies the linked database URL)
+- `JWT_SECRET` (at least 32 characters; Render generates one in the Blueprint)
+- `INITIAL_ADMIN_USERNAME` and `INITIAL_ADMIN_PASSWORD` only to create the first admin on an empty database
+- `UPLOAD_DIR` optionally points to persistent storage for photos and branding
+- `PORT` is assigned by Render; the app binds to `0.0.0.0`
+- `DB_SSL=true` only if the database provider requires TLS
 
-```bash
-npm run dev
-```
+Production startup fails early if the JWT secret, database, or database dialect is unsafe/misconfigured. SQLite remains intended for local development only.
 
-For production:
+## Useful commands
 
-```bash
-npm run start:prod
-```
+- `npm run dev` — start with nodemon
+- `npm start` — start the server (Render uses this command)
+- `npm run start:prod` — production start alias
+- `npm run seed` / `npm run seed:dev` — add default development staff accounts and products to the configured database; disabled in production
+- `npm run seed:reset` — **destructively drop and recreate all tables**, then add development seed data; disabled in production and never run against a database containing wanted data
+- `npm run users` — list staff accounts in the configured database
 
-## Database seeds
-
-```bash
-npm run seed
-npm run seed:dev
-npm run seed:reset
-```
-
-## Configuration
-
-The application loads environment variables from `.env` using `dotenv` and exposes settings through `config/index.js`.
-
-- `PORT` – HTTP port for the server
-- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` – database connection credentials
-- `JWT_SECRET` – secret used to sign authentication tokens
-- `LOG_LEVEL` – optional logging level
-
-## Project structure
-
-- `app.js` – application entrypoint
-- `config/` – application configuration files
-- `models/` – Sequelize model definitions
-- `routes/` – Express route handlers
-- `middleware/` – authentication helpers
-- `public/` – static frontend files
-- `uploads/` – uploaded files storage
-- `utils/` – helper utilities
-
-## Notes
-
-- `sequelize.sync({ alter: true })` is enabled in `app.js` for development and will automatically sync database tables.
-- A default admin user is created automatically with username `admin` and password `password` if none exists.
-
-## Optional
-
-If you wish to remove VS Code sample `Edge` launch configs or add Firefox debugging, update `.vscode/launch.json` accordingly.
+The server synchronizes Sequelize models at startup. Back up production data before deploying schema changes; for larger production changes, introduce explicit migrations rather than relying on automatic synchronization.

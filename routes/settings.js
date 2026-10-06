@@ -2,11 +2,12 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const config = require('../config');
 const { authenticate, authorize } = require('../middleware/auth');
 const { STAFF_MANAGE } = require('../utils/roles');
 
 const router = express.Router();
-const logoDir = path.join(__dirname, '..', 'uploads', 'branding');
+const logoDir = path.join(config.uploadDir, 'branding');
 const allowedTypes = {
     '.png': 'image/png',
     '.jpg': 'image/jpeg',

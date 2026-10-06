@@ -2,13 +2,17 @@ const { sequelize, User, LoanProduct } = require('../models');
 
 async function resetSeed() {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Refusing to destructively reset a production database.');
+    }
     await sequelize.sync({ force: true });
 
     const users = [
       { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'chairman', password: 'chairman123', role: 'chairman' },
-      { username: 'loan_officer', password: 'loans123', role: 'loan_officer' },
-      { username: 'cashier', password: 'cashier123', role: 'cashier' },
+      { username: 'chairperson', password: 'chairman123', role: 'chairperson' },
+      { username: 'manager', password: 'manager123', role: 'manager' },
+      { username: 'loans_officer', password: 'loans123', role: 'loans_officer' },
+      { username: 'officer', password: 'cashier123', role: 'officer' },
       { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
     ];
 

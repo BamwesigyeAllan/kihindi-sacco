@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(config.uploadDir));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const authRoutes = require('./routes/auth');
@@ -45,9 +45,24 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message || 'Server error' });
 });
 
-const PORT = config.port;
+const PORT = Number(config.port) || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
-const defaultUsers = [
+function startServer(port, host) {
+    const server = app.listen(port, host, () => {
+        console.log(`Server running on http://${host}:${port}`);
+        if (config.nodeEnv !== 'production') {
+            console.log('Default development login: admin / admin123');
+        }
+    });
+
+    server.on('error', (error) => {
+        console.error('Server failed to start:', error.message);
+        process.exit(1);
+    });
+}
+
+const developmentUsers = [
     { username: 'admin', password: 'admin123', role: 'admin' },
     { username: 'chairperson', password: 'password123', role: 'chairperson' },
     { username: 'manager', password: 'password123', role: 'manager' },
@@ -94,7 +109,15 @@ async function bootstrap() {
     await sequelize.sync();
     console.log(`Database synced (${config.database.dialect})`);
 
-    for (const userData of defaultUsers) {
+    const initialUsers = config.nodeEnv === 'production'
+        ? (config.initialAdmin.username ? [{
+            username: config.initialAdmin.username,
+            password: config.initialAdmin.password,
+            role: 'admin'
+        }] : [])
+        : developmentUsers;
+
+    for (const userData of initialUsers) {
         const existing = await User.findOne({ where: { username: userData.username } });
         if (!existing) {
             const hashed = await User.hashPassword(userData.password);
@@ -107,6 +130,10 @@ async function bootstrap() {
         }
     }
 
+    if (config.nodeEnv === 'production' && !(await User.count({ where: { role: 'admin' } }))) {
+        throw new Error('No admin account exists. Set INITIAL_ADMIN_USERNAME and INITIAL_ADMIN_PASSWORD for the first deployment.');
+    }
+
     for (const product of defaultProducts) {
         await LoanProduct.findOrCreate({
             where: { product_name: product.product_name },
@@ -114,14 +141,11 @@ async function bootstrap() {
         });
     }
 
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
-        console.log('Login: admin / admin123');
-    });
+    startServer(PORT, HOST);
 }
 
 bootstrap().catch((err) => {
-    console.error('Database connection failed:', err.message);
-    console.error('Set DB_DIALECT=sqlite for local file storage, or configure MySQL/TiDB in .env');
+    console.error('Application startup failed:', err.message);
+    console.error('Check the database configuration and required production environment variables.');
     process.exit(1);
 });

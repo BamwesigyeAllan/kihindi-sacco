@@ -3,6 +3,7 @@ const { sequelize, User, LoanProduct } = require('../models');
 const defaultUsers = [
   { username: 'admin', password: 'admin123', role: 'admin' },
   { username: 'chairperson', password: 'chairman123', role: 'chairperson' },
+  { username: 'manager', password: 'manager123', role: 'manager' },
   { username: 'loans_officer', password: 'loans123', role: 'loans_officer' },
   { username: 'officer', password: 'cashier123', role: 'officer' },
   { username: 'treasurer', password: 'treasurer123', role: 'treasurer' }
@@ -43,6 +44,9 @@ const loanProducts = [
 
 async function seed() {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Refusing to create development seed accounts in production.');
+    }
     await sequelize.sync();
 
     for (const userData of defaultUsers) {

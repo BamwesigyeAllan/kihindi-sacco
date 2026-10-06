@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const { body, param } = require('express-validator');
+const config = require('../config');
 const { Member, Transaction } = require('../models');
 const { authorize } = require('../middleware/auth');
 const { validate } = require('../middleware/validate');
@@ -11,7 +12,7 @@ const { generateMembershipNo, isTruthy } = require('../utils/helpers');
 const { MEMBER_WRITE } = require('../utils/roles');
 const router = express.Router();
 
-const uploadDir = './uploads/photos';
+const uploadDir = path.join(config.uploadDir, 'photos');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
